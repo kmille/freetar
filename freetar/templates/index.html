@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<form class="row" method="GET" action="/search">
+  <div class="col-md-9">
+    <label for="search_term" class="visually-hidden">Search</label>
+    <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}" placeholder="Search">
+  </div>
+  
+<div class="col-md-2">
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="button" class="btn btn-primary">Clear</button>
+</div>
+</form>
+
+
+{% if search_results is defined %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">artist</th>
+          <th scope="col">song</th>
+          <th scope="col">rating</th>
+          <th scope="col">type</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for result in search_results %}
+
+        <tr>
+          <td><a href="{{ result.artist_url}}">{{ result.artist_name}}<a/></td>
+          <td><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a/></td>
+          <td>{{ result.rating}}/5 ({{result.votes}})</td>
+          <td>{{ result._type}}</td>
+        </tr>
+
+    {% endfor %}
+      </tbody>
+    </table>
+{% endif %}
+
+{% if tab is defined %}
+    {{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
+    Tuning: {{ tab.tuning }}<br>
+    Difficulty: {{ tab.difficulty }}<br>
+    Capo: {{ tab.capo }}<br>
+
+    <div>
+        <textarea readonly rows="100%" cols="100%" id="floatingTextarea">
+            {{ tab.tab }}
+        </textarea>
+    </div>
+{% endif %}
+
+
+{% endblock %}
