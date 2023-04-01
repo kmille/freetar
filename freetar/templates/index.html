@@ -14,26 +14,33 @@
     <button type="button" class="btn btn-primary">Clear</button>
 </div>
 </form>
+      
+<i class="fa fa-regular fa-star">
+<i class="fa fa-star">
+<i class="fa fa-star" style="color: #ffae00;">
+
 
 
 {% if search_results is defined %}
-    <table class="table">
+    <table id="results" class="table">
       <thead>
         <tr>
           <th scope="col">artist</th>
           <th scope="col">song</th>
           <th scope="col">rating</th>
           <th scope="col">type</th>
+          <th scope="col">favorite</th>
         </tr>
       </thead>
       <tbody>
     {% for result in search_results %}
 
         <tr>
-          <td><a href="{{ result.artist_url}}">{{ result.artist_name}}<a/></td>
-          <td><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a/></td>
-          <td>{{ result.rating}}/5 ({{result.votes}})</td>
-          <td>{{ result._type}}</td>
+          <td class="artist" ><a href="{{ result.artist_url}}">{{ result.artist_name}}<a/></td>
+          <td class="song" ><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a/></td>
+          <td class="rating">{{ result.rating}}/5 ({{result.votes}})</td>
+          <td class="type" >{{ result._type}}</td>
+          <td><i class="fa-solid fa-star favorite"></i></td>
         </tr>
 
     {% endfor %}
@@ -54,5 +61,44 @@
     </div>
 {% endif %}
 
+<script>
+    $(".favorite").click(function() {
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        var row = $(this).closest("tr");
+        var fav = new Map();
+        
+        tab_url = row.find(".song").find("a").attr("href");
+        if (favorites[tab_url] != undefined) {
+            delete favorites[tab_url];
+            row.find(".favorite").css("color", "#000000");
+        } else {
+            
+            fav["tab_url"] = row.find(".song").find("a").attr("href");
+            fav["artist_name"] = row.find(".artist").text();
+            fav["tab_url"] = tab_url;
+            fav["song"] = row.find(".song").text();
+            fav["type"] = row.find(".type").text();
+            fav["rating"] = row.find(".rating").text();
+
+            favorites[fav["tab_url"]] = fav;
+            row.find(".favorite").css("color", "#ffae00");
+        }
+        
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+    });
+
+    // make every entry yellow if we faved it before
+    $(document).ready(function() {
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        
+        $("#results tr").each(function() {
+            var tab_url = $(this).find(".song").find("a").attr("href");
+            if (favorites[tab_url] != undefined) {
+                $(this).find(".favorite").css("color", "#ffae00");
+            }
+        });
+    });
+
+</script>
 
 {% endblock %}
