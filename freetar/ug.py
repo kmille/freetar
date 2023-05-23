@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 import json
+import re
 
 from dataclasses import dataclass, field
 
@@ -42,6 +43,7 @@ class SongDetail():
     difficulty: str
     capo: str
     tuning: str
+    tab_url: str
     versions: list[SearchResult] = field(default_factory=list)
 
     def __init__(self, data):
@@ -52,15 +54,28 @@ class SongDetail():
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
-        self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
-        _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
-        self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
+        if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
+            self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
+            _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
+            self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
+            print(self.tuning)
+        self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
         self.versions = []
         for version in data["store"]["page"]["data"]["tab_view"]["versions"]:
             self.versions.append(SearchResult(version))
+        self.fix_tab()
 
     def __repr__(self):
         return f"{self.artist_name} - {self.song_name}"
+
+    def fix_tab(self):
+        tab = self.tab
+        tab = tab.replace("\r\n", "</br>")
+        tab = tab.replace(" ", "&nbsp;")
+        tab = tab.replace("[tab]", "")
+        tab = tab.replace("[/tab]", "")
+        tab = re.sub(r'\[ch\](\w+)\[\/ch\]', r'<strong>\1</strong>', tab)
+        self.tab = tab
 
 
 def ug_search(value: str):
@@ -85,7 +100,6 @@ def ug_search(value: str):
 
 def ug_tab(url_path: str):
     #resp = requests.get("https://tabs.ultimate-guitar.com/tab/rise-against/swing-life-away-chords-262724")
-    print(url_path)
     resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path)
     #with open("/home/kmille/Downloads/debug.html", "w") as f:
     #    f.write(resp.text)
@@ -96,7 +110,6 @@ def ug_tab(url_path: str):
     data = data.attrs['data-content']
     data = json.loads(data)
     s = SongDetail(data)
-    print(s)
     #print(json.dumps(data, indent=4))
     #results = data['store']['page']['data']['results']
     #breakpoint()

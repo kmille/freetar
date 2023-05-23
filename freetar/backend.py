@@ -30,4 +30,4 @@ def show_tab(artist: str, song: str):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=22000, debug=True)
