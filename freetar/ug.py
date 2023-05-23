@@ -47,8 +47,9 @@ class SongDetail():
     versions: list[SearchResult] = field(default_factory=list)
 
     def __init__(self, data):
-        with open("test.json", "w") as f:
-            json.dump(data, f)
+        if __name__ == '__main__':
+            with open("test.json", "w") as f:
+                json.dump(data, f)
         self.tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
