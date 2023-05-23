@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 
-from ug import ug_search, ug_tab
+from .ug import ug_search, ug_tab
+import waitress
 
 app = Flask(__name__)
 
@@ -29,5 +30,17 @@ def show_tab(artist: str, song: str):
                            tab=tab)
 
 
+def main():
+    host = "0.0.0.0"
+    port = 22000
+    if __name__ == '__main__':
+        app.run(debug=True,
+                host=host,
+                port=port)
+    else:
+        print(f"Running backend on {host}:{port}")
+        waitress.serve(app, listen=f"{host}:{port}")
+
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=22000, debug=True)
+    main()
