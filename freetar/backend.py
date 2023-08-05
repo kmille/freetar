@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-from .ug import ug_search, ug_tab
+from freetar.ug import ug_search, ug_tab
 import waitress
 
 app = Flask(__name__)
@@ -20,14 +20,16 @@ def search():
         search_results = []
     return render_template("index.html",
                            search_term=search_term,
-                           search_results=search_results)
+                           title=f"Freetar - Search: {search_term}",
+                           search_results=search_results,)
 
 
 @app.route("/tab/<artist>/<song>")
 def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
     return render_template("index.html",
-                           tab=tab)
+                           tab=tab,
+                           title=f"{tab.artist_name} - {tab.song_name}")
 
 
 def main():

@@ -15,18 +15,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 
 
-    <title>Hello, world!</title>
+    <title>{{ title or "Welcome to Freetar" }}</title>
   </head>
   <body>
-    <h1>Hello, world!</h1>
-
 
 <div class="container">
 
 
     {% block content %}
     {% endblock %}
-
 
 </div>
 
