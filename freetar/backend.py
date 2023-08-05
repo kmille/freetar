@@ -32,6 +32,11 @@ def show_tab(artist: str, song: str):
                            title=f"{tab.artist_name} - {tab.song_name}")
 
 
+@app.route("/favs")
+def show_favs():
+    return render_template("favorites.html",
+                           title=f"Freetar - Favorites")
+
 def main():
     host = "0.0.0.0"
     port = 22000
