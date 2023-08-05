@@ -34,8 +34,9 @@ def show_tab(artist: str, song: str):
 
 @app.route("/favs")
 def show_favs():
-    return render_template("favorites.html",
-                           title=f"Freetar - Favorites")
+    return render_template("index.html",
+                           title=f"Freetar - Favorites",
+                           favs=True)
 
 def main():
     host = "0.0.0.0"

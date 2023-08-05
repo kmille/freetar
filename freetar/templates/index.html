@@ -15,7 +15,7 @@
 </div>
 </form>
       
-{% if search_results is defined %}
+{% if search_results is defined or favs is defined and favs %}
     <table id="results" class="table">
       <thead>
         <tr>
@@ -72,6 +72,34 @@
     <div style="font-family: monospace">
         {{ tab.tab | safe }} 
     </div>
+
+{% endif %}
+
+
+{% if favs is defined and favs %}
+
+<script>
+    $(document).ready(function() {
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+
+        $.each(favorites, function(index, song) {
+            $('#results').append(
+                '<tr>' +
+                    '<td>' + song.artist_name + '</td>' +
+                    '<td class="song">' +
+                        '<a href="' + song.tab_url + '">' + song.song + '</a>' +
+                    '</td>' +
+                    '<td>' + song.rating + '</td>' +
+                    '<td>' + song.type + '</td>' +
+                    '<td><i class="fa fa--regular fa-star favorite"></i></td>' + 
+                '</tr>');
+        });
+
+        colorize_favs();
+    });
+
+
+</script>
 
 {% endif %}
 
