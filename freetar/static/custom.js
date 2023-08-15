@@ -15,6 +15,7 @@ function colorize_favs() {
 }
 
 $(document).ready(function() {
+/*
     $(".favorite").click(function() {
             console.log("fav was clicked");
             favorites = JSON.parse(localStorage.getItem("favorites")) || {};
@@ -27,7 +28,6 @@ $(document).ready(function() {
                 row.find(".favorite").css("color", "#000000");
             } else {
 
-                fav["tab_url"] = row.find(".song").find("a").attr("href");
                 fav["artist_name"] = row.find(".artist").text();
                 fav["tab_url"] = tab_url;
                 fav["song"] = row.find(".song").text();
@@ -40,6 +40,7 @@ $(document).ready(function() {
 
             localStorage.setItem("favorites", JSON.stringify(favorites));
         });
+*/
 
         colorize_favs();
 

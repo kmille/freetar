@@ -65,6 +65,7 @@
     <button type="button" class="btn btn-primary" onclick="scroll_timeout-=50" >+</button>
     <button type="button" class="btn btn-primary" onclick="scroll_timeout+=50" >-</button>
     <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
+    <i class="fa fa--regular fa-star favorite"></i>
     
     
     <hr class="border border-primary">
@@ -72,6 +73,13 @@
     <div style="font-family: monospace">
         {{ tab.tab | safe }} 
     </div>
+
+
+    <h2>Alternative versions</h2>
+    {% for version in tab.versions %}
+    <a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})</a></br>
+    {% endfor %}
+
 
 {% endif %}
 
@@ -98,6 +106,46 @@
         colorize_favs();
     });
 
+
+</script>
+
+{% endif %}
+
+{% if tab is defined and tab %}
+
+<script>
+    $(document).ready(function() {
+
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        if(window.location.pathname in favorites) {
+            console.log("True!");
+            $(".favorite").css("color", "#ffae00");
+        }
+
+    });
+
+    $(".favorite").click(function() {
+        console.log("fav2 was clicked");
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+
+        tab_url = window.location.pathname;
+        if (tab_url in favorites) {
+            delete favorites[tab_url];
+            $(".favorite").css("color", "#000000");
+        } else {
+            var fav = new Map();
+            fav["artist_name"] = "{{ tab.artist_name }}";
+            fav["tab_url"] = window.location.pathname;
+            fav["song"] = "{{ tab.song_name }}";
+            fav["type"] = "{{ tab._type }}";
+            fav["rating"] = "{{ tab.rating }}";
+
+            favorites[fav["tab_url"]] = fav;
+            $(".favorite").css("color", "#ffae00");
+        }
+
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+    });
 
 </script>
 
