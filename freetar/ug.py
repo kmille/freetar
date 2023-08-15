@@ -75,7 +75,7 @@ class SongDetail():
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
         tab = tab.replace("[/tab]", "")
-        tab = re.sub(r'\[ch\]([#\w]+)\[\/ch\]', r'<strong>\1</strong>', tab)
+        tab = re.sub(r'\[ch\]([/#\w]+)\[\/ch\]', r'<strong>\1</strong>', tab)
         self.tab = tab
 
 
