@@ -32,6 +32,14 @@ def show_tab(artist: str, song: str):
                            title=f"{tab.artist_name} - {tab.song_name}")
 
 
+@app.route("/tab/<tabid>")
+def show_tab2(tabid: int):
+    tab = ug_tab(tabid)
+    return render_template("index.html",
+                           tab=tab,
+                           title=f"{tab.artist_name} - {tab.song_name}")
+
+
 @app.route("/favs")
 def show_favs():
     return render_template("index.html",
