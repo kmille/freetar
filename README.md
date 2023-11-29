@@ -19,10 +19,12 @@ Try it out: https://freetar.androidloves.me
 
 
 ## How to use it
-You need poetry. Then:
+You need [poetry](https://python-poetry.org/). Then:
 ```
 poetry install
 poetry run freetar
 Visit localhost:22000 in browser
 ```
-
+You can also use
+pip install freetar
+```
