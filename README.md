@@ -18,3 +18,11 @@ Try it out: https://freetar.androidloves.me
 - save favs encrypted server side?
 
 
+## How to use it
+You need poetry. Then:
+```
+poetry install
+poetry run freetar
+Visit localhost:22000 in browser
+```
+
