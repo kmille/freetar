@@ -25,6 +25,9 @@ poetry install
 poetry run freetar
 Visit localhost:22000 in browser
 ```
-You can also use
+
+You can also use the [PyPi](https://pypi.org/project/freetar/) package
+
+```
 pip install freetar
 ```
