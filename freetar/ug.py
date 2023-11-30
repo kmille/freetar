@@ -102,6 +102,9 @@ def ug_search(value: str):
 
 
 def get_chords(s: SongDetail):
+    if s.appliciture is None:
+        return dict()
+
     chords = {}
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
