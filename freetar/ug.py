@@ -102,39 +102,37 @@ def ug_search(value: str):
 
 
 def get_chords(s: SongDetail):
-    z = {}
+    chords = {}
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
             frets = chord_variant["frets"]
             min_fret = min(frets)
             max_fret = max(frets)
             possible_frets = list(range(min_fret, max_fret+1))
-            c = {
+            variants_temp = {
                 possible_fret: [1 if b==possible_fret else 0 for b in frets][::-1]
                 for possible_fret
                 in possible_frets
                 if possible_fret > -1
             }
 
-            d = dict()
+            variants = dict()
             found = False
-            for x,y in c.items():
+            for fret, fingers in variants_temp.items():
                 try:
-                    if not found and y.index(1) >= 0:
+                    if not found and fingers.index(1) >= 0:
                         found = True
                 except ValueError:
                     ...
 
                 if found:
-                    d[x] = y
+                    variants[fret] = fingers
 
-            if chord not in z:
-                z[chord] = []
-                z[chord].append(d)
-            else:
-                z[chord].append(d)
+            if chord not in chords:
+                chords[chord] = []
+            chords[chord].append(variants)
 
-    return z
+    return chords
 
 
 def ug_tab(url_path: str):
