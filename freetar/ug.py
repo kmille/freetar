@@ -55,6 +55,8 @@ class SongDetail():
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
+        self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
+        self.chords = []
         if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
@@ -99,6 +101,42 @@ def ug_search(value: str):
     return ug_results
 
 
+def get_chords(s: SongDetail):
+    z = {}
+    for chord in s.appliciture:
+        for chord_variant in s.appliciture[chord]:
+            frets = chord_variant["frets"]
+            min_fret = min(frets)
+            max_fret = max(frets)
+            possible_frets = list(range(min_fret, max_fret+1))
+            c = {
+                possible_fret: [1 if b==possible_fret else 0 for b in frets][::-1]
+                for possible_fret
+                in possible_frets
+                if possible_fret > -1
+            }
+
+            d = dict()
+            found = False
+            for x,y in c.items():
+                try:
+                    if not found and y.index(1) >= 0:
+                        found = True
+                except ValueError:
+                    ...
+
+                if found:
+                    d[x] = y
+
+            if chord not in z:
+                z[chord] = []
+                z[chord].append(d)
+            else:
+                z[chord].append(d)
+
+    return z
+
+
 def ug_tab(url_path: str):
     #resp = requests.get("https://tabs.ultimate-guitar.com/tab/rise-against/swing-life-away-chords-262724")
     resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path)
@@ -111,6 +149,7 @@ def ug_tab(url_path: str):
     data = data.attrs['data-content']
     data = json.loads(data)
     s = SongDetail(data)
+    s.chords = get_chords(s)
     #print(json.dumps(data, indent=4))
     #results = data['store']['page']['data']['results']
     #breakpoint()

@@ -67,6 +67,36 @@
     <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
     <i class="fa fa--regular fa-star favorite"></i>
     
+    <hr class="border border-primary"/>
+
+    {% for chord in tab.chords %}
+        <h4>{{chord}}</h4>
+        <div class="d-flex flex-row overflow-x-scroll align-items-center">
+            {% for chord_map in tab.chords[chord] %}
+                <table class="table d-block mx-2">
+                    <tbody>
+                        {% for fret in chord_map%}
+                            <tr>
+                                <td>{{fret}}</td>
+                                {% for string in chord_map[fret] %}
+                                    {% if string == 1 %}
+                                        <td class="bg-light">
+                                            <div class="bg-dark rounded-circle" style="height: 1rem; width: 1rem;"></div>
+                                        </td>
+                                    {% else %}
+                                        <td class="bg-light">
+                                            <div style="height: 1rem; width: 1rem;"></div>
+                                        </td>
+                                    {% endif %}
+                                {%endfor%}
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+        <hr class="mb-5"/>
+    {% endfor %}
     
     <hr class="border border-primary">
 
