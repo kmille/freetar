@@ -79,14 +79,14 @@
             <div id="collapse{{loop.index}}" class="accordion-collapse collapse" data-bs-parent="#chordAccordion">
                 <div class="d-flex flex-row overflow-x-scroll align-items-center accordion-body">
                     {% for chord_map in tab.chords[chord] %}
-                        <table class="table table-sm table-bordered d-block mx-3">
-                            <tbody>
+                        <table class="table table-borderless table-sm d-block mx-3 p-2 bg-light rounded">
+                            <tbody class="table-group-divider text-black">
                                 {% for fret in chord_map%}
                                     <tr style="font-size: 0.75rem;">
-                                        <td>{{fret}}</td>
+                                        <td class="m-0 p-0">{{fret}}</td>
                                         {% for string in chord_map[fret] %}
-                                            <td>
-                                                <div class="text-align-center text-center" style="height: 1rem; width: 1rem;">{{"⬤" if string == 1}}</div>
+                                            <td class="m-0 p-0" style="background: linear-gradient(#000, #000) no-repeat center/2px 100%;">
+                                                <div class="text-align-center text-center m-0 p-0 border-bottom border-black" style="height: 1rem; width: 1rem;">{{"⬤" if string == 1}}</div>
                                             </td>
                                         {%endfor%}
                                     </tr>
