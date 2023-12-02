@@ -69,39 +69,30 @@
     
     <hr class="border border-primary"/>
 
-    <div class="accordion" id="chordAccordion">
+    <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
         {% for chord in tab.chords %}
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="false" aria-controls="collapse{{loop.index}}">
-                    {{chord}} Variants
-                </button>
-            </h2>
-            <div id="collapse{{loop.index}}" class="accordion-collapse collapse" data-bs-parent="#chordAccordion">
-                <div class="d-flex flex-row overflow-x-scroll align-items-center accordion-body">
-                    {% for chord_map in tab.chords[chord] %}
-                        <div class="d-flex flex-column text-center">
-                            <h4>{{chord}}</h4>
-                            <table class="table table-borderless table-sm d-block p-2 bg-light rounded">
-                                <tbody class="table-group-divider text-black">
-                                    {% for fret in chord_map%}
-                                        <tr style="font-size: 0.75rem;">
-                                            <td class="m-0 p-0">{{fret}}</td>
-                                            {% for string in chord_map[fret] %}
-                                                <td class="m-0 p-0" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
-                                                    <div class="text-align-center text-center m-0 p-0 border-bottom border-black" style="height: 1rem; width: 1rem;">{{"⬤" if string == 1}}</div>
-                                                </td>
-                                            {%endfor%}
-                                        </tr>
-                                    {%endfor%}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endfor %}
-                </div>
+            {% set chord_map = tab.chords[chord] | first %}
+            <div class="text-center">
+                <h4>{{chord}}</h4>
+                <table class="table table-borderless table-sm d-flex p-2 bg-light rounded">
+                    <tbody class="table-group-divider text-black">
+                        {% for fret in chord_map%}
+                            <tr style="font-size: 0.75rem;">
+                                <td class="m-0 p-0">{{fret}}</td>
+                                {% for string in chord_map[fret] %}
+                                    <td class="m-0 p-0" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
+                                        <div class="text-align-center text-center m-0 p-0 border-bottom border-black" style="height: 1rem; width: 1rem;">{{"⬤" if string == 1}}</div>
+                                    </td>
+                                {%endfor%}
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
             </div>
-            <hr/>
         {% endfor %}
     </div>
+    
+    <hr class="border border-primary"/>
 
     <div style="font-family: monospace">
         {{ tab.tab | safe }} 
