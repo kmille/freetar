@@ -57,6 +57,7 @@ class SongDetail():
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
         self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
         self.chords = []
+        self.unstrummeds = []
         if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
@@ -106,6 +107,7 @@ def get_chords(s: SongDetail):
         return dict()
 
     chords = {}
+    unstrummeds = {}
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
             frets = chord_variant["frets"]
@@ -116,7 +118,7 @@ def get_chords(s: SongDetail):
                 possible_fret: [1 if b==possible_fret else 0 for b in frets][::-1]
                 for possible_fret
                 in possible_frets
-                if possible_fret > -1
+                if possible_fret > 0
             }
 
             variants = dict()
@@ -131,11 +133,20 @@ def get_chords(s: SongDetail):
                 if found:
                     variants[fret] = fingers
 
+            while len(variants) < 6:
+                variants[max(variants) + 1] = [0] * 6
+
+            variant_strings_pressed = [*variants.values()]
+            variant_strings_pressed = [sum(x) for x in zip(*variant_strings_pressed)]
+            unstrummed_strings = [int(not bool(y)) for y in variant_strings_pressed]
+
             if chord not in chords:
                 chords[chord] = []
+                unstrummeds[chord] = []
             chords[chord].append(variants)
+            unstrummeds[chord].append(unstrummed_strings)
 
-    return chords
+    return chords, unstrummeds
 
 
 def ug_tab(url_path: str):
@@ -150,7 +161,7 @@ def ug_tab(url_path: str):
     data = data.attrs['data-content']
     data = json.loads(data)
     s = SongDetail(data)
-    s.chords = get_chords(s)
+    s.chords, s.unstrummeds = get_chords(s)
     #print(json.dumps(data, indent=4))
     #results = data['store']['page']['data']['results']
     #breakpoint()

@@ -71,26 +71,32 @@
 
     <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
         {% for chord in tab.chords %}
-            {% set chord_map = tab.chords[chord] | first %}
+            {% set i = 0 %}
+            {% set chord_map = tab.chords[chord][i] %}
             <div class="text-center">
-                <h4>{{chord}}  </h4>
-                <table class="table table-borderless table-sm d-flex p-2 bg-light rounded">
-                    <tbody class="table-group-divider text-black">
+                <div>{{chord}}</div>
+                <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {% for x in tab.unstrummeds[chord][i] %}
+                                <th>{{"x" if x == 1}}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
                         {% for fret in chord_map%}
                             <tr style="font-size: 0.75rem;">
                                 <td class="m-0 p-0">{{fret}}</td>
                                 {% for string in chord_map[fret] %}
-                                    <td class="m-0 p-0" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
-                                        <div class="text-align-center text-center m-0 p-0 border-bottom border-black" style="height: 1rem; width: 1rem;">{{"⬤" if string == 1}}</div>
+                                    <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
+                                        <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
                                     </td>
                                 {%endfor%}
                             </tr>
                         {%endfor%}
                     </tbody>
                 </table>
-                <div class="w-100 d-float">
-                    <span style="font-size: 75%;" class="badge bg-secondary float-end">+{{tab.chords[chord]|length - 1}}</span>
-                </div>
             </div>
         {% endfor %}
     </div>
