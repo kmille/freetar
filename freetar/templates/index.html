@@ -4,42 +4,43 @@
 {% block content %}
 
 <form class="row" method="GET" action="/search">
-  <div class="col-md-9">
-    <label for="search_term" class="visually-hidden">Search</label>
-    <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}" placeholder="Search">
-  </div>
-  
-<div class="col-md-2">
-    <button type="submit" class="btn btn-primary">Search</button>
-    <button type="button" class="btn btn-primary" onclick="$('#search_term').val('')" >Clear</button>
-</div>
+    <div class="col-md-9">
+        <label for="search_term" class="visually-hidden">Search</label>
+        <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}"
+            placeholder="Search">
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="button" class="btn btn-primary" onclick="$('#search_term').val('')">Clear</button>
+    </div>
 </form>
-      
+
 {% if search_results is defined or favs is defined and favs %}
-    <table id="results" class="table">
-      <thead>
+<table id="results" class="table">
+    <thead>
         <tr>
-          <th scope="col">artist</th>
-          <th scope="col">song</th>
-          <th scope="col">rating</th>
-          <th scope="col">type</th>
-          <th scope="col">favorite</th>
+            <th scope="col" class="order">artist</th>
+            <th scope="col" class="order">song</th>
+            <th scope="col" class="order">rating</th>
+            <th scope="col" class="order">type</th>
+            <th scope="col">favorite</th>
         </tr>
-      </thead>
-      <tbody>
-    {% for result in search_results %}
+    </thead>
+    <tbody>
+        {% for result in search_results %}
 
         <tr>
-          <td class="artist" ><a href="{{ result.artist_url}}">{{ result.artist_name}}<a/></td>
-          <td class="song" ><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a/></td>
-          <td class="rating">{{ result.rating}}/5 ({{result.votes}})</td>
-          <td class="type" >{{ result._type}}</td>
-          <td><i class="fa fa--regular fa-star favorite"></i></td>
+            <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}<a /></td>
+            <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a /></td>
+            <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
+            <td class="type">{{ result._type}}</td>
+            <td><i class="fa fa--regular fa-star favorite"></i></td>
         </tr>
 
-    {% endfor %}
-      </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 {% endif %}
 
 {% if tab is defined %}
@@ -108,10 +109,28 @@
     </div>
 
 
-    <h2>Alternative versions</h2>
-    {% for version in tab.versions %}
-    <a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})</a></br>
-    {% endfor %}
+<div class="form-check form-switch">
+    <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
+    <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+</div>
+<button type="button" class="btn btn-primary" onclick="scroll_timeout-=50">+</button>
+<button type="button" class="btn btn-primary" onclick="scroll_timeout+=50">-</button>
+<i id="dark_mode" class="fa fa-adjust fa-fw"></i>
+<i class="fa fa--regular fa-star favorite"></i>
+
+
+<hr class="border border-primary">
+
+<div style="font-family: monospace">
+    {{ tab.tab | safe }}
+</div>
+
+
+<h2>Alternative versions</h2>
+{% for version in tab.versions %}
+<a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
+    version.votes }})</a></br>
+{% endfor %}
 
 
 {% endif %}
@@ -120,19 +139,19 @@
 {% if favs is defined and favs %}
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         favorites = JSON.parse(localStorage.getItem("favorites")) || {};
 
-        $.each(favorites, function(index, song) {
+        $.each(favorites, function (index, song) {
             $('#results').append(
                 '<tr>' +
-                    '<td>' + song.artist_name + '</td>' +
-                    '<td class="song">' +
-                        '<a href="' + song.tab_url + '">' + song.song + '</a>' +
-                    '</td>' +
-                    '<td>' + song.rating + '</td>' +
-                    '<td>' + song.type + '</td>' +
-                    '<td><i class="fa fa--regular fa-star favorite"></i></td>' + 
+                '<td>' + song.artist_name + '</td>' +
+                '<td class="song">' +
+                '<a href="' + song.tab_url + '">' + song.song + '</a>' +
+                '</td>' +
+                '<td>' + song.rating + '</td>' +
+                '<td>' + song.type + '</td>' +
+                '<td><i class="fa fa--regular fa-star favorite"></i></td>' +
                 '</tr>');
         });
 
@@ -147,17 +166,17 @@
 {% if tab is defined and tab %}
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-        if(window.location.pathname in favorites) {
+        if (window.location.pathname in favorites) {
             console.log("True!");
             $(".favorite").css("color", "#ffae00");
         }
 
     });
 
-    $(".favorite").click(function() {
+    $(".favorite").click(function () {
         console.log("fav2 was clicked");
         favorites = JSON.parse(localStorage.getItem("favorites")) || {};
 
@@ -179,7 +198,64 @@
 
         localStorage.setItem("favorites", JSON.stringify(favorites));
     });
+</script>
 
+{% else %}
+<script>
+    // Add sorting to the table
+    // taken from https://stackoverflow.com/a/70024272
+    function table_sort() {
+        console.log('Running table sort code')
+        const styleSheet = document.createElement('style')
+        styleSheet.innerHTML = `
+        .order-inactive span {
+            visibility:hidden;
+        }
+        .order-inactive:hover span {
+            visibility:visible;
+        }
+        .order-active span {
+            visibility: visible;
+        }
+        `
+        document.head.appendChild(styleSheet)
+
+        document.querySelectorAll('th.order').forEach(th_elem => {
+            let asc = true
+            const span_elem = document.createElement('span')
+            span_elem.style = "font-size:0.8rem; margin-left:0.5rem"
+            span_elem.innerHTML = "▼"
+            th_elem.appendChild(span_elem)
+            th_elem.classList.add('order-inactive')
+
+            const index = Array.from(th_elem.parentNode.children).indexOf(th_elem)
+            th_elem.addEventListener('click', (e) => {
+                document.querySelectorAll('th.order').forEach(elem => {
+                    elem.classList.remove('order-active')
+                    elem.classList.add('order-inactive')
+                })
+                th_elem.classList.remove('order-inactive')
+                th_elem.classList.add('order-active')
+
+                if (!asc) {
+                    th_elem.querySelector('span').innerHTML = '▲'
+                } else {
+                    th_elem.querySelector('span').innerHTML = '▼'
+                }
+                const arr = Array.from(th_elem.closest("table").querySelectorAll('tbody tr'))
+                arr.sort((a, b) => {
+                    const a_val = a.dataset.value || a.children[index].innerText
+                    const b_val = b.dataset.value || b.children[index].innerText
+                    return (asc) ? a_val.localeCompare(b_val) : b_val.localeCompare(a_val)
+                })
+                arr.forEach(elem => {
+                    th_elem.closest("table").querySelector("tbody").appendChild(elem)
+                })
+                asc = !asc
+            })
+        })
+    }
+    table_sort()
 </script>
 
 {% endif %}
