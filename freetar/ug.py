@@ -57,7 +57,7 @@ class SongDetail():
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
         self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
         self.chords = []
-        self.unstrummeds = []
+        self.fingers_for_strings = []
         if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
@@ -104,10 +104,11 @@ def ug_search(value: str):
 
 def get_chords(s: SongDetail):
     if s.appliciture is None:
-        return dict()
+        return dict(), dict()
 
     chords = {}
-    unstrummeds = {}
+    fingerings = {}
+
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
             frets = chord_variant["frets"]
@@ -140,13 +141,18 @@ def get_chords(s: SongDetail):
             variant_strings_pressed = [sum(x) for x in zip(*variant_strings_pressed)]
             unstrummed_strings = [int(not bool(y)) for y in variant_strings_pressed]
 
+            fingering_for_variant = []
+            for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
+                fingering_for_variant.append("x" if x else finger)
+            fingering_for_variant = fingering_for_variant
+
             if chord not in chords:
                 chords[chord] = []
-                unstrummeds[chord] = []
+                fingerings[chord] = []
             chords[chord].append(variants)
-            unstrummeds[chord].append(unstrummed_strings)
+            fingerings[chord].append(fingering_for_variant)
 
-    return chords, unstrummeds
+    return chords, fingerings
 
 
 def ug_tab(url_path: str):
@@ -161,7 +167,7 @@ def ug_tab(url_path: str):
     data = data.attrs['data-content']
     data = json.loads(data)
     s = SongDetail(data)
-    s.chords, s.unstrummeds = get_chords(s)
+    s.chords, s.fingers_for_strings = get_chords(s)
     #print(json.dumps(data, indent=4))
     #results = data['store']['page']['data']['results']
     #breakpoint()

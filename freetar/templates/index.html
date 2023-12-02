@@ -79,8 +79,8 @@
                     <thead>
                         <tr>
                             <th></th>
-                            {% for x in tab.unstrummeds[chord][i] %}
-                                <th>{{"x" if x == 1}}</th>
+                            {% for x in tab.fingers_for_strings[chord][i] %}
+                                <th>{{x if x != 0}}</th>
                             {% endfor %}
                         </tr>
                     </thead>
