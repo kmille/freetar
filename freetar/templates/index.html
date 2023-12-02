@@ -73,7 +73,7 @@
         {% for chord in tab.chords %}
             {% set chord_map = tab.chords[chord] | first %}
             <div class="text-center">
-                <h4>{{chord}}</h4>
+                <h4>{{chord}}  </h4>
                 <table class="table table-borderless table-sm d-flex p-2 bg-light rounded">
                     <tbody class="table-group-divider text-black">
                         {% for fret in chord_map%}
@@ -88,6 +88,9 @@
                         {%endfor%}
                     </tbody>
                 </table>
+                <div class="w-100 d-float">
+                    <span style="font-size: 75%;" class="badge bg-secondary float-end">+{{tab.chords[chord]|length - 1}}</span>
+                </div>
             </div>
         {% endfor %}
     </div>
