@@ -109,28 +109,11 @@
     </div>
 
 
-<div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
-    <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
-</div>
-<button type="button" class="btn btn-primary" onclick="scroll_timeout-=50">+</button>
-<button type="button" class="btn btn-primary" onclick="scroll_timeout+=50">-</button>
-<i id="dark_mode" class="fa fa-adjust fa-fw"></i>
-<i class="fa fa--regular fa-star favorite"></i>
-
-
-<hr class="border border-primary">
-
-<div style="font-family: monospace">
-    {{ tab.tab | safe }}
-</div>
-
-
-<h2>Alternative versions</h2>
-{% for version in tab.versions %}
-<a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
-    version.votes }})</a></br>
-{% endfor %}
+    <h2>Alternative versions</h2>
+    {% for version in tab.versions %}
+    <a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
+        version.votes }})</a></br>
+    {% endfor %}
 
 
 {% endif %}
