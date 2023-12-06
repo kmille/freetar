@@ -63,6 +63,10 @@
       <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
       <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
     </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
+      <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
+    </div>
     <button type="button" class="btn btn-primary" onclick="scroll_timeout-=50" >+</button>
     <button type="button" class="btn btn-primary" onclick="scroll_timeout+=50" >-</button>
     <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
@@ -70,39 +74,40 @@
     
     <hr class="border border-primary"/>
 
-    <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
-        {% for chord in tab.chords %}
-            {% set i = 0 %}
-            {% set chord_map = tab.chords[chord][i] %}
-            <div class="text-center">
-                <div>{{chord}}</div>
-                <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            {% for x in tab.fingers_for_strings[chord][i] %}
-                                <th>{{x if x != 0}}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
-                        {% for fret in chord_map%}
-                            <tr style="font-size: 0.75rem;">
-                                <td class="m-0 p-0">{{fret}}</td>
-                                {% for string in chord_map[fret] %}
-                                    <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
-                                        <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
-                                    </td>
-                                {%endfor%}
+    <div id="chordVisuals" style="display: none;">
+        <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
+            {% for chord in tab.chords %}
+                {% set i = 0 %}
+                {% set chord_map = tab.chords[chord][i] %}
+                <div class="text-center">
+                    <div>{{chord}}</div>
+                    <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {% for x in tab.fingers_for_strings[chord][i] %}
+                                    <th>{{x if x != 0}}</th>
+                                {% endfor %}
                             </tr>
-                        {%endfor%}
-                    </tbody>
-                </table>
-            </div>
-        {% endfor %}
+                        </thead>
+                        <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
+                            {% for fret in chord_map%}
+                                <tr style="font-size: 0.75rem;">
+                                    <td class="m-0 p-0">{{fret}}</td>
+                                    {% for string in chord_map[fret] %}
+                                        <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
+                                            <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
+                                        </td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+        <hr class="border border-primary"/>
     </div>
-    
-    <hr class="border border-primary"/>
 
     <div style="font-family: monospace">
         {{ tab.tab | safe }} 
