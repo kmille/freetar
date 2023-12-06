@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form class="row" method="GET" action="/search">
+<form class="row search-bar" method="GET" action="/search">
     <div class="col-md-9">
         <label for="search_term" class="visually-hidden">Search</label>
         <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}"
@@ -44,7 +44,7 @@
 {% endif %}
 
 {% if tab is defined %}
-    <a href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
+    <a class="view-ug" href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
     {{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
     {% if tab.tuning %}
         Tuning: {{ tab.tuning }}<br>
@@ -59,7 +59,7 @@
     </br>
     
     
-    <div class="form-check form-switch">
+    <div class="form-check form-switch autoscroll">
       <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
       <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
     </div>
@@ -67,8 +67,8 @@
       <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
       <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
     </div>
-    <button type="button" class="btn btn-primary" onclick="scroll_timeout-=50" >+</button>
-    <button type="button" class="btn btn-primary" onclick="scroll_timeout+=50" >-</button>
+    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout-=50" >+</button>
+    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout+=50" >-</button>
     <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
     <i class="fa fa--regular fa-star favorite"></i>
     
@@ -109,17 +109,20 @@
         <hr class="border border-primary"/>
     </div>
 
-    <div style="font-family: monospace">
+    <div class="tab">
         {{ tab.tab | safe }} 
     </div>
 
-
-    <h2>Alternative versions</h2>
-    {% for version in tab.versions %}
-    <a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
-        version.votes }})</a></br>
-    {% endfor %}
-
+    <div class="alternatives">
+        <h2>Alternative versions</h2>
+        <ul>
+        {% for version in tab.versions %}
+            <li><a href="{{ version.tab_url }}">
+              Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})
+            </a></li>
+        {% endfor %}
+        </ul>
+    </div>
 
 {% endif %}
 
