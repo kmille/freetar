@@ -52,22 +52,10 @@ function initialise_transpose() {
         }
 
         const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6']
-        
-        const chords = [
-            variations.map(variation => 'C' + variation),
-            variations.map(variation => 'C#' + variation),
-            variations.map(variation => 'D' + variation),
-            variations.map(variation => 'D#' + variation),
-            variations.map(variation => 'E' + variation),
-            variations.map(variation => 'F' + variation),
-            variations.map(variation => 'F#' + variation),
-            variations.map(variation => 'G' + variation),
-            variations.map(variation => 'G#' + variation),
-            variations.map(variation => 'A' + variation),
-            variations.map(variation => 'A#' + variation),
-            variations.map(variation => 'B' + variation),
-        ];
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', "A", 'A#', 'B']
 
+        const chords = notes.map(note => variations.map(variation => note + variation))
+        
         const chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
         if (chord_index === -1) {
             return chord
