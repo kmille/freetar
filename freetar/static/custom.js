@@ -11,22 +11,21 @@ function colorize_favs() {
             $(this).find(".favorite").css("color", "#ffae00");
         }
     });
-
 }
 
-const initialise_transpose = (function () {
+function initialise_transpose() {
     let transpose_value = 0;
     const current = $('#transpose .current')
     const plus = $('#transpose .plus')
     const minus = $('#transpose .minus')
     current.text(transpose_value)
     plus.click(function () {
-        transpose_value = Math.min(12, transpose_value + 1)
+        transpose_value = Math.min(11, transpose_value + 1)
         current.text(transpose_value)
         transpose()
     });
     minus.click(function () {
-        transpose_value = Math.max(-12, transpose_value - 1)
+        transpose_value = Math.max(-11, transpose_value - 1)
         current.text(transpose_value)
         transpose()
     });
@@ -45,42 +44,42 @@ const initialise_transpose = (function () {
     }
 
     function transpose_chord(chord, transpose_value) {
-        const chords = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        const chordsWithFlats = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
-        const chordsMinor = ['Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm']
-        const chordsMinorWithFlats = ['Cm', 'Dbm', 'Dm', 'Ebm', 'Em', 'Fm', 'Gbm', 'Gm', 'Abm', 'Am', 'Bbm', 'Bm']
-        const hasSeven = chord[chord.length - 1] === '7'
-        if (hasSeven) {
-            chord = chord.slice(0, -1)
+
+        if (chord.indexOf('/') !== -1) {
+            const transposed = chord.split('/').map(cho => transpose_chord(cho, transpose_value))
+            console.log(chord, transposed, transpose_value)
+            return transposed.join('/')
         }
 
-        let chord_index = chords.indexOf(chord)
-        let chordGroup = chords;
+        const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6']
+        
+        const chords = [
+            variations.map(variation => 'C' + variation),
+            variations.map(variation => 'C#' + variation),
+            variations.map(variation => 'D' + variation),
+            variations.map(variation => 'D#' + variation),
+            variations.map(variation => 'E' + variation),
+            variations.map(variation => 'F' + variation),
+            variations.map(variation => 'F#' + variation),
+            variations.map(variation => 'G' + variation),
+            variations.map(variation => 'G#' + variation),
+            variations.map(variation => 'A' + variation),
+            variations.map(variation => 'A#' + variation),
+            variations.map(variation => 'B' + variation),
+        ];
 
-        if (chord_index == -1) {
-            chord_index = chordsWithFlats.indexOf(chord)
-            chordGroup = chordsWithFlats;
+        const chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
+        if (chord_index === -1) {
+            return chord
         }
-        if (chord_index == -1) {
-            chord_index = chordsMinor.indexOf(chord)
-            chordGroup = chordsMinor;
-        }
-        if (chord_index == -1) {
-            chord_index = chordsMinorWithFlats.indexOf(chord)
-            chordGroup = chordsMinorWithFlats;
+        let new_index = (chord_index + transpose_value) % 12
+        if (new_index < 0) {
+            new_index += 12
         }
 
-        if (chord_index == -1) {
-            return hasSeven ? chord + '7' : chord
-        }
-
-        const new_index = (chord_index + transpose_value) % 12
-        if (hasSeven) {
-            return chordGroup[new_index] + '7'
-        }
-        return chordGroup[new_index]
+        return chords[new_index][chords[chord_index].indexOf(chord)]
     }
-})()
+}
 
 
 $(document).ready(function () {
@@ -113,15 +112,14 @@ $(document).ready(function () {
 
     colorize_favs();
 
-    initialise_transpose();
-
     //set dark mode
     dark_mode = JSON.parse(localStorage.getItem("dark_mode")) || false;
     if (dark_mode) {
         document.documentElement.setAttribute('data-bs-theme', 'dark')
     }
 
-    console.log($('.song-tab strong'))
+    initialise_transpose();
+
 });
 
 function pageScroll() {
