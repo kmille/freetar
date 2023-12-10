@@ -32,3 +32,16 @@ You can also use the [PyPi](https://pypi.org/project/freetar/) package
 ```
 pip install freetar
 ```
+
+
+## How to run with Docker
+
+Build the image and tag it as `freetar`:
+```sh
+docker build . -t freetar
+```
+
+And now run it on port 8080
+```sh
+docker run -it -p8080:8080 freetar
+```

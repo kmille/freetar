@@ -1,0 +1,4 @@
+requests==2.28.2
+beautifulsoup4==4.12.0
+flask==2.3.3
+waitress==2.1.2
