@@ -43,29 +43,36 @@ function initialise_transpose() {
         });
     }
 
-    function transpose_chord(chord, transpose_value) {
+    const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6']
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', "A", 'A#', 'B']
+    const notesFlat = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', "A", 'Bb', 'B']
 
+    const chords = notes.map(note => variations.map(variation => note + variation))
+    const chordsFlat = notesFlat.map(note => variations.map(variation => note + variation))
+        
+
+    function transpose_chord(chord, transpose_value) {
         if (chord.indexOf('/') !== -1) {
             const transposed = chord.split('/').map(cho => transpose_chord(cho, transpose_value))
-            console.log(chord, transposed, transpose_value)
             return transposed.join('/')
         }
+        let isFlat = false
 
-        const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6']
-        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', "A", 'A#', 'B']
-
-        const chords = notes.map(note => variations.map(variation => note + variation))
-        
-        const chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
+        let chordGroup = chords;
+        let chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
         if (chord_index === -1) {
-            return chord
+            chordGroup = chordsFlat;
+            chord_index = chordsFlat.findIndex(chordGroup => chordGroup.includes(chord))
+            if (chord_index === -1) {
+                return chord
+            }
         }
         let new_index = (chord_index + transpose_value) % 12
         if (new_index < 0) {
             new_index += 12
         }
 
-        return chords[new_index][chords[chord_index].indexOf(chord)]
+        return chordGroup[new_index][chordGroup[chord_index].indexOf(chord)]
     }
 }
 
