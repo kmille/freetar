@@ -58,7 +58,7 @@ class SongDetail():
         self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
         self.chords = []
         self.fingers_for_strings = []
-        if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
+        if type(data["store"]["page"]["data"]["tab_view"]["meta"]) is dict:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
@@ -115,7 +115,7 @@ def get_chords(s: SongDetail):
             max_fret = max(frets)
             possible_frets = list(range(min_fret, max_fret+1))
             variants_temp = {
-                possible_fret: [1 if b==possible_fret else 0 for b in frets][::-1]
+                possible_fret: [1 if b == possible_fret else 0 for b in frets][::-1]
                 for possible_fret
                 in possible_frets
                 if possible_fret > 0
@@ -171,4 +171,3 @@ def ug_tab(url_path: str):
     #results = data['store']['page']['data']['results']
     #breakpoint()
     return s
-
