@@ -62,7 +62,6 @@ class SongDetail():
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
-            print(self.tuning)
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
         self.versions = []
         for version in data["store"]["page"]["data"]["tab_view"]["versions"]:
