@@ -70,6 +70,14 @@ if($(this).is(':checked')){
 }
 });
 
+$('#checkbox_view_chords').click(function(){
+    if($(this).is(':checked')){
+        $("#chordVisuals").toggle();
+    } else {
+        $("#chordVisuals").toggle();
+    }
+});
+
 $('#dark_mode').click(function(){
     if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
         document.documentElement.setAttribute('data-bs-theme','light');

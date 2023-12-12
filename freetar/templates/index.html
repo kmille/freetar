@@ -44,43 +44,81 @@
 {% endif %}
 
 {% if tab is defined %}
-<a href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
-{{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
-{% if tab.tuning %}
-Tuning: {{ tab.tuning }}<br>
-{% endif %}
-Difficulty: {{ tab.difficulty }}<br>
-Capo:
-{% if tab.capo %}
-{{ tab.capo -}} th fret
-{% else %}
-no capo
-{% endif %}
-</br>
+    <a href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
+    {{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
+    {% if tab.tuning %}
+        Tuning: {{ tab.tuning }}<br>
+    {% endif %}
+    Difficulty: {{ tab.difficulty }}<br>
+    Capo: 
+    {% if tab.capo %}
+        {{ tab.capo -}} th fret
+    {% else %}
+        no capo
+    {% endif %}
+    </br>
+    
+    
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
+      <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+    </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
+      <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="scroll_timeout-=50" >+</button>
+    <button type="button" class="btn btn-primary" onclick="scroll_timeout+=50" >-</button>
+    <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
+    <i class="fa fa--regular fa-star favorite"></i>
+    
+    <hr class="border border-primary"/>
+
+    <div id="chordVisuals" style="display: none;">
+        <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
+            {% for chord in tab.chords %}
+                {% set i = 0 %}
+                {% set chord_map = tab.chords[chord][i] %}
+                <div class="text-center">
+                    <div>{{chord}}</div>
+                    <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {% for x in tab.fingers_for_strings[chord][i] %}
+                                    <th>{{x if x != 0}}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
+                            {% for fret in chord_map%}
+                                <tr style="font-size: 0.75rem;">
+                                    <td class="m-0 p-0">{{fret}}</td>
+                                    {% for string in chord_map[fret] %}
+                                        <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
+                                            <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
+                                        </td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+        <hr class="border border-primary"/>
+    </div>
+
+    <div style="font-family: monospace">
+        {{ tab.tab | safe }} 
+    </div>
 
 
-<div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
-    <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
-</div>
-<button type="button" class="btn btn-primary" onclick="scroll_timeout-=50">+</button>
-<button type="button" class="btn btn-primary" onclick="scroll_timeout+=50">-</button>
-<i id="dark_mode" class="fa fa-adjust fa-fw"></i>
-<i class="fa fa--regular fa-star favorite"></i>
-
-
-<hr class="border border-primary">
-
-<div style="font-family: monospace">
-    {{ tab.tab | safe }}
-</div>
-
-
-<h2>Alternative versions</h2>
-{% for version in tab.versions %}
-<a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
-    version.votes }})</a></br>
-{% endfor %}
+    <h2>Alternative versions</h2>
+    {% for version in tab.versions %}
+    <a href="{{ version.tab_url }}">Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{
+        version.votes }})</a></br>
+    {% endfor %}
 
 
 {% endif %}

@@ -55,6 +55,9 @@ class SongDetail():
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
+        self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
+        self.chords = []
+        self.fingers_for_strings = []
         if type(data["store"]["page"]["data"]["tab_view"]["meta"]) == dict:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
@@ -99,6 +102,59 @@ def ug_search(value: str):
     return ug_results
 
 
+def get_chords(s: SongDetail):
+    if s.appliciture is None:
+        return dict(), dict()
+
+    chords = {}
+    fingerings = {}
+
+    for chord in s.appliciture:
+        for chord_variant in s.appliciture[chord]:
+            frets = chord_variant["frets"]
+            min_fret = min(frets)
+            max_fret = max(frets)
+            possible_frets = list(range(min_fret, max_fret+1))
+            variants_temp = {
+                possible_fret: [1 if b==possible_fret else 0 for b in frets][::-1]
+                for possible_fret
+                in possible_frets
+                if possible_fret > 0
+            }
+
+            variants = dict()
+            found = False
+            for fret, fingers in variants_temp.items():
+                try:
+                    if not found and fingers.index(1) >= 0:
+                        found = True
+                except ValueError:
+                    ...
+
+                if found:
+                    variants[fret] = fingers
+
+            while len(variants) < 6:
+                variants[max(variants) + 1] = [0] * 6
+
+            variant_strings_pressed = [*variants.values()]
+            variant_strings_pressed = [sum(x) for x in zip(*variant_strings_pressed)]
+            unstrummed_strings = [int(not bool(y)) for y in variant_strings_pressed]
+
+            fingering_for_variant = []
+            for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
+                fingering_for_variant.append("x" if x else finger)
+            fingering_for_variant = fingering_for_variant
+
+            if chord not in chords:
+                chords[chord] = []
+                fingerings[chord] = []
+            chords[chord].append(variants)
+            fingerings[chord].append(fingering_for_variant)
+
+    return chords, fingerings
+
+
 def ug_tab(url_path: str):
     #resp = requests.get("https://tabs.ultimate-guitar.com/tab/rise-against/swing-life-away-chords-262724")
     resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path)
@@ -111,6 +167,7 @@ def ug_tab(url_path: str):
     data = data.attrs['data-content']
     data = json.loads(data)
     s = SongDetail(data)
+    s.chords, s.fingers_for_strings = get_chords(s)
     #print(json.dumps(data, indent=4))
     #results = data['store']['page']['data']['results']
     #breakpoint()
