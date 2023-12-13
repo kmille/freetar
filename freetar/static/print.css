@@ -1,0 +1,27 @@
+.nav {
+  display: none;
+}
+
+.search-bar {
+  display: none;
+}
+
+.view-ug {
+  display: none;
+}
+
+.autoscroll {
+  display: none;
+}
+
+#dark_mode {
+  display: none;
+}
+
+.favorite {
+  display: none;
+}
+
+.alternatives {
+  display: none;
+}

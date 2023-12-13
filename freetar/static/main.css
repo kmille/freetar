@@ -1,0 +1,11 @@
+.tab {
+  font-family: monospace;
+}
+
+.alternatives ul {
+  list-style-type: none;
+}
+
+.nav li {
+  padding-right: 1ch;
+}
