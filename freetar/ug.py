@@ -30,6 +30,11 @@ class SearchResult:
         self.votes = int(data["votes"])
         self.rating = round(data["rating"], 1)
 
+        if "?" in self.tab_url:
+            self.tab_url = self.tab_url + "&really=true"
+        else:
+            self.tab_url = self.tab_url + "?really=true"
+
     def __repr__(self):
         return f"{self.artist_name} - {self.song_name} (ver {self.version}) ({self._type} {self.rating}/5 - {self.votes} votes)"
 
