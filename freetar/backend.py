@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-from ug import ug_search, ug_tab
+from freetar.ug import ug_search, ug_tab
 import waitress
 
 app = Flask(__name__)
@@ -49,7 +49,7 @@ def show_favs():
 
 def main():
     host = "0.0.0.0"
-    port = 8080
+    port = 22000
     if __name__ == '__main__':
         app.run(debug=True,
                 host=host,

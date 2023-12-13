@@ -30,13 +30,13 @@ function initialise_transpose() {
         transpose()
     });
 
-    $('#song_tab').find('strong').each(function () {
+    $('.tab').find('strong').each(function () {
         const text = $(this).text()
         $(this).attr('data-original', text)
     })
 
     function transpose() {
-        $('#song_tab').find('strong').each(function () {
+        $('.tab').find('strong').each(function () {
             const text = $(this).attr('data-original')
             const new_text = transpose_chord(text.trim(), transpose_value)
             $(this).text(new_text)
@@ -56,8 +56,6 @@ function initialise_transpose() {
             const transposed = chord.split('/').map(cho => transpose_chord(cho, transpose_value))
             return transposed.join('/')
         }
-        let isFlat = false
-
         let chordGroup = chords;
         let chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
         if (chord_index === -1) {
