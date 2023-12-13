@@ -9,9 +9,10 @@ Try it out: https://freetar.androidloves.me
 - save your favorite chords as favs (everything is stored in session storage, no account needed)
 - dark mode
 - auto scroll
+- useful for printing chords
 
 ## Future work
-- show chords
+- ~~show chords~~
 - improve UX on mobile devices
 - on smartphones: prevent lock screen
 - share chords (qr code)?
