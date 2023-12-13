@@ -43,7 +43,7 @@ function initialise_transpose() {
         });
     }
 
-    const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6']
+    const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6', 'm6', '9', 'm9', 'maj9', '11', 'add2', 'add9']
     const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', "A", 'A#', 'B']
     const notesFlat = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', "A", 'Bb', 'B']
 
