@@ -59,18 +59,20 @@
     </br>
     
     
-    <div class="form-check form-switch autoscroll">
-      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
-      <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+    <div class="d-flex align-items-center">
+        <div class="form-check form-switch autoscroll m-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
+            <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
+        </div>
+        <div class="form-check form-switch autoscroll m-2">
+          <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
+          <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+        </div>
+        <button type="button" class="btn btn-primary autoscroll m-2" onclick="scroll_timeout-=50" >+ Scroll Speed</button>
+        <button type="button" class="btn btn-primary autoscroll m-2" onclick="scroll_timeout+=50" >- Scroll Speed</button>
+        <i id="dark_mode" class="fa fa-adjust fa-fw m-2"></i>
+        <i class="fa fa--regular fa-star favorite m-2"></i>
     </div>
-    <div class="form-check form-switch autoscroll">
-      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
-      <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
-    </div>
-    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout-=50" >+</button>
-    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout+=50" >-</button>
-    <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
-    <i class="fa fa--regular fa-star favorite"></i>
     
     <hr class="border border-primary"/>
 
