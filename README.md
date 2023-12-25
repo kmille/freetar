@@ -32,3 +32,14 @@ You can also use the [PyPi](https://pypi.org/project/freetar/) package
 ```
 pip install freetar
 ```
+
+### Dev environment
+```
+poetry install
+vim freetar/*.py
+poetry run python freetar/backend.py
+# static files: freetar/static/*
+# html templates: freetar/templates/*
+poetry run freetar
+```
+
