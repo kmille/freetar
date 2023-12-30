@@ -59,27 +59,29 @@
     </br>
     
     
-    <div class="form-check form-switch autoscroll">
-      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
-      <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
-    </div>
-    <div class="form-check form-switch autoscroll">
-      <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
-      <label class="form-check-label" for="checkbox_view_chords">Show Chord Visualization</label>
-    </div>
-    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout-=50" >+</button>
-    <button type="button" class="btn btn-primary autoscroll" onclick="scroll_timeout+=50" >-</button>
-    <i id="dark_mode" class="fa fa-adjust fa-fw"></i>
-    <i class="fa fa--regular fa-star favorite"></i>
+    <div class="d-flex align-items-center">
+        <div class="form-check form-switch autoscroll m-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
+            <label class="form-check-label" for="checkbox_view_chords">Chord visualization</label>
+        </div>
+        <div class="form-check form-switch autoscroll m-2">
+          <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
+          <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+        </div>
+        <i title="decrease scroll speed" class="fa fa-backward m-2" onclick="scroll_timeout+=50" ></i>
+        <i title="increase scroll speed" class="fa fa-forward m-2" onclick="scroll_timeout-=50" ></i>
+        <i title="enable/disable dark mode" id="dark_mode" class="fa fa-adjust fa-fw m-2"></i>
+        <i title="add/remove song to/from favs" class="fa fa--regular fa-star favorite m-2"></i>
 
-    <div id="transpose">
-        <span>Transpose</span>
-        Current: <span class="current">0</span>
-        <button class="btn btn-primary minus">-</button>
-        <button class="btn btn-primary plus">+</button>
-    </div>
-
+        <div id="transpose">
+            <span>Transpose</span>
+            Current: <span class="current">0</span>
+            <button class="btn btn-primary minus">-</button>
+            <button class="btn btn-primary plus">+</button>
+        </div>
     
+    </div>
+
     <hr class="border border-primary"/>
     <div id="chordVisuals" style="display: none;">
         <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
