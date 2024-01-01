@@ -20,20 +20,25 @@ Try it out: https://freetar.androidloves.me
 
 
 ## How to use it
-You need [poetry](https://python-poetry.org/). Then:
-```
-poetry install
-poetry run freetar
-Visit localhost:22000 in browser
-```
-
-You can also use the [PyPi](https://pypi.org/project/freetar/) package
+**PyPi**
+Package: https://pypi.org/project/freetar/
 
 ```
 pip install freetar
 ```
 
+**Docker**
+Image: https://hub.docker.com/r/kmille2/freetar
+Port: 22000
+
+```
+docker pull kmille2/freetar
+docker run kmille2/freetar
+```
+
+
 ### Dev environment
+You need [poetry](https://python-poetry.org/). Then:
 ```
 poetry install
 vim freetar/*.py
@@ -41,5 +46,6 @@ poetry run python freetar/backend.py
 # static files: freetar/static/*
 # html templates: freetar/templates/*
 poetry run freetar
+Visit localhost:22000 in browser
 ```
 
