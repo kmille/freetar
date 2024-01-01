@@ -33,7 +33,7 @@ Port: 22000
 
 ```
 docker pull kmille2/freetar
-docker run kmille2/freetar
+sudo docker run -p 127.0.0.1:22000:22000 kmille2/freetar
 ```
 
 
