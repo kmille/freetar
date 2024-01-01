@@ -20,19 +20,19 @@ Try it out: https://freetar.androidloves.me
 
 
 ## How to use it
-**PyPi**
+**PyPi**  
 Package: https://pypi.org/project/freetar/
 
 ```
 pip install freetar
 ```
 
-**Docker**
+**Docker**  
 Image: https://hub.docker.com/r/kmille2/freetar  
 Port: 22000
 
 ```
-docker pull kmille2/freetar
+sudo docker pull kmille2/freetar
 sudo docker run -p 127.0.0.1:22000:22000 kmille2/freetar
 ```
 
