@@ -32,12 +32,13 @@
 {% endif %}
 
 {% if tab is defined %}
-    <a class="view-ug" href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
     {{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
+  <i title="add/remove song to/from favs" class="fa fa--regular fa-star favorite m-2 d-print-none"></i><br/>
     {% if tab.tuning %}
         Tuning: {{ tab.tuning }}<br>
     {% endif %}
     Difficulty: {{ tab.difficulty }}<br>
+  <a class="d-print-none" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
     Capo: 
     {% if tab.capo %}
         {{ tab.capo -}} th fret
@@ -115,7 +116,7 @@
         {{ tab.tab | safe }} 
     </div>
 
-    <div class="alternatives">
+    <div class="d-print-none mt-4">
         <h2>Alternative versions</h2>
         <ul>
         {% for version in tab.versions %}
