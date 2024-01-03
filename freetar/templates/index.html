@@ -23,7 +23,7 @@
             <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
             <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
             <td class="type">{{ result._type}}</td>
-            <td><i class="fa fa--regular fa-star favorite"></i></td>
+            <td><i data-url="{{ result.tab_url }}" class="fa fa--regular fa-star favorite"></i></td>
         </tr>
 
         {% endfor %}
@@ -195,6 +195,12 @@
 
 {% else %}
 <script>
+    favorites_url = Object.keys(JSON.parse(localStorage.getItem("favorites")) || {});
+    for (const fav of [...document.getElementsByClassName('favorite')]) {
+      console.log(fav.getAttribute('data-url'))
+      if (favorites_url.includes(fav.getAttribute('data-url').split("?")[0])) $(fav).css("color", "#ffae00");
+    } 
+
     // Add sorting to the table
     // taken from https://stackoverflow.com/a/70024272
     function table_sort() {
