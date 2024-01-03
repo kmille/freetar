@@ -3,18 +3,6 @@
 
 {% block content %}
 
-<form class="row search-bar" method="GET" action="/search">
-    <div class="col-md-9">
-        <label for="search_term" class="visually-hidden">Search</label>
-        <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}"
-            placeholder="Search">
-    </div>
-
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <button type="button" class="btn btn-primary" onclick="$('#search_term').val('')">Clear</button>
-    </div>
-</form>
 
 {% if search_results is defined or favs is defined and favs %}
 <table id="results" class="table">
