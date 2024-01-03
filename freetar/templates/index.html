@@ -3,7 +3,6 @@
 
 {% block content %}
 
-
 {% if search_results is defined or favs is defined and favs %}
 <table id="results" class="table">
     <thead>
@@ -17,7 +16,6 @@
     </thead>
     <tbody>
         {% for result in search_results %}
-
         <tr>
             <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}</a></td>
             <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
@@ -25,20 +23,21 @@
             <td class="type">{{ result._type}}</td>
             <td><i data-url="{{ result.tab_url }}" class="fa fa--regular fa-star favorite"></i></td>
         </tr>
-
         {% endfor %}
     </tbody>
 </table>
 {% endif %}
 
 {% if tab is defined %}
+  <div class="float-end text-end">
   <i title="add/remove song to/from favs" class="fa fa--regular fa-star favorite m-2 d-print-none"></i><br/>
     {% if tab.tuning %}
         Tuning: {{ tab.tuning }}<br>
     {% endif %}
-    Difficulty: {{ tab.difficulty }}<br>
   <a class="d-print-none" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
+  </div>
 <h5><a href="/search?search_term={{ tab.artist_name }}">{{ tab.artist_name }}</a> - {{ tab.song_name }} (ver {{tab.version }})</h5>
+        Difficulty: {{ tab.difficulty }}<br>
     Capo: 
     {% if tab.capo %}
         {{ tab.capo -}} th fret
@@ -48,12 +47,12 @@
     </br>
     
     
-    <div class="d-flex align-items-center">
-        <div class="form-check form-switch autoscroll m-2">
+    <div class="d-flex align-items-center d-print-none">
+        <div class="form-check form-switch autoscroll me-4">
             <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
             <label class="form-check-label" for="checkbox_view_chords">Chord visualization</label>
         </div>
-        <div class="form-check form-switch autoscroll m-2">
+        <div class="form-check form-switch autoscroll">
           <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
           <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
         </div>
@@ -69,11 +68,10 @@
         </div>
         -->
     
+        <span class="ms-4">Transpose </span>
         <i id="transpose_down" title="transpose down" class="fa fa-arrow-down m-2"></i>
         <i id="transpose_up" title="transpose up" class="fa fa-arrow-up m-2"></i>
 
-        <i title="add/remove song to/from favs" class="fa fa--regular fa-star favorite m-2"></i>
-        <i title="enable/disable dark mode" id="dark_mode" class="fa fa-adjust fa-fw m-2"></i>
     </div>
 
     <hr class="border border-primary"/>
