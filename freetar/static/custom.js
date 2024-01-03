@@ -30,47 +30,59 @@ function initialise_transpose() {
         transpose()
     });
 
-    $('.tab').find('strong').each(function () {
+    $('.tab').find('.chord-root, .chord-bass').each(function () {
         const text = $(this).text()
         $(this).attr('data-original', text)
     })
 
     function transpose() {
-        $('.tab').find('strong').each(function () {
-            const text = $(this).attr('data-original')
-            const new_text = transpose_chord(text.trim(), transpose_value)
-            $(this).text(new_text)
+        $('.tab').find('.chord-root, .chord-bass').each(function () {
+            const originalText = $(this).attr('data-original')
+            if (transpose_value === 0) {
+                $(this).text(originalText)
+            } else {
+                const new_text = transpose_note(originalText.trim(), transpose_value)
+                $(this).text(new_text)
+            }
         });
     }
 
-    const variations = ['', 'dim', 'm', 'm7', 'maj7', '7', 'sus4', 'sus2', 'sus', 'dim7', 'min7b5', '7sus4', '6', 'm6', '9', 'm9', 'maj9', '11', 'add2', 'add9']
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', "A", 'A#', 'B']
-    const notesFlat = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', "A", 'Bb', 'B']
+    // Defines a list of notes, grouped with any alternate names (like D# and Eb)
+    const noteNames = [
+        ['A'],
+        ['A#', 'Bb'],
+        ['B','Cb'],
+        ['C', 'B#'],
+        ['C#', 'Db'],
+        ['D'],
+        ['D#', 'Eb'],
+        ['E', 'Fb'],
+        ['F', 'E#'],
+        ['F#', 'Gb'],
+        ['G'],
+        ['G#', 'Ab'],
+    ];
 
-    const chords = notes.map(note => variations.map(variation => note + variation))
-    const chordsFlat = notesFlat.map(note => variations.map(variation => note + variation))
-        
+    // Find the given note in noteNames, then step through the list to find the
+    // next note up or down. Currently just selects the first note name that
+    // matches. It doesn't preserve sharp, flat, or any try to determine what
+    // key we're in.
+    function transpose_note(note, transpose_value) {
 
-    function transpose_chord(chord, transpose_value) {
-        if (chord.indexOf('/') !== -1) {
-            const transposed = chord.split('/').map(cho => transpose_chord(cho, transpose_value))
-            return transposed.join('/')
+        let noteIndex = noteNames.findIndex(tone => tone.includes(note));
+        if (noteIndex === -1)
+        {
+            console.debug("Note ["+note+"] not found. Can't transpose");
+            return note;
         }
-        let chordGroup = chords;
-        let chord_index = chords.findIndex(chordGroup => chordGroup.includes(chord))
-        if (chord_index === -1) {
-            chordGroup = chordsFlat;
-            chord_index = chordsFlat.findIndex(chordGroup => chordGroup.includes(chord))
-            if (chord_index === -1) {
-                return chord
-            }
-        }
-        let new_index = (chord_index + transpose_value) % 12
+
+        let new_index = (noteIndex + transpose_value) % 12;
         if (new_index < 0) {
-            new_index += 12
+            new_index += 12;
         }
 
-        return chordGroup[new_index][chordGroup[chord_index].indexOf(chord)]
+        // TODO: Decide on sharp, flat, or natural
+        return noteNames[new_index][0];
     }
 }
 
