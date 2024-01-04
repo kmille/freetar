@@ -26,7 +26,13 @@
     </tbody>
 </table>
 
-{% if favs is defined and favs %}
+{% if favs %}
+<details><summary>Advanced</summary>
+  <strong class="d-block">Export favorties</strong>
+  <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
+  <strong class="mt-3 d-block">Import favorites</strong>
+<input type="file" class="form-control" onchange="importFavorties(this)" />
+</details>
 
 <script>
     $(document).ready(function () {
@@ -48,9 +54,30 @@
         colorize_favs();
     });
 
+  function exportFavorites() {
+    const blob = new Blob([localStorage.getItem("favorites")], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "freetar-favorites.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
+  function importFavorties(input) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const content = e.target.result;
+        localStorage.setItem("favorites", content);
+      };
+      reader.readAsText(file);
+      location.reload();
+    }
+  }
 </script>
-
 {% endif %}
 
 <script>
