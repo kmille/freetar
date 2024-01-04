@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
+from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab
 import waitress
 
 app = Flask(__name__)
-
+Minify(app=app, html=True, js=True, cssless=True)
 
 @app.route("/")
 def index():
