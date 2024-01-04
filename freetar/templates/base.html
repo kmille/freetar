@@ -14,6 +14,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <title>{{ title or "Welcome to Freetar" }}</title>
   <link rel="icon" type="image/png" href="/static/guitar.png" />
+  <script>
+    if (JSON.parse(localStorage.getItem("dark_mode")) || false)
+      document.documentElement.setAttribute('data-bs-theme', 'dark')
+  </script>
 </head>
 
 <body>

@@ -105,12 +105,6 @@ $(document).ready(function () {
 
     colorize_favs();
 
-    //set dark mode
-    dark_mode = JSON.parse(localStorage.getItem("dark_mode")) || false;
-    if (dark_mode) {
-        document.documentElement.setAttribute('data-bs-theme', 'dark')
-    }
-
     initialise_transpose();
 
 });
