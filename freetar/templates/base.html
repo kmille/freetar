@@ -10,7 +10,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <title>{{ title or "Welcome to Freetar" }}</title>
   <link rel="icon" type="image/png" href="/static/guitar.png" />
@@ -38,7 +37,9 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link">
-              <i title="enable/disable dark mode" id="dark_mode" class="fa fa-adjust fa-fw"></i></a>
+              <span title="enable/disable dark mode" id="dark_mode">
+                🌓︎
+              </span></a>
           </li>
         </ul>
         <form class="d-flex" method="GET" action="/search">

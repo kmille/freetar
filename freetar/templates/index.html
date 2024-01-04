@@ -21,7 +21,7 @@
             <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
             <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
             <td class="type">{{ result._type}}</td>
-            <td><i data-url="{{ result.tab_url }}" class="fa fa--regular fa-star favorite"></i></td>
+            <td><span data-url="{{ result.tab_url }}" class="favorite">★</span></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -143,7 +143,7 @@
                 '</td>' +
                 '<td>' + song.rating + '</td>' +
                 '<td>' + song.type + '</td>' +
-                '<td><i class="fa fa--regular fa-star favorite"></i></td>' +
+                '<td><span class="favorite">★</span></td>' +
                 '</tr>');
         });
 
