@@ -82,6 +82,7 @@
     </div>
 
     <a class="d-print-none d-block d-md-none mt-4" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
+    {% if tab.versions %}
     <div class="d-print-none mt-4">
         <h2>Alternative versions</h2>
         <ul class="list-unstyled">
@@ -92,6 +93,7 @@
         {% endfor %}
         </ul>
     </div>
+    {% endif %}
 
 
 <script>
