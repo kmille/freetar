@@ -30,7 +30,7 @@ def search():
 @app.route("/tab/<artist>/<song>")
 def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
-    return render_template("index.html",
+    return render_template("tab.html",
                            tab=tab,
                            title=f"{tab.artist_name} - {tab.song_name}")
 
