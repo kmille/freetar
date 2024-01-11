@@ -22,19 +22,18 @@
 <body>
 
   <nav class="mb-2 navbar navbar-expand-lg bg-body-tertiary d-print-none">
-    <div class="container">
+    <div class="container d-flex" style="flex-wrap: nowrap;">
       <a class="navbar-brand" href="/">Freetar</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <div id="navbarSupportedContent" class="d-flex ">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/favs">Favorites</a>
+            <a class="nav-link" href="/favs">
+              <span class="d-none d-md-inline">Favorites</span>
+              <span class="d-inline d-md-none">Favs</span>
+            </a>
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav mx-4">
           <li class="nav-item">
             <a class="nav-link">
               <span title="enable/disable dark mode" id="dark_mode">
@@ -45,7 +44,7 @@
         <form class="d-flex" method="GET" action="/search">
           <input required class="form-control me-2" name="search_term" type="search" placeholder="Search"
             aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">🔎</button>
+          <button class="btn btn-outline-success d-none d-md-block" type="submit">🔎</button>
         </form>
       </div>
     </div>
