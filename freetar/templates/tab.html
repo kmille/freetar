@@ -5,7 +5,7 @@
 
 
   <div class="float-end text-end">
-  <span title="add/remove song to/from favs" class="favorite m-2 d-print-none">★</span><br/>
+  <span title="add/remove song to/from favs" class="favorite m-2 d-print-none" data-artist="{{tab.artist_name}}" data-song="{{tab.song_name}}" data-type="{{tab._type}}" data-rating="{{tab.rating}}" data-url="{{ request.path }}">★</span><br/>
     {% if tab.tuning %}
         Tuning: {{ tab.tuning }}<br>
     {% endif %}
@@ -30,14 +30,14 @@
         <div class="form-check form-switch autoscroll me-4">
           <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
           <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
-        <span title="decrease scroll speed" class="m-2" onclick="scroll_timeout+=50" >❮❮</span>
-        <span title="increase scroll speed" class="m-2" onclick="scroll_timeout-=50" >❯❯</span>
+        <span role="button" title="decrease scroll speed" class="m-2" onclick="scroll_timeout+=50" >❮❮</span>
+        <span role="button" title="increase scroll speed" class="m-2" onclick="scroll_timeout-=50" >❯❯</span>
         </div>
    
   <div>
         <span class="">Transpose </span>
-        <span id="transpose_down" title="transpose down" class="m-2">🡇</span>
-        <span id="transpose_up" title="transpose up" class="m-2">🡅</span>
+        <span role="button" id="transpose_down" title="transpose down" class="m-2">🡇</span>
+        <span role="button" id="transpose_up" title="transpose up" class="m-2">🡅</span>
     </div>
     </div>
 
@@ -107,28 +107,6 @@
 
     });
 
-    $(".favorite").click(function () {
-        console.log("fav2 was clicked");
-        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-
-        tab_url = window.location.pathname;
-        if (tab_url in favorites) {
-            delete favorites[tab_url];
-            $(".favorite").css("color", "#000000");
-        } else {
-            var fav = new Map();
-            fav["artist_name"] = "{{ tab.artist_name }}";
-            fav["tab_url"] = window.location.pathname;
-            fav["song"] = "{{ tab.song_name }}";
-            fav["type"] = "{{ tab._type }}";
-            fav["rating"] = "{{ tab.rating }}";
-
-            favorites[fav["tab_url"]] = fav;
-            $(".favorite").css("color", "#ffae00");
-        }
-
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-    });
 </script>
 
 {% endblock %}
