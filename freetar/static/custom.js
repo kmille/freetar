@@ -129,9 +129,9 @@ $('#checkbox_autoscroll').click(function () {
 
 $('#checkbox_view_chords').click(function(){
     if($(this).is(':checked')){
-        $("#chordVisuals").toggle();
+        $("#chordVisuals").show();
     } else {
-        $("#chordVisuals").toggle();
+        $("#chordVisuals").hide();
     }
 });
 
