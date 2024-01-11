@@ -55,6 +55,8 @@ class SongDetail():
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
+        self._type = data["store"]["page"]["data"]["tab"]["type"]
+        self.rating = int(data["store"]["page"]["data"]["tab"]["rating"])
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
         self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
         self.chords = []
