@@ -3,30 +3,32 @@
 
 {% block content %}
 
-<table id="results" class="table">
-    <thead>
-        <tr>
-            <th scope="col" class="order">artist</th>
-            <th scope="col" class="order">song</th>
-            <th scope="col" class="order">rating</th>
-            <th scope="col" class="order">type</th>
-            <th scope="col">favorite</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in search_results %}
-        <tr>
-            <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}</a></td>
-            <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
-            <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
-            <td class="type">{{ result._type}}</td>
-            <td>
-              <span data-artist="{{result.artist_name}}" data-song="{{result.song_name}}" data-type="{{result._type}}" data-rating="{{result.rating}}" data-url="{{ result.tab_url }}" class="favorite">★</span>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+  <table id="results" class="table">
+      <thead>
+          <tr>
+              <th scope="col" class="order">artist</th>
+              <th scope="col" class="order">song</th>
+              <th scope="col" class="order">rating</th>
+              <th scope="col" class="order">type</th>
+              <th scope="col">favorite</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for result in search_results %}
+          <tr>
+              <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}</a></td>
+              <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
+              <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
+              <td class="type">{{ result._type}}</td>
+              <td>
+                <span data-artist="{{result.artist_name}}" data-song="{{result.song_name}}" data-type="{{result._type}}" data-rating="{{result.rating}}" data-url="{{ result.tab_url }}" class="favorite">★</span>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
 
 {% if favs %}
 <details><summary>Advanced</summary>
