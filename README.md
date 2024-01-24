@@ -4,7 +4,7 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 Try it out: https://freetar.androidloves.me
 
 ## Features
-- no ads, popups, ai, blockchain. Just a simple design
+- no ads, popups, AI, blockchain. Just a simple design
 - search for tabs and view them
 - save your favorite chords as favs (everything is stored in session storage, no account needed)
 - dark mode
@@ -13,7 +13,7 @@ Try it out: https://freetar.androidloves.me
 
 
 ## How to use it
-After successfull installation, there is an executable called "freetar" in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
+After successfull installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
 
 
 **PyPi**  
@@ -51,5 +51,6 @@ poetry run freetar
 - ~~show chords~~
 - improve UX on mobile devices
 - on smartphones: prevent lock screen
-- share chords (qr code)?
+- ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
+- Browser Extension like like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)
