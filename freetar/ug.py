@@ -30,10 +30,6 @@ class SearchResult:
         self.votes = int(data["votes"])
         self.rating = round(data["rating"], 1)
 
-        if "?" in self.tab_url:
-            self.tab_url = self.tab_url + "&really=true"
-        else:
-            self.tab_url = self.tab_url + "?really=true"
 
     def __repr__(self):
         return f"{self.artist_name} - {self.song_name} (ver {self.version}) ({self._type} {self.rating}/5 - {self.votes} votes)"
@@ -59,6 +55,8 @@ class SongDetail():
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
+        self._type = data["store"]["page"]["data"]["tab"]["type"]
+        self.rating = int(data["store"]["page"]["data"]["tab"]["rating"])
         self.difficulty = data["store"]["page"]["data"]["tab_view"]["ug_difficulty"]
         self.appliciture = data["store"]["page"]["data"]["tab_view"]["applicature"]
         self.chords = []
@@ -78,7 +76,7 @@ class SongDetail():
 
     def fix_tab(self):
         tab = self.tab
-        tab = tab.replace("\r\n", "</br>")
+        tab = tab.replace("\r\n", "<br/>")
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
         tab = tab.replace("[/tab]", "")

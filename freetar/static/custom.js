@@ -76,43 +76,8 @@ function initialise_transpose() {
 
 
 $(document).ready(function () {
-    /*
-        $(".favorite").click(function() {
-                console.log("fav was clicked");
-                favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-                var row = $(this).closest("tr");
-                var fav = new Map();
-    
-                tab_url = row.find(".song").find("a").attr("href");
-                if (favorites[tab_url] != undefined) {
-                    delete favorites[tab_url];
-                    row.find(".favorite").css("color", "#000000");
-                } else {
-    
-                    fav["artist_name"] = row.find(".artist").text();
-                    fav["tab_url"] = tab_url;
-                    fav["song"] = row.find(".song").text();
-                    fav["type"] = row.find(".type").text();
-                    fav["rating"] = row.find(".rating").text();
-    
-                    favorites[fav["tab_url"]] = fav;
-                   row.find(".favorite").css("color", "#ffae00");
-                }
-    
-                localStorage.setItem("favorites", JSON.stringify(favorites));
-            });
-    */
-
     colorize_favs();
-
-    //set dark mode
-    dark_mode = JSON.parse(localStorage.getItem("dark_mode")) || false;
-    if (dark_mode) {
-        document.documentElement.setAttribute('data-bs-theme', 'dark')
-    }
-
     initialise_transpose();
-
 });
 
 function pageScroll() {
@@ -135,9 +100,9 @@ $('#checkbox_autoscroll').click(function () {
 
 $('#checkbox_view_chords').click(function(){
     if($(this).is(':checked')){
-        $("#chordVisuals").toggle();
+        $("#chordVisuals").show();
     } else {
-        $("#chordVisuals").toggle();
+        $("#chordVisuals").hide();
     }
 });
 
@@ -151,4 +116,27 @@ $('#dark_mode').click(function(){
         localStorage.setItem("dark_mode", true);
     }
 });
+
+document.querySelectorAll('.favorite').forEach(item => {
+  item.addEventListener('click', event => {
+    favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+    elm = event.target;
+    tab_url = elm.getAttribute('data-url')
+    if (tab_url in favorites) {
+        delete favorites[tab_url];
+        $(elm).css("color", "");
+    } else {
+      const fav = {
+        artist_name: elm.getAttribute('data-artist'),
+        song: elm.getAttribute('data-song'),        
+        type: elm.getAttribute('data-type'),        
+        rating: elm.getAttribute('data-rating'),  
+        tab_url: elm.getAttribute('data-url')
+      }
+      favorites[fav["tab_url"]] = fav;
+      $(elm).css("color", "#ffae00");
+    }
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  })
+})
 

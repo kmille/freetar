@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+  <div class="float-end text-end">
+  <span title="add/remove song to/from favs" class="favorite m-2 d-print-none" data-artist="{{tab.artist_name}}" data-song="{{tab.song_name}}" data-type="{{tab._type}}" data-rating="{{tab.rating}}" data-url="{{ request.path }}">★</span><br/>
+    {% if tab.tuning %}
+        Tuning: {{ tab.tuning }}<br>
+    {% endif %}
+  <a class="d-print-none d-none d-md-inline" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
+  </div>
+<h5><a href="/search?search_term={{ tab.artist_name }}">{{ tab.artist_name }}</a> - {{ tab.song_name }} (ver {{tab.version }})</h5>
+        Difficulty: {{ tab.difficulty }}<br>
+    Capo: 
+    {% if tab.capo %}
+        {{ tab.capo -}} th fret
+    {% else %}
+        no capo
+    {% endif %}
+    </br>
+    
+    
+    <div class="d-flex align-items-center d-print-none flex-wrap">
+        <div class="form-check form-switch me-4">
+            <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
+            <label class="form-check-label" for="checkbox_view_chords">Show chords</label>
+        </div>
+        <div class="form-check form-switch autoscroll me-4">
+          <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
+          <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
+        <span role="button" title="decrease scroll speed" class="m-2" onclick="scroll_timeout+=50" >❮❮</span>
+        <span role="button" title="increase scroll speed" class="m-2" onclick="scroll_timeout-=50" >❯❯</span>
+        </div>
+   
+  <div>
+        <span class="">Transpose </span>
+        <span role="button" id="transpose_down" title="transpose down" class="m-2">🡇</span>
+        <span role="button" id="transpose_up" title="transpose up" class="m-2">🡅</span>
+    </div>
+    </div>
+
+    <hr class="border border-primary"/>
+    <div id="chordVisuals" style="display: none;">
+        <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
+            {% for chord in tab.chords %}
+                {% set i = 0 %}
+                {% set chord_map = tab.chords[chord][i] %}
+                <div class="text-center">
+                    <div>{{chord}}</div>
+                    <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {% for x in tab.fingers_for_strings[chord][i] %}
+                                    <th>{{x if x != 0}}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
+                            {% for fret in chord_map%}
+                                <tr style="font-size: 0.75rem;">
+                                    <td class="m-0 p-0">{{fret}}</td>
+                                    {% for string in chord_map[fret] %}
+                                        <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
+                                            <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
+                                        </td>
+                                    {%endfor%}
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+        <hr class="border border-primary"/>
+    </div>
+
+    <div class="tab font-monospace">
+        {{ tab.tab | safe }} 
+    </div>
+
+    <a class="d-print-none d-block d-md-none mt-4" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
+    {% if tab.versions %}
+    <div class="d-print-none mt-4">
+        <h2>Alternative versions</h2>
+        <ul class="list-unstyled">
+        {% for version in tab.versions %}
+            <li><a href="{{ version.tab_url }}">
+              Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})
+            </a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+
+<script>
+    $(document).ready(function () {
+
+        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        if (window.location.pathname in favorites) {
+            console.log("True!");
+            $(".favorite").css("color", "#ffae00");
+        }
+
+    });
+
+</script>
+
+{% endblock %}

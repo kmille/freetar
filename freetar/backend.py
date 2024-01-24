@@ -1,14 +1,18 @@
 from flask import Flask, render_template, request
+from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab
 import waitress
 
 app = Flask(__name__)
-
+Minify(app=app, html=True, js=True, cssless=True)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",
+                           title="Freetar",
+                           favs=True)
+
 
 
 @app.route("/search")
@@ -27,7 +31,7 @@ def search():
 @app.route("/tab/<artist>/<song>")
 def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
-    return render_template("index.html",
+    return render_template("tab.html",
                            tab=tab,
                            title=f"{tab.artist_name} - {tab.song_name}")
 

@@ -3,148 +3,42 @@
 
 {% block content %}
 
-<form class="row search-bar" method="GET" action="/search">
-    <div class="col-md-9">
-        <label for="search_term" class="visually-hidden">Search</label>
-        <input name="search_term" type="text" class="form-control" id="search_term" value="{{ search_term or '' }}"
-            placeholder="Search">
-    </div>
+<div class="table-responsive">
+  <table id="results" class="table">
+      <thead>
+          <tr>
+              <th scope="col" class="order">artist</th>
+              <th scope="col" class="order">song</th>
+              <th scope="col" class="order">rating</th>
+              <th scope="col" class="order">type</th>
+              <th scope="col">favorite</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for result in search_results %}
+          <tr>
+              <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}</a></td>
+              <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
+              <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
+              <td class="type">{{ result._type}}</td>
+              <td>
+                <span data-artist="{{result.artist_name}}" data-song="{{result.song_name}}" data-type="{{result._type}}" data-rating="{{result.rating}}" data-url="{{ result.tab_url }}" class="favorite">★</span>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
 
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <button type="button" class="btn btn-primary" onclick="$('#search_term').val('')">Clear</button>
-    </div>
-</form>
-
-{% if search_results is defined or favs is defined and favs %}
-<table id="results" class="table">
-    <thead>
-        <tr>
-            <th scope="col" class="order">artist</th>
-            <th scope="col" class="order">song</th>
-            <th scope="col" class="order">rating</th>
-            <th scope="col" class="order">type</th>
-            <th scope="col">favorite</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in search_results %}
-
-        <tr>
-            <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}<a /></td>
-            <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})<a /></td>
-            <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
-            <td class="type">{{ result._type}}</td>
-            <td><i class="fa fa--regular fa-star favorite"></i></td>
-        </tr>
-
-        {% endfor %}
-    </tbody>
-</table>
-{% endif %}
-
-{% if tab is defined %}
-    <a class="view-ug" href="{{ tab.tab_url }}">View on Ultimate Guitar</a><br>
-    {{ tab.artist_name }} - {{ tab.song_name }} (ver {{tab.version }})<br>
-    {% if tab.tuning %}
-        Tuning: {{ tab.tuning }}<br>
-    {% endif %}
-    Difficulty: {{ tab.difficulty }}<br>
-    Capo: 
-    {% if tab.capo %}
-        {{ tab.capo -}} th fret
-    {% else %}
-        no capo
-    {% endif %}
-    </br>
-    
-    
-    <div class="d-flex align-items-center">
-        <div class="form-check form-switch autoscroll m-2">
-            <input class="form-check-input" type="checkbox" role="switch" id="checkbox_view_chords"/>
-            <label class="form-check-label" for="checkbox_view_chords">Chord visualization</label>
-        </div>
-        <div class="form-check form-switch autoscroll m-2">
-          <input class="form-check-input" type="checkbox" role="switch" id="checkbox_autoscroll" />
-          <label class="form-check-label" for="checkbox_autoscroll">Autoscroll</label>
-        </div>
-        <i title="decrease scroll speed" class="fa fa-backward m-2" onclick="scroll_timeout+=50" ></i>
-        <i title="increase scroll speed" class="fa fa-forward m-2" onclick="scroll_timeout-=50" ></i>
-
-        <!--
-        <div id="transpose">
-            <span>Transpose</span>
-            Current: <span class="current">0</span>
-            <button class="btn btn-primary minus">-</button>
-            <button class="btn btn-primary plus">+</button>
-        </div>
-        -->
-    
-        <i id="transpose_down" title="transpose down" class="fa fa-arrow-down m-2"></i>
-        <i id="transpose_up" title="transpose up" class="fa fa-arrow-up m-2"></i>
-
-        <i title="add/remove song to/from favs" class="fa fa--regular fa-star favorite m-2"></i>
-        <i title="enable/disable dark mode" id="dark_mode" class="fa fa-adjust fa-fw m-2"></i>
-    </div>
-
-    <hr class="border border-primary"/>
-    <div id="chordVisuals" style="display: none;">
-        <div class="d-grid" style="grid-gap: 3rem; grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));">
-            {% for chord in tab.chords %}
-                {% set i = 0 %}
-                {% set chord_map = tab.chords[chord][i] %}
-                <div class="text-center">
-                    <div>{{chord}}</div>
-                    <table class="table table-borderless table-sm p-2 bg-light rounded text-black">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                {% for x in tab.fingers_for_strings[chord][i] %}
-                                    <th>{{x if x != 0}}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody class="border-3 border-start-0 border-end-0 border-bottom-0 border-black">
-                            {% for fret in chord_map%}
-                                <tr style="font-size: 0.75rem;">
-                                    <td class="m-0 p-0">{{fret}}</td>
-                                    {% for string in chord_map[fret] %}
-                                        <td class="m-0 p-0 border-bottom border-black" style="background: linear-gradient(#000, #000) no-repeat center/1px 100%;">
-                                            <div class="text-align-center text-center m-0 p-0 {{'bg-black rounded-circle' if string==1}}" style="height: 1rem; width: 1rem;"></div>
-                                        </td>
-                                    {%endfor%}
-                                </tr>
-                            {%endfor%}
-                        </tbody>
-                    </table>
-                </div>
-            {% endfor %}
-        </div>
-        <hr class="border border-primary"/>
-    </div>
-
-    <div class="tab">
-        {{ tab.tab | safe }} 
-    </div>
-
-    <div class="alternatives">
-        <h2>Alternative versions</h2>
-        <ul>
-        {% for version in tab.versions %}
-            <li><a href="{{ version.tab_url }}">
-              Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})
-            </a></li>
-        {% endfor %}
-        </ul>
-    </div>
-
-{% endif %}
-
-
-{% if favs is defined and favs %}
+{% if favs %}
+<details><summary>Advanced</summary>
+  <strong class="d-block">Export favorties</strong>
+  <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
+  <strong class="mt-3 d-block">Import favorites</strong>
+<input type="file" class="form-control" onchange="importFavorties(this)" />
+</details>
 
 <script>
-    $(document).ready(function () {
         favorites = JSON.parse(localStorage.getItem("favorites")) || {};
 
         $.each(favorites, function (index, song) {
@@ -156,57 +50,42 @@
                 '</td>' +
                 '<td>' + song.rating + '</td>' +
                 '<td>' + song.type + '</td>' +
-                '<td><i class="fa fa--regular fa-star favorite"></i></td>' +
+                '<td><span data-artist="'+song.artist_name+'" data-song="'+song.song+'" data-type="'+song.type+'" data-rating="'+song.rating+'" data-url="'+song.tab_url+'" class="favorite">★</span></td>' +
                 '</tr>');
         });
 
-        colorize_favs();
-    });
+  function exportFavorites() {
+    const blob = new Blob([localStorage.getItem("favorites")], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "freetar-favorites.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
-
+  function importFavorties(input) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const content = e.target.result;
+        localStorage.setItem("favorites", content);
+      };
+      reader.readAsText(file);
+      location.reload();
+    }
+  }
 </script>
-
 {% endif %}
 
-{% if tab is defined and tab %}
-
 <script>
-    $(document).ready(function () {
+    favorites_url = Object.keys(JSON.parse(localStorage.getItem("favorites")) || {});
+    for (const fav of [...document.getElementsByClassName('favorite')]) {
+      if (favorites_url.includes(fav.getAttribute('data-url').split("?")[0])) $(fav).css("color", "#ffae00");
+    } 
 
-        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-        if (window.location.pathname in favorites) {
-            console.log("True!");
-            $(".favorite").css("color", "#ffae00");
-        }
-
-    });
-
-    $(".favorite").click(function () {
-        console.log("fav2 was clicked");
-        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-
-        tab_url = window.location.pathname;
-        if (tab_url in favorites) {
-            delete favorites[tab_url];
-            $(".favorite").css("color", "#000000");
-        } else {
-            var fav = new Map();
-            fav["artist_name"] = "{{ tab.artist_name }}";
-            fav["tab_url"] = window.location.pathname;
-            fav["song"] = "{{ tab.song_name }}";
-            fav["type"] = "{{ tab._type }}";
-            fav["rating"] = "{{ tab.rating }}";
-
-            favorites[fav["tab_url"]] = fav;
-            $(".favorite").css("color", "#ffae00");
-        }
-
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-    });
-</script>
-
-{% else %}
-<script>
     // Add sorting to the table
     // taken from https://stackoverflow.com/a/70024272
     function table_sort() {
@@ -262,7 +141,5 @@
     }
     table_sort()
 </script>
-
-{% endif %}
 
 {% endblock %}
