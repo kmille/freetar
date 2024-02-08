@@ -1,15 +1,16 @@
 # freetar - an alternative frontend for ultimate-guitar.com
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
-Try it out: https://freetar.androidloves.me
+Try it out: https://freetar.de
 
 ## Features
 - no ads, popups, AI, blockchain. Just a simple design
 - search for tabs and view them
-- save your favorite chords as favs (everything is stored in session storage, no account needed)
+- save your favorite chords as favs (everything is stored in session storage (not send to the server), no account needed)
 - dark mode
 - auto scroll
 - useful for printing chords
+- show chords
 
 
 ## How to use it
@@ -53,4 +54,4 @@ poetry run freetar
 - on smartphones: prevent lock screen
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
-- Browser Extension like like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)
+- Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)
