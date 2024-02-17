@@ -136,6 +136,8 @@ def get_chords(s: SongDetail):
                 if found:
                     variants[fret] = fingers
 
+            if not len(variants):
+                continue
             while len(variants) < 6:
                 variants[max(variants) + 1] = [0] * 6
 

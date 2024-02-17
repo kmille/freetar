@@ -1,4 +1,6 @@
 FROM python:3.11-alpine3.18 AS builder
+RUN apk update
+RUN apk add gcc musl-dev libffi-dev
 RUN pip install poetry
 COPY . /app
 WORKDIR /app
