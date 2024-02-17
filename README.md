@@ -1,7 +1,10 @@
 # freetar - an alternative frontend for ultimate-guitar.com
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
-Try it out: https://freetar.de
+
+## Instances
+- https://freetar.de
+- https://freetar.habedieeh.re
 
 ## Features
 - no ads, popups, AI, blockchain. Just a simple design
