@@ -80,8 +80,23 @@ class SongDetail():
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
         tab = tab.replace("[/tab]", "")
-        tab = re.sub(r'\[ch\]([/#\w()+-]+)\[\/ch\]', r'<strong>\1</strong>', tab)
+
+        # (?P<root>[A-Ga-g](#|b)?) : Chord root is any letter A - G with an optional sharp or flat at the end
+        # (?P<quality>[^[/]+)?  : Chord quality is anything after the root, but before the `/` for the base note
+        # (?P<bass>/[A-Ga-g](#|b)?)? :  Chord quality is anything after the root, including parens in the case of 'm(maj7)'
+        # tab = re.sub(r'\[ch\](?P<root>[A-Ga-g](#|b)?)(?P<quality>[#\w()]+)?(?P<bass>/[A-Ga-g](#|b)?)?\[\/ch\]', self.parse_chord, tab)
+        tab = re.sub(r'\[ch\](?P<root>[A-Ga-g](#|b)?)(?P<quality>[^[/]+)?(?P<bass>/[A-Ga-g](#|b)?)?\[\/ch\]', self.parse_chord, tab)
         self.tab = tab
+
+    def parse_chord(self, chord):
+        root = '<span class="chord-root">%s</span>' % chord.group('root')
+        quality = ''
+        bass = ''
+        if chord.group('quality') is not None:
+            quality = '<span class="chord-quality">%s</span>' % chord.group('quality')
+        if chord.group('bass') is not None:
+            bass = '/<span class="chord-bass">%s</span>' % chord.group('bass')[1:]
+        return '<span class="chord fw-bold">%s</span>' % (root + quality + bass)
 
 
 def ug_search(value: str):
