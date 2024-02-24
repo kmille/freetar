@@ -29,16 +29,23 @@ $(window).on("wheel touchmove", function() {
 $('#scroll_speed_down').click(function () {
     // Increase the delay to slow down scroll
     scrollTimeout += 50;
-    pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
-    startScrolling();
+    if (scrollInterval !== null)
+    {
+        pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
+        startScrolling();
+    }
 });
 
 $('#scroll_speed_up').click(function () {
     // Decrease the delay to speed up scroll.
     // Don't decrease the delay all the way to 0
     scrollTimeout = Math.max(50, scrollTimeout - 50);
-    pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
-    startScrolling();
+
+    if (scrollInterval !== null)
+    {
+        pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
+        startScrolling();
+    }
 });
 
 
