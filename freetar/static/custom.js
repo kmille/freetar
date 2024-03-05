@@ -1,6 +1,3 @@
-scroll_timeout = 500;
-do_scroll = true;
-
 function colorize_favs() {
     // make every entry yellow if we faved it before
     favorites = JSON.parse(localStorage.getItem("favorites")) || {};
@@ -86,29 +83,11 @@ function initialise_transpose() {
     }
 }
 
-
 $(document).ready(function () {
     colorize_favs();
     initialise_transpose();
 });
 
-function pageScroll() {
-    console.log(scroll_timeout);
-    window.scrollBy(0, 3);
-    if (do_scroll) {
-        scrolldelay = setTimeout(pageScroll, scroll_timeout);
-    }
-}
-
-$('#checkbox_autoscroll').click(function () {
-    if ($(this).is(':checked')) {
-        do_scroll = true;
-        pageScroll();
-    } else {
-        scroll_timeout = 500;
-        do_scroll = false;
-    }
-});
 
 $('#checkbox_view_chords').click(function(){
     if($(this).is(':checked')){
@@ -140,9 +119,9 @@ document.querySelectorAll('.favorite').forEach(item => {
     } else {
       const fav = {
         artist_name: elm.getAttribute('data-artist'),
-        song: elm.getAttribute('data-song'),        
-        type: elm.getAttribute('data-type'),        
-        rating: elm.getAttribute('data-rating'),  
+        song: elm.getAttribute('data-song'),
+        type: elm.getAttribute('data-type'),
+        rating: elm.getAttribute('data-rating'),
         tab_url: elm.getAttribute('data-url')
       }
       favorites[fav["tab_url"]] = fav;
