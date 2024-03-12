@@ -86,6 +86,11 @@ function initialise_transpose() {
 $(document).ready(function () {
     colorize_favs();
     initialise_transpose();
+
+    //uncheck all the checkboxes on page load
+    $('input[type="checkbox"]').each(function() {
+        $(this).prop("checked", false);
+      });
 });
 
 
