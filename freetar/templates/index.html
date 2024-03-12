@@ -128,10 +128,18 @@
                 }
                 const arr = Array.from(th_elem.closest("table").querySelectorAll('tbody tr'))
                 arr.sort((a, b) => {
-                    const a_val = a.dataset.value || a.children[index].innerText
-                    const b_val = b.dataset.value || b.children[index].innerText
-                    return (asc) ? a_val.localeCompare(b_val) : b_val.localeCompare(a_val)
-                })
+                const ratingA = parseFloat(a.dataset.value || a.children[index].innerText.split("/")[0]);
+                const ratingB = parseFloat(b.dataset.value || b.children[index].innerText.split("/")[0]);
+                const reviewsA = parseInt(a.dataset.value || a.children[index].innerText.split(" (")[1].split(")")[0]);
+                const reviewsB = parseInt(b.dataset.value || b.children[index].innerText.split(" (")[1].split(")")[0]);
+
+                const compareRating = ratingB - ratingA; // Higher rating comes first
+                const compareReviews = reviewsB - reviewsA; // More reviews come first for the same rating
+
+                // Adjust sort order based on asc flag
+                return asc ? (compareRating || compareReviews) : -(compareRating || compareReviews);
+                });
+
                 arr.forEach(elem => {
                     th_elem.closest("table").querySelector("tbody").appendChild(elem)
                 })
