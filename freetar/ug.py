@@ -52,7 +52,7 @@ class SongDetail():
         if __name__ == '__main__':
             with open("test.json", "w") as f:
                 json.dump(data, f)
-        self.raw_tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
+        self.raw_tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"].replace("\r\n", "\n")
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
@@ -78,7 +78,6 @@ class SongDetail():
 
     def fix_tab(self):
         tab = self.raw_tab
-        tab = tab.replace("\r\n", "<br/>")
         tab = tab.replace("\n", "<br/>")
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
