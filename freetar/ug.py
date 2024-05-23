@@ -77,6 +77,7 @@ class SongDetail():
     def fix_tab(self):
         tab = self.tab
         tab = tab.replace("\r\n", "<br/>")
+        tab = tab.replace("\n", "<br/>")
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
         tab = tab.replace("[/tab]", "")
