@@ -45,13 +45,14 @@ class SongDetail():
     capo: str
     tuning: str
     tab_url: str
+    tab_url_path: str
     versions: list[SearchResult] = field(default_factory=list)
 
     def __init__(self, data):
         if __name__ == '__main__':
             with open("test.json", "w") as f:
                 json.dump(data, f)
-        self.tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
+        self.raw_tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
@@ -66,6 +67,7 @@ class SongDetail():
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
+        self.tab_url_path = urlparse(self.tab_url).path
         self.versions = []
         for version in data["store"]["page"]["data"]["tab_view"]["versions"]:
             self.versions.append(SearchResult(version))
@@ -75,7 +77,7 @@ class SongDetail():
         return f"{self.artist_name} - {self.song_name}"
 
     def fix_tab(self):
-        tab = self.tab
+        tab = self.raw_tab
         tab = tab.replace("\r\n", "<br/>")
         tab = tab.replace("\n", "<br/>")
         tab = tab.replace(" ", "&nbsp;")
@@ -98,6 +100,9 @@ class SongDetail():
         if chord.group('bass') is not None:
             bass = '/<span class="chord-bass">%s</span>' % chord.group('bass')[1:]
         return '<span class="chord fw-bold">%s</span>' % (root + quality + bass)
+
+    def download_url_ug(self):
+        return '/download/' + self.tab_url_path.split('/', 2)[2]
 
 
 def ug_search(value: str):

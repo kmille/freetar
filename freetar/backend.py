@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab
 import waitress
+import io
 
 app = Flask(__name__)
 Minify(app=app, html=True, js=True, cssless=True)
@@ -43,6 +44,15 @@ def show_tab2(tabid: int):
                            tab=tab,
                            title=f"{tab.artist_name} - {tab.song_name}")
 
+@app.route("/download/<artist>/<song>")
+def download_tab(artist: str, song: str):
+    tab = ug_tab(f"{artist}/{song}")
+    return respond_with_download(tab.raw_tab, f"{tab.artist_name} - {tab.song_name}.txt")
+
+@app.route("/download/<tabid>")
+def download_tab2(tabid: int):
+    tab = ug_tab(tabid)
+    return respond_with_download(tab.raw_tab, f"{tab.artist_name} - {tab.song_name}.txt")
 
 @app.route("/favs")
 def show_favs():
@@ -50,10 +60,14 @@ def show_favs():
                            title="Freetar - Favorites",
                            favs=True)
 
+def respond_with_download(content, filename):
+    data = io.BytesIO(content.encode('utf-8'))
+    return send_file(data, as_attachment=True, download_name=filename)
+
 
 def main():
     host = "0.0.0.0"
-    port = 22000
+    port = 22001
     if __name__ == '__main__':
         app.run(debug=True,
                 host=host,
