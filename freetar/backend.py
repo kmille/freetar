@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file
 from flask_minify import Minify
 
-from freetar.ug import ug_search, ug_tab
+from freetar.ug import ug_search, ug_tab, SongDetail
 import waitress
 import io
 
@@ -47,12 +47,14 @@ def show_tab2(tabid: int):
 @app.route("/download/<artist>/<song>")
 def download_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
-    return respond_with_download(tab.raw_tab, f"{tab.artist_name} - {tab.song_name}.txt")
+    format = request.args.get('format')
+    return tab_to_dl_file(tab, format)
 
 @app.route("/download/<tabid>")
 def download_tab2(tabid: int):
     tab = ug_tab(tabid)
-    return respond_with_download(tab.raw_tab, f"{tab.artist_name} - {tab.song_name}.txt")
+    format = request.args.get('format')
+    return tab_to_dl_file(tab, format)
 
 @app.route("/favs")
 def show_favs():
@@ -60,7 +62,17 @@ def show_favs():
                            title="Freetar - Favorites",
                            favs=True)
 
-def respond_with_download(content, filename):
+def tab_to_dl_file(tab: SongDetail, format: str):
+    if format == 'ug_txt':
+        ext = 'ug.txt'
+        content = tab.raw_tab
+    elif format == 'txt':
+        ext = 'txt'
+        content = tab.plain_text()
+    else:
+        return f'no such format: {format}', 400
+
+    filename = f'{tab.artist_name} - {tab.song_name}.{ext}'
     data = io.BytesIO(content.encode('utf-8'))
     return send_file(data, as_attachment=True, download_name=filename)
 

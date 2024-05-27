@@ -90,6 +90,13 @@ class SongDetail():
         tab = re.sub(r'\[ch\](?P<root>[A-Ga-g](#|b)?)(?P<quality>[^[/]+)?(?P<bass>/[A-Ga-g](#|b)?)?\[\/ch\]', self.parse_chord, tab)
         self.tab = tab
 
+    def plain_text(self):
+        tab = self.raw_tab
+        tab = tab.replace("[tab]", "")
+        tab = tab.replace("[/tab]", "")
+        tab = re.sub(r'\[ch\]([^\[]*)\[\/ch\]', lambda match: match.group(1), tab)
+        return tab
+
     def parse_chord(self, chord):
         root = '<span class="chord-root">%s</span>' % chord.group('root')
         quality = ''
@@ -100,7 +107,7 @@ class SongDetail():
             bass = '/<span class="chord-bass">%s</span>' % chord.group('bass')[1:]
         return '<span class="chord fw-bold">%s</span>' % (root + quality + bass)
 
-    def download_url_ug(self):
+    def download_url(self):
         return '/download/' + self.tab_url_path.split('/', 2)[2]
 
 
