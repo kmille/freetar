@@ -10,8 +10,9 @@
         Tuning: {{ tab.tuning }}<br>
     {% endif %}
   <a class="d-print-none d-none d-md-inline" href="{{ tab.tab_url }}?no_redirect">View on Ultimate Guitar</a><br>
-  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=txt">Download (Plain text)</a>
-  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=ug_txt">Download (UG format)</a>
+  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=txt">Download (Plain text)</a><br>
+  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=ug_txt">Download (UG format)</a><br>
+  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=chordpro">Download (ChordPro)</a>
   </div>
 <h5><a href="/search?search_term={{ tab.artist_name }}">{{ tab.artist_name }}</a> - {{ tab.song_name }} (ver {{tab.version }})</h5>
         Difficulty: {{ tab.difficulty }}<br>

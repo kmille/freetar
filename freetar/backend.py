@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, send_file
 from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab, SongDetail
+from freetar.chordpro import song_to_chordpro
+
 import waitress
 import io
 
@@ -69,6 +71,9 @@ def tab_to_dl_file(tab: SongDetail, format: str):
     elif format == 'txt':
         ext = 'txt'
         content = tab.plain_text()
+    elif format == 'chordpro':
+        ext = 'cho'
+        content = song_to_chordpro(tab)
     else:
         return f'no such format: {format}', 400
 
