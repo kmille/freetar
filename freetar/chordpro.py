@@ -9,11 +9,18 @@ def song_to_chordpro(song: SongDetail):
     header_lines = [
         chordpro_directive('title', f'{song.artist_name} - {song.song_name}'),
         chordpro_meta('artist', song.artist_name),
-        chordpro_meta('capo', song.capo) if song.capo else None
+        chordpro_meta('capo', song.capo),
+        chordpro_meta('tuning', song.tuning),
+        chordpro_meta('version', song.version),
+        chordpro_meta('difficulty', song.difficulty),
     ]
-    return ''.join((line + '\n' for line in (header_lines + tab_lines) if line is not None))
+    return ''.join((line + '\n' for line in (header_lines + tab_lines + ['']) if line is not None))
 
 def chordpro_meta(key: str, value: str):
+    if value is None:
+        return None
+    if type(value) is not str:
+        value = str(value)
     return chordpro_directive('meta', key + ' ' + value)
 
 def chordpro_directive(name: str, argstr: str):
