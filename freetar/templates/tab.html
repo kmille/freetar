@@ -5,14 +5,17 @@
 
 
   <div class="float-end text-end">
-  <span title="add/remove song to/from favs" class="favorite m-2 d-print-none" data-artist="{{tab.artist_name}}" data-song="{{tab.song_name}}" data-type="{{tab._type}}" data-rating="{{tab.rating}}" data-url="{{ request.path }}">★</span><br/>
+  <span title="add/remove song to/from favs" role="button" class="favorite m-2 d-print-none" data-artist="{{tab.artist_name}}" data-song="{{tab.song_name}}" data-type="{{tab._type}}" data-rating="{{tab.rating}}" data-url="{{ request.path }}">★</span>
+  <span title="download" role="button" id="download" class="m-2 d-print-none">📥</span><br/>
+  <div id="download-options" style="display: none;">
+    <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=txt">Download (Plain text)</a><br>
+    <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=ug_txt">Download (UG format)</a><br>
+    <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=chordpro">Download (ChordPro)</a>
+  </div>
     {% if tab.tuning %}
         Tuning: {{ tab.tuning }}<br>
     {% endif %}
   <a class="d-print-none d-none d-md-inline" href="{{ tab.tab_url }}?no_redirect">View on Ultimate Guitar</a><br>
-  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=txt">Download (Plain text)</a><br>
-  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=ug_txt">Download (UG format)</a><br>
-  <a class="d-print-none d-none d-md-inline" href="{{ tab.download_url() }}?format=chordpro">Download (ChordPro)</a>
   </div>
 <h5><a href="/search?search_term={{ tab.artist_name }}">{{ tab.artist_name }}</a> - {{ tab.song_name }} (ver {{tab.version }})</h5>
         Difficulty: {{ tab.difficulty }}<br>
