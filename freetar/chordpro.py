@@ -10,6 +10,7 @@ def song_to_chordpro(song: SongDetail):
         chordpro_directive('title', f'{song.artist_name} - {song.song_name}'),
         chordpro_meta('artist', song.artist_name),
         chordpro_meta('capo', song.capo),
+        chordpro_meta('key', song.key),
         chordpro_meta('tuning', song.tuning),
         chordpro_meta('version', song.version),
         chordpro_meta('difficulty', song.difficulty),

@@ -43,6 +43,7 @@ class SongDetail():
     version: int
     difficulty: str
     capo: str
+    key: str
     tuning: str
     tab_url: str
     tab_url_path: str
@@ -54,6 +55,7 @@ class SongDetail():
                 json.dump(data, f)
         self.raw_tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"].replace("\r\n", "\n")
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
+        self.key = data["store"]["page"]["data"]["tab"].get('tonality_name')
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
         self._type = data["store"]["page"]["data"]["tab"]["type"]
