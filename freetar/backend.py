@@ -84,7 +84,7 @@ def tab_to_dl_file(tab: SongDetail, format: str):
 
 def main():
     host = "0.0.0.0"
-    port = 22001
+    port = 22000
     if __name__ == '__main__':
         app.run(debug=True,
                 host=host,
