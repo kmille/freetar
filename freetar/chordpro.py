@@ -24,7 +24,7 @@ def chordpro_meta(key: str, value: str):
         value = str(value)
     return chordpro_directive('meta', key + ' ' + value)
 
-def chordpro_directive(name: str, argstr: str):
+def chordpro_directive(name: str, argstr: str = None):
     if argstr:
         return '{' + name + ': ' + argstr + '}'
     else:
@@ -64,7 +64,7 @@ class SectionEnd():
     sec: Section
 
     def __str__(self):
-        return chordpro_directive('end_of_' + self.sec.id(), self.sec.label())
+        return chordpro_directive('end_of_' + self.sec.id())
 
 @dataclass
 class Instrumental():
