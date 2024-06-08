@@ -111,17 +111,20 @@ def only_chords(line):
 def has_chords(line):
     return type(line) is list and any((type(x) is Chord for x in line))
 
+def has_lyrics_and_nothing_else(line):
+    return (not has_chords(line)) and (not only_whitespace(line))
+
 def intersperse_chords(tlines):
     skip = True
     for this, next in zip([None] + tlines, tlines):
         if skip:
             skip = False
             continue
-        if has_chords(this) and not only_chords(this):
-            yield Instrumental(this)
-        elif has_chords(this) and only_chords(this) and (not has_chords(next)):
+        elif has_chords(this) and only_chords(this) and (has_lyrics_and_nothing_else(next)):
             yield list(insert_chords_between_tokens([x for x in this if type(x) is Chord], next))
             skip = True
+        elif has_chords(this):
+            yield Instrumental(this)
         else:
             yield this
 
