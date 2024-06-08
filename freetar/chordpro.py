@@ -112,11 +112,11 @@ def has_chords(line):
     return type(line) is list and any((type(x) is Chord for x in line))
 
 def has_lyrics_and_nothing_else(line):
-    return (not has_chords(line)) and (not only_whitespace(line))
+    return type(line) is list and (not has_chords(line)) and (not only_whitespace(line))
 
 def intersperse_chords(tlines):
     skip = True
-    for this, next in zip([None] + tlines, tlines):
+    for this, next in zip([None] + tlines, tlines + [None]):
         if skip:
             skip = False
             continue
