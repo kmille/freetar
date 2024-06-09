@@ -18,7 +18,7 @@ def song_to_chordpro(song: SongDetail):
     return ''.join((line + '\n' for line in (header_lines + tab_lines + ['']) if line is not None))
 
 def chordpro_meta(key: str, value: str):
-    if value is None:
+    if not value:
         return None
     if type(value) is not str:
         value = str(value)
