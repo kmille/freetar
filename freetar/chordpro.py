@@ -7,8 +7,8 @@ from freetar.ug import SongDetail
 def song_to_chordpro(song: SongDetail):
     tab_lines = untokenise_tab(intersperse_chords(tokenise_tab(song.raw_tab)))
     header_lines = [
-        chordpro_directive('title', f'{song.artist_name} - {song.song_name}'),
-        chordpro_meta('artist', song.artist_name),
+        chordpro_directive('title', song.song_name),
+        chordpro_directive('artist', song.artist_name),
         chordpro_meta('capo', song.capo),
         chordpro_meta('key', song.key),
         chordpro_meta('tuning', song.tuning),
