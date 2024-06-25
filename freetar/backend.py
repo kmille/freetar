@@ -10,9 +10,7 @@ Minify(app=app, html=True, js=True, cssless=True)
 
 @app.route("/")
 def index():
-    return render_template("index.html",
-                           title="Freetar",
-                           favs=True)
+    return render_template("index.html", favs=True)
 
 
 @app.route("/search")

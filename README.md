@@ -1,4 +1,4 @@
-# freetar - an alternative frontend for ultimate-guitar.com
+# freetar - an open source alternative front-end to ultimate-guitar.com
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
 
