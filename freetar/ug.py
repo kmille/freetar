@@ -30,7 +30,6 @@ class SearchResult:
         self.votes = int(data["votes"])
         self.rating = round(data["rating"], 1)
 
-
     def __repr__(self):
         return f"{self.artist_name} - {self.song_name} (ver {self.version}) ({self._type} {self.rating}/5 - {self.votes} votes)"
 
