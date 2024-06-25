@@ -82,13 +82,13 @@
     </div>
 
     <a class="d-print-none d-block d-md-none mt-4" href="{{ tab.tab_url }}">View on Ultimate Guitar</a>
-    {% if tab.versions %}
+    {% if tab.alternatives %}
     <div class="d-print-none mt-4">
         <h2>Alternative versions</h2>
         <ul class="list-unstyled">
-        {% for version in tab.versions %}
-            <li><a href="{{ version.tab_url }}">
-              Version {{ version.version }} ({{ version._type }}) {{version.rating }}/5 ({{ version.votes }})
+        {% for alt in tab.alternatives %}
+            <li><a href="{{ alt.tab_url }}">
+              Version {{ alt.version }} ({{ alt._type }}) {{alt.rating }}/5 ({{ alt.votes }})
             </a></li>
         {% endfor %}
         </ul>

@@ -44,7 +44,7 @@ class SongDetail():
     capo: str
     tuning: str
     tab_url: str
-    versions: list[SearchResult] = field(default_factory=list)
+    alternatives: list[SearchResult] = field(default_factory=list)
 
     def __init__(self, data):
         if __name__ == '__main__':
@@ -65,9 +65,10 @@ class SongDetail():
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
-        self.versions = []
-        for version in data["store"]["page"]["data"]["tab_view"]["versions"]:
-            self.versions.append(SearchResult(version))
+        self.alternatives = []
+        for alternative in data["store"]["page"]["data"]["tab_view"]["versions"]:
+            if alternative.get("type", "") != "Official":
+                self.alternatives.append(SearchResult(alternative))
         self.fix_tab()
 
     def __repr__(self):
