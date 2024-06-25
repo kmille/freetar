@@ -30,7 +30,8 @@
   <title>{{ title or "Freetar - guitar chords from Ultimate Guitar" }}</title>
   <link rel="icon" type="image/png" href="/static/guitar.png" />
   <script>
-    if (JSON.parse(localStorage.getItem("dark_mode")) || false)
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (JSON.parse(localStorage.getItem("dark_mode")) || isDarkMode)
       document.documentElement.setAttribute('data-bs-theme', 'dark')
   </script>
 </head>
