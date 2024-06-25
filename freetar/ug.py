@@ -5,8 +5,10 @@ import json
 import re
 
 from dataclasses import dataclass, field
+from .utils import FreetarError
 
-#session = requests.Session()
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.3"
 
 
 @dataclass
@@ -46,10 +48,7 @@ class SongDetail():
     tab_url: str
     alternatives: list[SearchResult] = field(default_factory=list)
 
-    def __init__(self, data):
-        if __name__ == '__main__':
-            with open("test.json", "w") as f:
-                json.dump(data, f)
+    def __init__(self, data: dict):
         self.tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
@@ -101,26 +100,31 @@ class SongDetail():
 
 
 def ug_search(value: str):
-    resp = requests.get(f"https://www.ultimate-guitar.com/search.php?search_type=title&value={quote(value)}")
-    bs = BeautifulSoup(resp.text, 'html.parser')
-    # data can be None
-    data = bs.find("div", {"class": "js-store"})
-    # KeyError
-    data = data.attrs['data-content']
-    data = json.loads(data)
-    results = data['store']['page']['data']['results']
-    ug_results = []
-    for result in results:
-        _type = result.get("type")
-        if _type and _type != "Pro":
-            s = SearchResult(result)
-            ug_results.append(s)
-            #print(s)
-    #print(json.dumps(data, indent=4))
-    return ug_results
+    try:
+        resp = requests.get(f"https://www.ultimate-guitar.com/search.php?search_type=title&value={quote(value)}",
+                            headers={'User-Agent': USER_AGENT})
+        resp.raise_for_status()
+        bs = BeautifulSoup(resp.text, 'html.parser')
+        # data can be None
+        data = bs.find("div", {"class": "js-store"})
+        # KeyError
+        data = data.attrs['data-content']
+        data = json.loads(data)
+        results = data['store']['page']['data']['results']
+        ug_results = []
+        for result in results:
+            _type = result.get("type")
+            if _type and _type != "Pro":
+                s = SearchResult(result)
+                ug_results.append(s)
+                #print(s)
+        #print(json.dumps(data, indent=4))
+        return ug_results
+    except (KeyError, ValueError, AttributeError, requests.exceptions.RequestException) as e:
+        raise FreetarError(f"Could not search for chords: {e}") from e
 
 
-def get_chords(s: SongDetail):
+def get_chords(s: SongDetail) -> SongDetail:
     if s.appliciture is None:
         return dict(), dict()
 
@@ -176,19 +180,16 @@ def get_chords(s: SongDetail):
 
 
 def ug_tab(url_path: str):
-    #resp = requests.get("https://tabs.ultimate-guitar.com/tab/rise-against/swing-life-away-chords-262724")
-    resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path)
-    #with open("/home/kmille/Downloads/debug.html", "w") as f:
-    #    f.write(resp.text)
-    bs = BeautifulSoup(resp.text, 'html.parser')
-    # data can be None
-    data = bs.find("div", {"class": "js-store"})
-    # KeyError
-    data = data.attrs['data-content']
-    data = json.loads(data)
-    s = SongDetail(data)
-    s.chords, s.fingers_for_strings = get_chords(s)
-    #print(json.dumps(data, indent=4))
-    #results = data['store']['page']['data']['results']
-    #breakpoint()
-    return s
+    try:
+        resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path,
+                            headers={'User-Agent': USER_AGENT})
+        resp.raise_for_status()
+        bs = BeautifulSoup(resp.text, 'html.parser')
+        data = bs.find("div", {"class": "js-store"})
+        data = data.attrs['data-content']
+        data = json.loads(data)
+        s = SongDetail(data)
+        s.chords, s.fingers_for_strings = get_chords(s)
+        return s
+    except (KeyError, ValueError, AttributeError, requests.exceptions.RequestException) as e:
+        raise FreetarError(f"Could not parse chord: {e}") from e

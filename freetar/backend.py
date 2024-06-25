@@ -3,7 +3,7 @@ from flask import Flask, render_template, request
 from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab
-from freetar.utils import get_version
+from freetar.utils import get_version, FreetarError
 
 
 app = Flask(__name__)
@@ -61,6 +61,14 @@ def show_favs():
 @app.route("/about")
 def show_about():
     return render_template('about.html')
+
+
+@app.errorhandler(403)
+@app.errorhandler(500)
+@app.errorhandler(FreetarError)
+def internal_error(error):
+    return render_template('error.html',
+                           error=error)
 
 
 def main():
