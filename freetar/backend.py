@@ -1,11 +1,20 @@
+import waitress
 from flask import Flask, render_template, request
 from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab
-import waitress
+from freetar.utils import get_version
+
 
 app = Flask(__name__)
 Minify(app=app, html=True, js=True, cssless=True)
+
+
+@app.context_processor
+def export_variables():
+    return {
+        'version': get_version(),
+    }
 
 
 @app.route("/")
@@ -47,6 +56,11 @@ def show_favs():
     return render_template("index.html",
                            title="Freetar - Favorites",
                            favs=True)
+
+
+@app.route("/about")
+def show_about():
+    return render_template('about.html')
 
 
 def main():
