@@ -68,6 +68,9 @@ class SongDetail():
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
+        else:
+            self.capo = None
+            self.tuning = None
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
         self.tab_url_path = urlparse(self.tab_url).path
         self.versions = []
