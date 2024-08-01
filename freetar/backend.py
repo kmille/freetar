@@ -1,21 +1,26 @@
+import waitress
+import io
 from flask import Flask, render_template, request, send_file
 from flask_minify import Minify
 
 from freetar.ug import ug_search, ug_tab, SongDetail
+from freetar.utils import get_version, FreetarError
 from freetar.chordpro import song_to_chordpro
-
-import waitress
-import io
 
 app = Flask(__name__)
 Minify(app=app, html=True, js=True, cssless=True)
 
+
+@app.context_processor
+def export_variables():
+    return {
+        'version': get_version(),
+    }
+
+
 @app.route("/")
 def index():
-    return render_template("index.html",
-                           title="Freetar",
-                           favs=True)
-
+    return render_template("index.html", favs=True)
 
 
 @app.route("/search")
@@ -80,6 +85,19 @@ def tab_to_dl_file(tab: SongDetail, format: str):
     filename = f'{tab.artist_name} - {tab.song_name}.{ext}'
     data = io.BytesIO(content.encode('utf-8'))
     return send_file(data, as_attachment=True, download_name=filename)
+
+
+@app.route("/about")
+def show_about():
+    return render_template('about.html')
+
+
+@app.errorhandler(403)
+@app.errorhandler(500)
+@app.errorhandler(FreetarError)
+def internal_error(error):
+    return render_template('error.html',
+                           error=error)
 
 
 def main():
