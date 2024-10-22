@@ -2,6 +2,8 @@
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
 
+**UPDATE 22.10.2023:** As ultimate-guitar.com started to block (some? my? server?) ip addresses it's now possible to send requests to UG over Tor (socks5 proxy listening on `localhost:9050`). This feature can be enabled when environment variable `FREETAR_ENABLE_TOR=1` is set. Supported since Freetar version 0.10.0.
+
 ## Instances
 - https://freetar.de
 - https://freetar.habedieeh.re
