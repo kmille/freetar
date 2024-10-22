@@ -12,9 +12,9 @@ homepage = "https://github.com/kmille/freetar"
 python = "^3.9"
 requests = {extras = ["socks"], version = "^2.32.3"}
 beautifulsoup4 = "^4.12.0"
-flask = "^2.2.3"
+flask = "^3.0.3"
 waitress = "^2.1.2"
-flask-minify = "^0.42"
+flask-minify = "^0.48"
 
 
 [tool.poetry.group.dev.dependencies]
