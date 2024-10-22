@@ -1,4 +1,5 @@
 import waitress
+import os
 from flask import Flask, render_template, request
 from flask_minify import Minify
 
@@ -8,6 +9,8 @@ from freetar.utils import get_version, FreetarError
 
 app = Flask(__name__)
 Minify(app=app, html=True, js=True, cssless=True)
+
+TOR_ENABLED = "FREETAR_ENABLE_TOR" in os.environ
 
 
 @app.context_processor
@@ -60,7 +63,8 @@ def show_favs():
 
 @app.route("/about")
 def show_about():
-    return render_template('about.html')
+    return render_template('about.html',
+                           tor_enabled=TOR_ENABLED)
 
 
 @app.errorhandler(403)
