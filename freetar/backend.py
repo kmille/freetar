@@ -1,16 +1,21 @@
 import waitress
 import os
 from flask import Flask, render_template, request
+from flask_caching import Cache
 from flask_minify import Minify
 
 from freetar.ug import Search, ug_tab
 from freetar.utils import get_version, FreetarError
 
-
-app = Flask(__name__)
-Minify(app=app, html=True, js=True, cssless=True)
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
+                      "CACHE_DEFAULT_TIMEOUT": 0,
+                      "CACHE_THRESHOLD": 10000})
 
 TOR_ENABLED = "FREETAR_ENABLE_TOR" in os.environ
+
+app = Flask(__name__)
+cache.init_app(app)
+Minify(app=app, html=True, js=True, cssless=True)
 
 
 @app.context_processor
@@ -26,6 +31,7 @@ def index():
 
 
 @app.route("/search")
+@cache.cached(query_string=True)
 def search():
     search_term = request.args.get("search_term")
     try:
@@ -43,6 +49,7 @@ def search():
 
 
 @app.route("/tab/<artist>/<song>")
+@cache.cached()
 def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
     return render_template("tab.html",
@@ -51,6 +58,7 @@ def show_tab(artist: str, song: str):
 
 
 @app.route("/tab/<tabid>")
+@cache.cached()
 def show_tab2(tabid: int):
     tab = ug_tab(tabid)
     return render_template("tab.html",
