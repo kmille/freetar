@@ -60,4 +60,4 @@ poetry run freetar
 - on smartphones: prevent lock screen
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
-- Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)
+- ~~Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)~~ ([done](https://github.com/libredirect/browser_extension/issues/942))
