@@ -26,13 +26,19 @@
           no capo
       {% endif %}
   </div>
-  
-  <div class="col-sm col-lg-12">
+  <div class="col-sm col-md-9 col-lg-9">
      {% if tab.tuning %}
          Tuning: {{ tab.tuning }}<br>
      {% endif %}
   </div>
-    
+  <div class="col-sm col-md-3 col-lg-3">
+      Author:
+      {% if tab.author != "Unregistered" %}
+         <a class="d-print-none" href="https://ultimate-guitar.com/u/{{ tab.author }}?no_redirect">{{ tab.author }}</a>
+      {% else %}
+	unregistered
+      {% endif %}
+  </div>
     
   <div class="d-flex align-items-center d-print-none flex-wrap">
       <div class="form-check form-switch autoscroll me-4">
@@ -52,6 +58,7 @@
           <span role="button" id="transpose_down" title="transpose down" class="m-2">↓</span>
           <span role="button" id="transpose_up" title="transpose up" class="m-2">↑</span>
       </div>
+  </div>
   </div>
 
     <hr class="border border-primary"/>
