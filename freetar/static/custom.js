@@ -19,11 +19,14 @@ function initialise_transpose() {
     plus.click(function () {
         transpose_value = Math.min(11, transpose_value + 1)
         //current.text(transpose_value)
+	document.getElementById('transpose_value').textContent =  transpose_value > 0 ? '+' + transpose_value : transpose_value
         transpose()
+
     });
     minus.click(function () {
         transpose_value = Math.max(-11, transpose_value - 1)
         //current.text(transpose_value)
+	document.getElementById('transpose_value').textContent =  transpose_value > 0 ? '+' + transpose_value : transpose_value
         transpose()
     });
 
