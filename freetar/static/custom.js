@@ -17,14 +17,23 @@ function initialise_transpose() {
     const plus = $('#transpose_up')
     //current.text(transpose_value)
     plus.click(function () {
+	if (transpose_value === 11) {
+		transpose_value = -1
+	}
         transpose_value = Math.min(11, transpose_value + 1)
         //current.text(transpose_value)
+	document.getElementById('transpose_value').textContent =  transpose_value > 0 ? '+' + transpose_value : transpose_value
         transpose()
+
     });
     minus.click(function () {
+	if (transpose_value === -11) {
+		transpose_value = 1
+	}
         transpose_value = Math.max(-11, transpose_value - 1)
         //current.text(transpose_value)
-        transpose()
+	document.getElementById('transpose_value').textContent =  transpose_value > 0 ? '+' + transpose_value : transpose_value
+	transpose()
     });
 
     $('.tab').find('.chord-root, .chord-bass').each(function () {
