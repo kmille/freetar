@@ -44,7 +44,7 @@ class SearchResult:
 
 
 @dataclass
-class SongDetail():
+class SongDetail:
     tab: str
     artist_name: str
     song_name: str
@@ -106,18 +106,32 @@ class SongDetail():
         return '<span class="chord fw-bold">%s</span>' % (root + quality + bass)
 
 
-def ug_search(value: str):
-    try:
-        resp = requests.get(f"https://www.ultimate-guitar.com/search.php?search_type=title&value={quote(value)}",
-                            headers={'User-Agent': USER_AGENT},
-                            proxies=PROXIES)
-        resp.raise_for_status()
-        bs = BeautifulSoup(resp.text, 'html.parser')
-        # data can be None
-        data = bs.find("div", {"class": "js-store"})
-        # KeyError
-        data = data.attrs['data-content']
-        data = json.loads(data)
+@dataclass
+class Search:
+    results: dict
+    total_pages: int
+    current_page: int
+
+    def __init__(self, value: str, page: int):
+        try:
+            resp = requests.get(f"https://www.ultimate-guitar.com/search.php?page={page}&search_type=title&value={quote(value)}",
+                                headers={'User-Agent': USER_AGENT},
+                                proxies=PROXIES)
+            resp.raise_for_status()
+            bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
+            data = bs.find("div", {"class": "js-store"}) # KeyError
+            data = json.loads(data.attrs['data-content'])
+            self.results = self.get_results(data)
+            self.total_pages = data['store']['page']['data']['pagination']['total']
+            self.current_page = data['store']['page']['data']['pagination']['current']
+            #print(json.dumps(data, indent=4))
+        except requests.exceptions.RequestException:
+            # don't print full URL here, in case of 404
+            raise FreetarError(f"Could not find any chords for '{value}'.")
+        except (KeyError, ValueError, AttributeError) as e:
+            raise FreetarError(f"Could not search for chords: {e}") from e
+
+    def get_results(self, data: object):
         results = data['store']['page']['data']['results']
         ug_results = []
         for result in results:
@@ -125,13 +139,7 @@ def ug_search(value: str):
             if _type and _type not in ("Pro", "Official"):
                 s = SearchResult(result)
                 ug_results.append(s)
-                #print(s)
-        #print(json.dumps(data, indent=4))
         return ug_results
-    except requests.exceptions.RequestException:
-        raise FreetarError(f"Could not any chords for '{value}'.")
-    except (KeyError, ValueError, AttributeError, requests.exceptions.RequestException) as e:
-        raise FreetarError(f"Could not search for chords: {e}") from e
 
 
 def get_chords(s: SongDetail) -> SongDetail:
