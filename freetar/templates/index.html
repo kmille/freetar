@@ -30,6 +30,23 @@
   </table>
 </div>
 
+<div>
+    page:
+    <table>
+        <tbody>
+            <tr>
+                {% for page in range(total_pages) %}
+                <td><a    
+                    {% if page + 1 != current_page %}
+                        href="/search?search_term={{ search_term }}&page={{ page + 1 }}"
+                    {% endif %}
+                    >{{ page + 1 }}</a></td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 {% if favs %}
 <details><summary>Advanced</summary>
   <strong class="d-block">Export favorties</strong>
