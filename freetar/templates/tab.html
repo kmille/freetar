@@ -67,7 +67,7 @@
                             <tr>
                                 <th></th>
                                 {% for x in tab.fingers_for_strings[chord][i] %}
-                                    <th>{{x if x != 0}}</th>
+                                    <th>{{ "○" if x == 0 else x }}</th>
                                 {% endfor %}
                             </tr>
                         </thead>
