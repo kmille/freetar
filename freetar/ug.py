@@ -142,7 +142,7 @@ def get_chords(s: SongDetail) -> SongDetail:
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
             frets = chord_variant["frets"]
-            min_fret = min(frets)
+            min_fret = min(fret for fret in frets if fret > -1)
             max_fret = max(frets)
             possible_frets = list(range(min_fret, max_fret+1))
             variants_temp = {
@@ -179,8 +179,6 @@ def get_chords(s: SongDetail) -> SongDetail:
             for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
                 fingering_for_variant.append("x" if x else finger)
             fingering_for_variant = fingering_for_variant
-
-            print(f"FINGERING_FOR_VARIANT: {fingering_for_variant}")
 
 
             if chord not in chords:
