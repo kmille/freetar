@@ -1,10 +1,12 @@
 # freetar - an open source alternative front-end to ultimate-guitar.com
 
-# Tris note 2025-02-08
+# note 2025-02-08
 
 Forked to 
 - correct open strings notation
 - and offer suggestion on chord box trimming
+
+# Original readme
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
 
