@@ -177,11 +177,13 @@ def get_chords(s: SongDetail) -> SongDetail:
 
             fingering_for_variant = []
             for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
-
-                fingering_for_variant.append("⨯" if x else finger)
+                if finger == 0 and "finger" in chord_variant["listCapos"]:
+                    for entry in chord_variant["listCapos"]:
+                        if entry.get("finger") is not "0":
+                            fingering_for_variant.append(entry["finger"])
+                else:
+                    fingering_for_variant.append("⨯" if x else finger)
             fingering_for_variant = fingering_for_variant
-
-
 
             if chord not in chords:
                 chords[chord] = []
