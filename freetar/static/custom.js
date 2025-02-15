@@ -88,7 +88,7 @@ $(document).ready(function () {
     initialise_transpose();
 });
 
-
+$("#chordVisuals").show();
 $('#checkbox_view_chords').click(function(){
     if($(this).is(':checked')){
         $("#chordVisuals").show();
