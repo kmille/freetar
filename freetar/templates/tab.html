@@ -18,15 +18,15 @@
     Difficulty: {{ tab.difficulty }}<br>
   </div>
 
-  <div class="col-sm col-md-3 col-lg-3">
-      Capo: 
-      {% if tab.capo %}
-          {{ tab.capo -}} th fret
-      {% else %}
-          no capo
-      {% endif %}
-  </div>
-  
+<div class="col-sm col-md-3 col-lg-3">
+    Capo:
+    {% if tab.capo %}
+    {{ tab.capo }}{{ "st" if tab.capo == 1 else "nd" if tab.capo == 2 else "rd" if tab.capo == 3 else "th" }} fret
+    {% else %}
+    no capo
+    {% endif %}
+</div>
+
   <div class="col-sm col-lg-12">
      {% if tab.tuning %}
          Tuning: {{ tab.tuning }}<br>
