@@ -142,7 +142,7 @@ def get_chords(s: SongDetail) -> SongDetail:
     for chord in s.appliciture:
         for chord_variant in s.appliciture[chord]:
             frets = chord_variant["frets"]
-            min_fret = min(frets)
+            min_fret = min(fret for fret in frets if fret > -1)
             max_fret = max(frets)
             possible_frets = list(range(min_fret, max_fret+1))
             variants_temp = {
@@ -155,27 +155,34 @@ def get_chords(s: SongDetail) -> SongDetail:
             variants = dict()
             found = False
             for fret, fingers in variants_temp.items():
-                try:
-                    if not found and fingers.index(1) >= 0:
-                        found = True
-                except ValueError:
-                    ...
-
-                if found:
+                if min_fret < 6 and max_fret - min_fret < 6: #no need to trim if chord fits in a 6-block anyway
                     variants[fret] = fingers
+                else: # trim off low frets if the chord is higher in the neck
+                    try:
+                        if any(fingers):
+                            found = True
+                    except ValueError:
+                        ...
+
+                    if found:
+                        variants[fret] = fingers
 
             if not len(variants):
                 continue
             while len(variants) < 6:
                 variants[max(variants) + 1] = [0] * 6
 
-            variant_strings_pressed = [*variants.values()]
-            variant_strings_pressed = [sum(x) for x in zip(*variant_strings_pressed)]
-            unstrummed_strings = [int(not bool(y)) for y in variant_strings_pressed]
+            unstrummed_strings = [int(fret == -1) for fret in frets[::-1]] #
+
 
             fingering_for_variant = []
             for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
-                fingering_for_variant.append("x" if x else finger)
+                if finger == 0 and "finger" in chord_variant["listCapos"]:
+                    for entry in chord_variant["listCapos"]:
+                        if entry.get("finger") is not "0":
+                            fingering_for_variant.append(entry["finger"])
+                else:
+                    fingering_for_variant.append("⨯" if x else finger)
             fingering_for_variant = fingering_for_variant
 
             if chord not in chords:
@@ -183,7 +190,6 @@ def get_chords(s: SongDetail) -> SongDetail:
                 fingerings[chord] = []
             chords[chord].append(variants)
             fingerings[chord].append(fingering_for_variant)
-
     return chords, fingerings
 
 
