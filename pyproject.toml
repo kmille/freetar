@@ -14,7 +14,7 @@ requests = {extras = ["socks"], version = "^2.32.3"}
 beautifulsoup4 = "^4.12.0"
 flask = "^3.0.30"
 waitress = "^3.0.2"
-flask-minify = "^0.48"
+flask-minify = "^0.49"
 
 
 [tool.poetry.group.dev.dependencies]
