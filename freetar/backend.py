@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request
 from flask_minify import Minify
 
-from freetar.ug import ug_search, ug_tab
+from freetar.ug import Search, ug_tab
 from freetar.utils import get_version, FreetarError
 
 
@@ -28,14 +28,20 @@ def index():
 @app.route("/search")
 def search():
     search_term = request.args.get("search_term")
+    page = request.args.get("page") or 1
     if search_term:
-        search_results = ug_search(search_term)
+        search = Search(search_term, page)
+        search_results = search.results
+        total_pages = search.total_pages
+        current_page = search.current_page
     else:
         search_results = []
     return render_template("index.html",
                            search_term=search_term,
                            title=f"Freetar - Search: {search_term}",
-                           search_results=search_results,)
+                           search_results=search_results,
+                           total_pages=total_pages,
+                           current_page=current_page)
 
 
 @app.route("/tab/<artist>/<song>")
