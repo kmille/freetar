@@ -51,11 +51,13 @@ def show_tab2(tabid: int):
                            tab=tab,
                            title=f"{tab.artist_name} - {tab.song_name}")
 
+
 @app.route("/download/<artist>/<song>")
 def download_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
     format = request.args.get('format')
     return tab_to_dl_file(tab, format)
+
 
 @app.route("/download/<tabid>")
 def download_tab2(tabid: int):
@@ -63,11 +65,13 @@ def download_tab2(tabid: int):
     format = request.args.get('format')
     return tab_to_dl_file(tab, format)
 
+
 @app.route("/favs")
 def show_favs():
     return render_template("index.html",
                            title="Freetar - Favorites",
                            favs=True)
+
 
 def tab_to_dl_file(tab: SongDetail, format: str):
     if format == 'ug_txt':
