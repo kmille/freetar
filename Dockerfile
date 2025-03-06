@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.20 AS builder
+FROM python:3.12-alpine3.21 AS builder
 RUN apk update
 RUN apk add gcc musl-dev libffi-dev
 RUN pip install poetry
