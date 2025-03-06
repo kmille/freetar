@@ -122,7 +122,7 @@ def ug_search(value: str):
         ug_results = []
         for result in results:
             _type = result.get("type")
-            if _type and _type != "Pro":
+            if _type and _type not in ("Pro", "Official"):
                 s = SearchResult(result)
                 ug_results.append(s)
                 #print(s)
