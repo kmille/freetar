@@ -100,7 +100,9 @@ def show_about():
 @app.errorhandler(500)
 @app.errorhandler(FreetarError)
 def internal_error(error):
+    search_term = request.args.get("search_term")
     return render_template('error.html',
+                           search_term=search_term,
                            error=error)
 
 

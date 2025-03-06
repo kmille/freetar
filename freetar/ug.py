@@ -136,6 +136,8 @@ def ug_search(value: str):
                 #print(s)
         #print(json.dumps(data, indent=4))
         return ug_results
+    except requests.exceptions.RequestException:
+        raise FreetarError(f"Could not any chords for '{value}'.")
     except (KeyError, ValueError, AttributeError, requests.exceptions.RequestException) as e:
         raise FreetarError(f"Could not search for chords: {e}") from e
 
