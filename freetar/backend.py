@@ -85,8 +85,9 @@ def main():
                 host=host,
                 port=port)
     else:
-        print(f"Running backend on {host}:{port}")
-        waitress.serve(app, listen=f"{host}:{port}")
+        threads = os.environ.get("THREADS", "4")
+        print(f"Running backend on {host}:{port} with {threads} threads")
+        waitress.serve(app, listen=f"{host}:{port}", threads=threads)
 
 
 if __name__ == '__main__':
