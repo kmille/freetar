@@ -20,7 +20,7 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 
 
 ## How to use it
-After successfull installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
+After successful installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
 
 
 **PyPi**  

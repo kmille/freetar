@@ -74,7 +74,7 @@ function startScrolling() {
     scrollInterval = setInterval(pageScroll, scrollTimeout);
 }
 
-// Sets `pausedForUserInteraction` to `true` for `delay` miliseconds. 
+// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds. 
 // Will stop `pageScroll` from actually scrolling the page
 function pauseScrolling(delay) {
     pausedForUserInteraction = true;
