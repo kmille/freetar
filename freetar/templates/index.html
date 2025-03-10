@@ -32,10 +32,10 @@
 
 {% if favs %}
 <details><summary>Advanced</summary>
-  <strong class="d-block">Export favorties</strong>
+  <strong class="d-block">Export favorites</strong>
   <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
   <strong class="mt-3 d-block">Import favorites</strong>
-<input type="file" class="form-control" onchange="importFavorties(this)" />
+<input type="file" class="form-control" onchange="importFavorites(this)" />
 </details>
 
 <script>
@@ -65,7 +65,7 @@
     document.body.removeChild(a);
   }
 
-  function importFavorties(input) {
+  function importFavorites(input) {
     const file = input.files[0];
     if (file) {
       const reader = new FileReader();
