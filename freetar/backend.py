@@ -1,5 +1,6 @@
 import waitress
 import io
+import os
 from flask import Flask, render_template, request, send_file
 from flask_minify import Minify
 
@@ -9,6 +10,8 @@ from freetar.chordpro import song_to_chordpro
 
 app = Flask(__name__)
 Minify(app=app, html=True, js=True, cssless=True)
+
+TOR_ENABLED = "FREETAR_ENABLE_TOR" in os.environ
 
 
 @app.context_processor
@@ -93,7 +96,8 @@ def tab_to_dl_file(tab: SongDetail, format: str):
 
 @app.route("/about")
 def show_about():
-    return render_template('about.html')
+    return render_template('about.html',
+                           tor_enabled=TOR_ENABLED)
 
 
 @app.errorhandler(403)
@@ -114,8 +118,9 @@ def main():
                 host=host,
                 port=port)
     else:
-        print(f"Running backend on {host}:{port}")
-        waitress.serve(app, listen=f"{host}:{port}")
+        threads = os.environ.get("THREADS", "4")
+        print(f"Running backend on {host}:{port} with {threads} threads")
+        waitress.serve(app, listen=f"{host}:{port}", threads=threads)
 
 
 if __name__ == '__main__':

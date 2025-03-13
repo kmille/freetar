@@ -17,7 +17,7 @@
       <tbody>
           {% for result in search_results %}
           <tr>
-              <td class="artist"><a href="{{ result.artist_url}}">{{ result.artist_name}}</a></td>
+              <td class="artist"><a href="/search?search_term={{ result.artist_name }}">{{ result.artist_name}}</a></td>
               <td class="song"><a href="{{ result.tab_url}}">{{ result.song_name}} (ver {{result.version}})</a></td>
               <td class="rating" data-value="{{ result.rating }}">{{ result.rating}}/5 ({{result.votes}})</td>
               <td class="type">{{ result._type}}</td>
@@ -32,10 +32,10 @@
 
 {% if favs %}
 <details><summary>Advanced</summary>
-  <strong class="d-block">Export favorties</strong>
+  <strong class="d-block">Export favorites</strong>
   <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
   <strong class="mt-3 d-block">Import favorites</strong>
-<input type="file" class="form-control" onchange="importFavorties(this)" />
+<input type="file" class="form-control" onchange="importFavorites(this)" />
 </details>
 
 <script>
@@ -65,7 +65,7 @@
     document.body.removeChild(a);
   }
 
-  function importFavorties(input) {
+  function importFavorites(input) {
     const file = input.files[0];
     if (file) {
       const reader = new FileReader();

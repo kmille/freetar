@@ -3,12 +3,19 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 import json
 import re
+import os
 
 from dataclasses import dataclass, field
 from .utils import FreetarError
 
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.3"
+
+if os.environ.get("FREETAR_ENABLE_TOR", "") != "":
+    print("Enabling tor for requests to ultimate guitar")
+    PROXIES = {'https': 'socks5://127.0.0.1:9050'}
+else:
+    PROXIES = None
 
 
 @dataclass
@@ -87,11 +94,11 @@ class SongDetail():
         tab = tab.replace("[tab]", "")
         tab = tab.replace("[/tab]", "")
 
-        # (?P<root>[A-Ga-g](#|b)?) : Chord root is any letter A - G with an optional sharp or flat at the end
+        # (?P<root>[A-Ha-h](#|b)?) : Chord root is any letter A - H with an optional sharp or flat at the end
         # (?P<quality>[^[/]+)?  : Chord quality is anything after the root, but before the `/` for the base note
-        # (?P<bass>/[A-Ga-g](#|b)?)? :  Chord quality is anything after the root, including parens in the case of 'm(maj7)'
+        # (?P<bass>/[A-Ha-h](#|b)?)? :  Chord quality is anything after the root, including parens in the case of 'm(maj7)'
         # tab = re.sub(r'\[ch\](?P<root>[A-Ga-g](#|b)?)(?P<quality>[#\w()]+)?(?P<bass>/[A-Ga-g](#|b)?)?\[\/ch\]', self.parse_chord, tab)
-        tab = re.sub(r'\[ch\](?P<root>[A-Ga-g](#|b)?)(?P<quality>[^[/]+)?(?P<bass>/[A-Ga-g](#|b)?)?\[\/ch\]', self.parse_chord, tab)
+        tab = re.sub(r'\[ch\](?P<root>[A-Ha-h](#|b)?)(?P<quality>[^[/]+)?(?P<bass>/[A-Ha-h](#|b)?)?\[\/ch\]', self.parse_chord, tab)
         self.tab = tab
 
     def plain_text(self):
@@ -118,7 +125,8 @@ class SongDetail():
 def ug_search(value: str):
     try:
         resp = requests.get(f"https://www.ultimate-guitar.com/search.php?search_type=title&value={quote(value)}",
-                            headers={'User-Agent': USER_AGENT})
+                            headers={'User-Agent': USER_AGENT},
+                            proxies=PROXIES)
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         # data can be None
@@ -130,7 +138,7 @@ def ug_search(value: str):
         ug_results = []
         for result in results:
             _type = result.get("type")
-            if _type and _type != "Pro":
+            if _type and _type not in ("Pro", "Official"):
                 s = SearchResult(result)
                 ug_results.append(s)
                 #print(s)
@@ -200,7 +208,8 @@ def get_chords(s: SongDetail) -> SongDetail:
 def ug_tab(url_path: str):
     try:
         resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path,
-                            headers={'User-Agent': USER_AGENT})
+                            headers={'User-Agent': USER_AGENT},
+                            proxies=PROXIES)
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         data = bs.find("div", {"class": "js-store"})
