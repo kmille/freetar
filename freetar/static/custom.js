@@ -26,6 +26,11 @@ $('#checkbox_autoscroll').click(function () {
     }
 });
 
+$('#checkbox_use_flats').click(function () {
+    console.log("Use flats: " + $(this).is(':checked'));
+    initialise_transpose();
+});
+
 $(window).on("wheel touchmove", function() {
     pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
 });
@@ -109,6 +114,7 @@ function initialise_transpose() {
     //const current = $('#transpose .current')
     const minus = $('#transpose_down')
     const plus = $('#transpose_up')
+    const flats = $('#checkbox_use_flats')
     //current.text(transpose_value)
     plus.click(function () {
         transpose_value = Math.min(11, transpose_value + 1)
@@ -120,6 +126,10 @@ function initialise_transpose() {
         //current.text(transpose_value)
         transpose()
     });
+    flats.click(function () {
+        transpose_value = 0
+        transpose()
+    });
 
     $('.tab').find('.chord-root, .chord-bass').each(function () {
         const text = $(this).text()
@@ -128,13 +138,11 @@ function initialise_transpose() {
 
     function transpose() {
         $('.tab').find('.chord-root, .chord-bass').each(function () {
-            const originalText = $(this).attr('data-original')
-            if (transpose_value === 0) {
-                $(this).text(originalText)
-            } else {
-                const new_text = transpose_note(originalText.trim(), transpose_value)
+            const originalText = $(this).attr('data-original');
+            const use_flats = $('#checkbox_use_flats').is(':checked');
+
+            const new_text = transpose_note(originalText.trim(), transpose_value, use_flats)
                 $(this).text(new_text)
-            }
         });
     }
 
@@ -142,13 +150,13 @@ function initialise_transpose() {
     const noteNames = [
         ['A'],
         ['A#', 'Bb'],
-        ['B','Cb'],
-        ['C', 'B#'],
+        ['B'],
+        ['C'],
         ['C#', 'Db'],
         ['D'],
         ['D#', 'Eb'],
-        ['E', 'Fb'],
-        ['F', 'E#'],
+        ['E'],
+        ['F'],
         ['F#', 'Gb'],
         ['G'],
         ['G#', 'Ab'],
@@ -158,7 +166,7 @@ function initialise_transpose() {
     // next note up or down. Currently just selects the first note name that
     // matches. It doesn't preserve sharp, flat, or any try to determine what
     // key we're in.
-    function transpose_note(note, transpose_value) {
+    function transpose_note(note, transpose_value, use_flats = false) {
 
         let noteIndex = noteNames.findIndex(tone => tone.includes(note));
         if (noteIndex === -1)
@@ -172,7 +180,13 @@ function initialise_transpose() {
             new_index += 12;
         }
 
-        // TODO: Decide on sharp, flat, or natural
+        if (use_flats) {
+            // If we want to use flats, we need to check if the new note is a flat
+            // and if so, return the first flat name
+            if (noteNames[new_index].length > 1) {
+                return noteNames[new_index][1];
+            }
+        }
         return noteNames[new_index][0];
     }
 }
