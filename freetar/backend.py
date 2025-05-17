@@ -11,8 +11,6 @@ cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
                       "CACHE_DEFAULT_TIMEOUT": 0,
                       "CACHE_THRESHOLD": 10000})
 
-TOR_ENABLED = "FREETAR_ENABLE_TOR" in os.environ
-
 app = Flask(__name__)
 cache.init_app(app)
 Minify(app=app, html=True, js=True, cssless=True)
@@ -75,8 +73,7 @@ def show_favs():
 
 @app.route("/about")
 def show_about():
-    return render_template('about.html',
-                           tor_enabled=TOR_ENABLED)
+    return render_template('about.html')
 
 
 @app.errorhandler(403)
