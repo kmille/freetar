@@ -106,18 +106,19 @@ function colorize_favs() {
 
 function initialise_transpose() {
     let transpose_value = 0;
-    //const current = $('#transpose .current')
+    const transposedSteps = $('#transposed_steps')
     const minus = $('#transpose_down')
     const plus = $('#transpose_up')
-    //current.text(transpose_value)
     plus.click(function () {
         transpose_value = Math.min(11, transpose_value + 1)
-        //current.text(transpose_value)
         transpose()
     });
     minus.click(function () {
         transpose_value = Math.max(-11, transpose_value - 1)
-        //current.text(transpose_value)
+        transpose()
+    });
+    transposedSteps.click(function () {
+        transpose_value = 0
         transpose()
     });
 
@@ -129,11 +130,15 @@ function initialise_transpose() {
     function transpose() {
         $('.tab').find('.chord-root, .chord-bass').each(function () {
             const originalText = $(this).attr('data-original')
+            const transposedSteps = $('#transposed_steps')
             if (transpose_value === 0) {
                 $(this).text(originalText)
+                transposedSteps.hide()
             } else {
                 const new_text = transpose_note(originalText.trim(), transpose_value)
                 $(this).text(new_text)
+                transposedSteps.text((transpose_value > 0 ? "+" : "") + transpose_value)
+                transposedSteps.show()
             }
         });
     }

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "freetar"
-version = "0.12.0"
+version = "0.14.0"
 description = ""
 authors = ["kmille <github@androidloves.me>"]
 readme = "README.md"
@@ -14,11 +14,11 @@ requests = {extras = ["socks"], version = "^2.32.3"}
 beautifulsoup4 = "^4.12.0"
 flask = "^3.0.30"
 waitress = "^3.0.2"
-flask-minify = "^0.49"
-
+flask-minify = "^0.50"
+flask-caching = "^2.3.1"
 
 [tool.poetry.group.dev.dependencies]
-pdbpp = "^0.10.3"
+pdbpp = "^0.11.6"
 
 [build-system]
 requires = ["poetry-core"]
