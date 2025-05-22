@@ -1,11 +1,14 @@
 import waitress
+import io
 import os
-from flask import Flask, render_template, request
+
+from flask import Flask, render_template, request, send_file
 from flask_caching import Cache
 from flask_minify import Minify
 
-from freetar.ug import Search, ug_tab
+from freetar.ug import Search, ug_tab, SongDetail
 from freetar.utils import get_version, FreetarError
+from freetar.chordpro import song_to_chordpro
 
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
                       "CACHE_DEFAULT_TIMEOUT": 0,
@@ -64,11 +67,43 @@ def show_tab2(tabid: int):
                            title=f"{tab.artist_name} - {tab.song_name}")
 
 
+@app.route("/download/<artist>/<song>")
+def download_tab(artist: str, song: str):
+    tab = ug_tab(f"{artist}/{song}")
+    format = request.args.get('format')
+    return tab_to_dl_file(tab, format)
+
+
+@app.route("/download/<tabid>")
+def download_tab2(tabid: int):
+    tab = ug_tab(tabid)
+    format = request.args.get('format')
+    return tab_to_dl_file(tab, format)
+
+
 @app.route("/favs")
 def show_favs():
     return render_template("index.html",
                            title="Freetar - Favorites",
                            favs=True)
+
+
+def tab_to_dl_file(tab: SongDetail, format: str):
+    if format == 'ug_txt':
+        ext = 'ug.txt'
+        content = tab.raw_tab
+    elif format == 'txt':
+        ext = 'txt'
+        content = tab.plain_text()
+    elif format == 'chordpro':
+        ext = 'cho'
+        content = song_to_chordpro(tab)
+    else:
+        return f'no such format: {format}', 400
+
+    filename = f'{tab.artist_name} - {tab.song_name}.{ext}'
+    data = io.BytesIO(content.encode('utf-8'))
+    return send_file(data, as_attachment=True, download_name=filename)
 
 
 @app.route("/about")

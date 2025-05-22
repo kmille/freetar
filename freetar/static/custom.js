@@ -196,6 +196,14 @@ $('#checkbox_view_chords').click(function(){
     }
 });
 
+$('#download').click(function(){
+    $("#download-options").show();
+});
+
+$('#download-options').click(function(){
+    $("#download-options").hide();
+});
+
 $('#dark_mode').click(function(){
     if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
         document.documentElement.setAttribute('data-bs-theme', 'light');

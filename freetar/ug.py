@@ -43,13 +43,16 @@ class SongDetail:
     version: int
     difficulty: str
     capo: str
+    key: str
     tuning: str
     tab_url: str
+    tab_url_path: str
     alternatives: list[SearchResult] = field(default_factory=list)
 
     def __init__(self, data: dict):
-        self.tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"]
+        self.raw_tab = data["store"]["page"]["data"]["tab_view"]["wiki_tab"]["content"].replace('\r\n', '\n')
         self.artist_name = data["store"]["page"]["data"]["tab"]['artist_name']
+        self.key = data["store"]["page"]["data"]["tab"].get('tonality_name')
         self.song_name = data["store"]["page"]["data"]["tab"]["song_name"]
         self.version = int(data["store"]["page"]["data"]["tab"]["version"])
         self._type = data["store"]["page"]["data"]["tab"]["type"]
@@ -62,7 +65,11 @@ class SongDetail:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
+        else:
+            self.capo = None
+            self.tuning = None
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
+        self.tab_url_path = urlparse(self.tab_url).path
         self.alternatives = []
         for alternative in data["store"]["page"]["data"]["tab_view"]["versions"]:
             if alternative.get("type", "") != "Official":
@@ -73,8 +80,7 @@ class SongDetail:
         return f"{self.artist_name} - {self.song_name}"
 
     def fix_tab(self):
-        tab = self.tab
-        tab = tab.replace("\r\n", "<br/>")
+        tab = self.raw_tab
         tab = tab.replace("\n", "<br/>")
         tab = tab.replace(" ", "&nbsp;")
         tab = tab.replace("[tab]", "")
@@ -87,6 +93,13 @@ class SongDetail:
         tab = re.sub(r'\[ch\](?P<root>[A-Ha-h](#|b)?)(?P<quality>[^[/]+)?(?P<bass>/[A-Ha-h](#|b)?)?\[\/ch\]', self.parse_chord, tab)
         self.tab = tab
 
+    def plain_text(self):
+        tab = self.raw_tab
+        tab = tab.replace("[tab]", "")
+        tab = tab.replace("[/tab]", "")
+        tab = re.sub(r'\[ch\]([^\[]*)\[\/ch\]', lambda match: match.group(1), tab)
+        return tab
+
     def parse_chord(self, chord):
         root = '<span class="chord-root">%s</span>' % chord.group('root')
         quality = ''
@@ -96,6 +109,9 @@ class SongDetail:
         if chord.group('bass') is not None:
             bass = '/<span class="chord-bass">%s</span>' % chord.group('bass')[1:]
         return '<span class="chord fw-bold">%s</span>' % (root + quality + bass)
+
+    def download_url(self):
+        return '/download/' + self.tab_url_path.split('/', 2)[2]
 
 
 @dataclass
