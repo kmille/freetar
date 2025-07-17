@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.21 AS builder
+FROM python:3.13-alpine3.22 AS builder
 RUN apk update
 RUN apk add gcc musl-dev libffi-dev
 RUN pip install poetry
@@ -7,7 +7,7 @@ WORKDIR /app
 RUN poetry build --format=wheel
 
 
-FROM python:3.12-alpine3.20
+FROM python:3.13-alpine3.22
 ENV PYTHONUNBUFFERED=TRUE
 
 COPY --from=builder /app/dist/*.whl .
