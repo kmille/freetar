@@ -8,6 +8,11 @@ RUN poetry build --format=wheel
 
 
 FROM python:3.13-alpine3.22
+
+LABEL org.opencontainers.image.source=https://github.com/kmille/freetar
+LABEL org.opencontainers.image.description="freetar - an alternative frontend to ultimate-guitar.com "
+LABEL org.opencontainers.image.licenses=GPL-3.0-only
+
 ENV PYTHONUNBUFFERED=TRUE
 
 COPY --from=builder /app/dist/*.whl .
