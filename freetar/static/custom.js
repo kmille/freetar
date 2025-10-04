@@ -222,11 +222,12 @@ function initialise_columns() {
             });
         } else {
             // Multiple columns - split content
-            // Create a temporary element to get the text with preserved whitespace
-            const tempDiv = $('<div>').html(original_content);
+            // First, convert <br> tags to newlines for easier splitting
+            let htmlContent = original_content.replace(/<br\s*\/?>/gi, '\n');
             
-            // Get the text content while preserving line breaks
-            let content = tempDiv[0].innerText || tempDiv[0].textContent;
+            // Create a temporary element to extract text
+            const tempDiv = $('<div>').html(htmlContent);
+            const content = tempDiv.text();
             
             const lines = content.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
@@ -238,8 +239,8 @@ function initialise_columns() {
                 const endLine = Math.min(startLine + linesPerColumn, lines.length);
                 const columnLines = lines.slice(startLine, endLine);
 
-                columnHtml += '<div  class="font-monospace" style="white-space: pre;">';
-                // Escape HTML entities
+                columnHtml += '<div  class="font-monospace" style="white-space: pre-wrap;">';
+                // Escape HTML entities and convert newlines back to <br> tags
                 const escapedContent = columnLines.join('\n')
                     .replace(/&/g, '&')
                     .replace(/</g, '<')
