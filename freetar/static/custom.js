@@ -222,22 +222,25 @@ function initialise_columns() {
             });
         } else {
             // Multiple columns - split content
-            // First, get the text content while preserving structure
-            const tempDiv = $('<div>').html(original_content);
+            // First, convert <br> tags to newlines for easier splitting
+            let htmlContent = original_content.replace(/<br\s*\/?>/gi, '\n');
+            
+            // Create a temporary element to extract text
+            const tempDiv = $('<div>').html(htmlContent);
             const content = tempDiv.text();
             
             const lines = content.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
 
-            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+            let columnHtml = '<div  style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
 
             for (let col = 0; col < column_count; col++) {
                 const startLine = col * linesPerColumn;
                 const endLine = Math.min(startLine + linesPerColumn, lines.length);
                 const columnLines = lines.slice(startLine, endLine);
 
-                columnHtml += '<div class="tab font-monospace" style="white-space: pre-wrap;">';
-                // Join lines and escape HTML entities
+                columnHtml += '<div  class="font-monospace" style="white-space: pre-wrap;">';
+                // Escape HTML entities and convert newlines back to <br> tags
                 const escapedContent = columnLines.join('\n')
                     .replace(/&/g, '&')
                     .replace(/</g, '<')
