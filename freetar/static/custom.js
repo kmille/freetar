@@ -235,14 +235,14 @@ function initialise_columns() {
             const lines = processedHtml.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
 
-            let columnHtml = '<div  style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
 
             for (let col = 0; col < column_count; col++) {
                 const startLine = col * linesPerColumn;
                 const endLine = Math.min(startLine + linesPerColumn, lines.length);
                 const columnLines = lines.slice(startLine, endLine);
 
-                columnHtml += '<div  class="font-monospace" style="white-space: pre-wrap;">';
+                columnHtml += '<div class="font-monospace" style="white-space: pre-wrap;">';
                 // Join lines and trim leading/trailing whitespace from the column
                 const columnContent = columnLines.join('\n').replace(/^\s+/, '');
                 columnHtml += columnContent;
