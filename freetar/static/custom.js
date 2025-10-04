@@ -74,7 +74,7 @@ function startScrolling() {
     scrollInterval = setInterval(pageScroll, scrollTimeout);
 }
 
-// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds. 
+// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds.
 // Will stop `pageScroll` from actually scrolling the page
 function pauseScrolling(delay) {
     pausedForUserInteraction = true;
@@ -224,30 +224,28 @@ function initialise_columns() {
             // Multiple columns - split content
             // First, convert <br> tags to newlines for easier splitting
             let htmlContent = original_content.replace(/<br\s*\/?>/gi, '\n');
-            
-            // Create a temporary element to extract text
+
+            // Create a temporary element to extract text while preserving bold tags
             const tempDiv = $('<div>').html(htmlContent);
-            const content = tempDiv.text();
-            
-            const lines = content.split('\n');
+
+            // Get HTML content but normalize it to preserve formatting
+            let processedHtml = tempDiv.html();
+
+            // Split by newlines while preserving HTML tags
+            const lines = processedHtml.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
 
-            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+            let columnHtml = '<div  style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
 
             for (let col = 0; col < column_count; col++) {
                 const startLine = col * linesPerColumn;
                 const endLine = Math.min(startLine + linesPerColumn, lines.length);
                 const columnLines = lines.slice(startLine, endLine);
 
-                columnHtml += '<div class="font-monospace" style="white-space: pre-wrap;">';
-                // Escape HTML entities and convert newlines back to <br> tags
-                const escapedContent = columnLines.join('\n')
-                    .replace(/&/g, '&')
-                    .replace(/</g, '<')
-                    .replace(/>/g, '>')
-                    .replace(/"/g, '"')
-                    .replace(/'/g, '&#039;');
-                columnHtml += escapedContent;
+                columnHtml += '<div  class="font-monospace" style="white-space: pre-wrap;">';
+                // Join lines and trim leading/trailing whitespace from the column
+                const columnContent = columnLines.join('\n').replace(/^\s+/, '');
+                columnHtml += columnContent;
                 columnHtml += '</div>';
             }
 
