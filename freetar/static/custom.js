@@ -74,7 +74,7 @@ function startScrolling() {
     scrollInterval = setInterval(pageScroll, scrollTimeout);
 }
 
-// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds.
+// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds. 
 // Will stop `pageScroll` from actually scrolling the page
 function pauseScrolling(delay) {
     pausedForUserInteraction = true;
@@ -196,7 +196,7 @@ function initialise_columns() {
     }
 
     columnsUp.click(function () {
-        column_count = Math.min(4, column_count + 1);
+        column_count = Math.min(10, column_count + 1);
         applyColumns();
     });
 
