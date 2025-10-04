@@ -222,9 +222,12 @@ function initialise_columns() {
             });
         } else {
             // Multiple columns - split content
-            // Create a temporary element to parse the HTML
+            // Create a temporary element to get the text with preserved whitespace
             const tempDiv = $('<div>').html(original_content);
-            const content = tempDiv.text();
+            
+            // Get the text content while preserving line breaks
+            let content = tempDiv[0].innerText || tempDiv[0].textContent;
+            
             const lines = content.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
 
@@ -236,8 +239,14 @@ function initialise_columns() {
                 const columnLines = lines.slice(startLine, endLine);
 
                 columnHtml += '<div  class="font-monospace" style="white-space: pre;">';
-                // Escape HTML to preserve the text content
-                columnHtml += $('<div>').text(columnLines.join('\n')).html();
+                // Escape HTML entities
+                const escapedContent = columnLines.join('\n')
+                    .replace(/&/g, '&')
+                    .replace(/</g, '<')
+                    .replace(/>/g, '>')
+                    .replace(/"/g, '"')
+                    .replace(/'/g, '&#039;');
+                columnHtml += escapedContent;
                 columnHtml += '</div>';
             }
 
@@ -245,6 +254,7 @@ function initialise_columns() {
             tabDiv.html(columnHtml);
         }
     }
+
     // Initialize with single column
     applyColumns();
 }
