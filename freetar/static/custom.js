@@ -184,9 +184,16 @@ function initialise_transpose() {
 
 function initialise_columns() {
     let column_count = 1;
+    let original_content = null;
     const columnsCount = $('#columns_count');
     const columnsDown = $('#columns_down');
     const columnsUp = $('#columns_up');
+    const tabDiv = $('.tab');
+
+    // Store original content
+    if (tabDiv.length > 0) {
+        original_content = tabDiv.html();
+    }
 
     columnsUp.click(function () {
         column_count = Math.min(4, column_count + 1);
@@ -200,22 +207,39 @@ function initialise_columns() {
 
     function applyColumns() {
         columnsCount.text(column_count);
-        const tabDiv = $('.tab');
+
+        if (!original_content || tabDiv.length === 0) {
+            return;
+        }
 
         if (column_count === 1) {
-            // Single column - remove any column styling
+            // Single column - restore original content
+            tabDiv.html(original_content);
             tabDiv.css({
-                'column-count': '',
-                'column-gap': '',
-                'column-fill': ''
+                'display': '',
+                'grid-template-columns': '',
+                'gap': ''
             });
         } else {
-            // Multiple columns
-            tabDiv.css({
-                'column-count': column_count,
-                'column-gap': '2rem',
-                'column-fill': 'auto'
-            });
+            // Multiple columns - split content
+            const content = tabDiv.text();
+            const lines = content.split('\n');
+            const linesPerColumn = Math.ceil(lines.length / column_count);
+
+            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+
+            for (let col = 0; col < column_count; col++) {
+                const startLine = col * linesPerColumn;
+                const endLine = Math.min(startLine + linesPerColumn, lines.length);
+                const columnLines = lines.slice(startLine, endLine);
+
+                columnHtml += '<div class="font-monospace" style="white-space: pre;">';
+                columnHtml += columnLines.join('\n');
+                columnHtml += '</div>';
+            }
+
+            columnHtml += '</div>';
+            tabDiv.html(columnHtml);
         }
     }
 
