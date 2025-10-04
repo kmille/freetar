@@ -222,19 +222,22 @@ function initialise_columns() {
             });
         } else {
             // Multiple columns - split content
-            const content = tabDiv.text();
+            // Create a temporary element to parse the HTML
+            const tempDiv = $('<div>').html(original_content);
+            const content = tempDiv.text();
             const lines = content.split('\n');
             const linesPerColumn = Math.ceil(lines.length / column_count);
 
-            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+            let columnHtml = '<div  style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
 
             for (let col = 0; col < column_count; col++) {
                 const startLine = col * linesPerColumn;
                 const endLine = Math.min(startLine + linesPerColumn, lines.length);
                 const columnLines = lines.slice(startLine, endLine);
 
-                columnHtml += '<div class="font-monospace" style="white-space: pre;">';
-                columnHtml += columnLines.join('\n');
+                columnHtml += '<div  class="font-monospace" style="white-space: pre;">';
+                // Escape HTML to preserve the text content
+                columnHtml += $('<div>').text(columnLines.join('\n')).html();
                 columnHtml += '</div>';
             }
 
@@ -242,7 +245,6 @@ function initialise_columns() {
             tabDiv.html(columnHtml);
         }
     }
-
     // Initialize with single column
     applyColumns();
 }
