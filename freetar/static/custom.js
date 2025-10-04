@@ -182,9 +182,51 @@ function initialise_transpose() {
     }
 }
 
+function initialise_columns() {
+    let column_count = 1;
+    const columnsCount = $('#columns_count');
+    const columnsDown = $('#columns_down');
+    const columnsUp = $('#columns_up');
+
+    columnsUp.click(function () {
+        column_count = Math.min(4, column_count + 1);
+        applyColumns();
+    });
+
+    columnsDown.click(function () {
+        column_count = Math.max(1, column_count - 1);
+        applyColumns();
+    });
+
+    function applyColumns() {
+        columnsCount.text(column_count);
+        const tabDiv = $('.tab');
+
+        if (column_count === 1) {
+            // Single column - remove any column styling
+            tabDiv.css({
+                'column-count': '',
+                'column-gap': '',
+                'column-fill': ''
+            });
+        } else {
+            // Multiple columns
+            tabDiv.css({
+                'column-count': column_count,
+                'column-gap': '2rem',
+                'column-fill': 'auto'
+            });
+        }
+    }
+
+    // Initialize with single column
+    applyColumns();
+}
+
 $(document).ready(function () {
     colorize_favs();
     initialise_transpose();
+    initialise_columns();
 });
 
 
