@@ -2,10 +2,6 @@
 
 This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](https://www.ultimate-guitar.com/).  
 
-**UPDATE 22.10.2024:** As ultimate-guitar.com started to block (some? my? server?) ip addresses it's now possible to send requests to UG over Tor (socks5 proxy listening on `localhost:9050`). This feature can be enabled when environment variable `FREETAR_ENABLE_TOR=1` is set. Supported since Freetar version 0.10.0.
-**UPDATE: 17.11.2024**: As using Tor was not enough and the 403s are still a problem, caching was enabled.
-**UPDATE: 17.05.2025**: Tor is not really a solution. I removed it.
-
 ## Instances
 - https://freetar.de
 - https://freetar.habedieeh.re
@@ -63,3 +59,7 @@ poetry run freetar
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
 - ~~Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)~~ ([done](https://github.com/libredirect/browser_extension/issues/942))
+
+## Contributions
+
+Feel free to contribute, but please create an issue before with a proposal of the feature. I don't want freetar to be bloated (neither UI nor functionality).
