@@ -25,7 +25,7 @@ def export_variables():
 
 @app.route("/")
 def index():
-    return render_template("index.html", favs=True)
+    return render_template("index.html")
 
 
 @app.route("/search")
@@ -62,13 +62,6 @@ def show_tab2(tabid: int):
     return render_template("tab.html",
                            tab=tab,
                            title=f"{tab.artist_name} - {tab.song_name}")
-
-
-@app.route("/favs")
-def show_favs():
-    return render_template("index.html",
-                           title="Freetar - Favorites",
-                           favs=True)
 
 
 @app.route("/about")

@@ -52,7 +52,6 @@
   {% endif %}
 </div>
 
-{% if favs %}
 <details><summary>Advanced</summary>
   <strong class="d-block">Export favorites</strong>
   <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
@@ -100,7 +99,6 @@
     }
   }
 </script>
-{% endif %}
 
 <script>
     favorites_url = Object.keys(JSON.parse(localStorage.getItem("favorites")) || {});
