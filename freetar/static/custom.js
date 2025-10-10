@@ -142,44 +142,43 @@ function initialise_transpose() {
             }
         });
     }
+}
 
-    // Defines a list of notes, grouped with any alternate names (like D# and Eb)
-    const noteNames = [
-        ['A'],
-        ['A#', 'Bb'],
-        ['B','Cb'],
-        ['C', 'B#'],
-        ['C#', 'Db'],
-        ['D'],
-        ['D#', 'Eb'],
-        ['E', 'Fb'],
-        ['F', 'E#'],
-        ['F#', 'Gb'],
-        ['G'],
-        ['G#', 'Ab'],
-    ];
+// Defines a list of notes, grouped with any alternate names (like D# and Eb)
+const noteNames = [
+    ['A'],
+    ['A#', 'Bb'],
+    ['B','Cb'],
+    ['C', 'B#'],
+    ['C#', 'Db'],
+    ['D'],
+    ['D#', 'Eb'],
+    ['E', 'Fb'],
+    ['F', 'E#'],
+    ['F#', 'Gb'],
+    ['G'],
+    ['G#', 'Ab'],
+];
 
-    // Find the given note in noteNames, then step through the list to find the
-    // next note up or down. Currently just selects the first note name that
-    // matches. It doesn't preserve sharp, flat, or any try to determine what
-    // key we're in.
-    function transpose_note(note, transpose_value) {
-
-        let noteIndex = noteNames.findIndex(tone => tone.includes(note));
-        if (noteIndex === -1)
-        {
-            console.debug("Note ["+note+"] not found. Can't transpose");
-            return note;
-        }
-
-        let new_index = (noteIndex + transpose_value) % 12;
-        if (new_index < 0) {
-            new_index += 12;
-        }
-
-        // TODO: Decide on sharp, flat, or natural
-        return noteNames[new_index][0];
+// Find the given note in noteNames, then step through the list to find the
+// next note up or down. Currently just selects the first note name that
+// matches. It doesn't preserve sharp, flat, or any try to determine what
+// key we're in.
+function transpose_note(note, transpose_value) {
+    let noteIndex = noteNames.findIndex(tone => tone.includes(note));
+    if (noteIndex === -1)
+    {
+        console.debug("Note ["+note+"] not found. Can't transpose");
+        return note;
     }
+
+    let new_index = (noteIndex + transpose_value) % 12;
+    if (new_index < 0) {
+        new_index += 12;
+    }
+
+    // TODO: Decide on sharp, flat, or natural
+    return noteNames[new_index][0];
 }
 
 function initialise_columns() {
@@ -211,6 +210,23 @@ function initialise_columns() {
         if (!original_content || tabDiv.length === 0) {
             return;
         }
+
+        // Capture transpose state before modifying DOM
+        const currentTransposeValue = $('#transposed_steps').is(':visible') ?
+            parseInt($('#transposed_steps').text()) || 0 : 0;
+
+        // Store current data-original attributes for all chord elements
+        const chordData = [];
+        $('.tab').find('.chord-root, .chord-bass').each(function() {
+            const originalText = $(this).attr('data-original');
+            if (originalText) {
+                chordData.push({
+                    text: $(this).text(),
+                    original: originalText,
+                    classes: $(this).attr('class')
+                });
+            }
+        });
 
         if (column_count === 1) {
             // Single column - restore original content
@@ -251,6 +267,32 @@ function initialise_columns() {
 
             columnHtml += '</div>';
             tabDiv.html(columnHtml);
+        }
+
+        // Restore transpose functionality after DOM modification
+        let chordIndex = 0;
+        $('.tab').find('.chord-root, .chord-bass').each(function() {
+            if (chordIndex < chordData.length) {
+                const chord = chordData[chordIndex];
+                $(this).attr('data-original', chord.original);
+
+                // Apply current transpose if needed
+                if (currentTransposeValue !== 0) {
+                    const transposedText = transpose_note(chord.original.trim(), currentTransposeValue);
+                    $(this).text(transposedText);
+                } else {
+                    $(this).text(chord.original);
+                }
+                chordIndex++;
+            }
+        });
+
+        // Ensure transpose display is correct
+        if (currentTransposeValue !== 0) {
+            $('#transposed_steps').text((currentTransposeValue > 0 ? "+" : "") + currentTransposeValue);
+            $('#transposed_steps').show();
+        } else {
+            $('#transposed_steps').hide();
         }
     }
 
