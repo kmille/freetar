@@ -142,49 +142,168 @@ function initialise_transpose() {
             }
         });
     }
+}
 
-    // Defines a list of notes, grouped with any alternate names (like D# and Eb)
-    const noteNames = [
-        ['A'],
-        ['A#', 'Bb'],
-        ['B','Cb'],
-        ['C', 'B#'],
-        ['C#', 'Db'],
-        ['D'],
-        ['D#', 'Eb'],
-        ['E', 'Fb'],
-        ['F', 'E#'],
-        ['F#', 'Gb'],
-        ['G'],
-        ['G#', 'Ab'],
-    ];
+// Defines a list of notes, grouped with any alternate names (like D# and Eb)
+const noteNames = [
+    ['A'],
+    ['A#', 'Bb'],
+    ['B','Cb'],
+    ['C', 'B#'],
+    ['C#', 'Db'],
+    ['D'],
+    ['D#', 'Eb'],
+    ['E', 'Fb'],
+    ['F', 'E#'],
+    ['F#', 'Gb'],
+    ['G'],
+    ['G#', 'Ab'],
+];
 
-    // Find the given note in noteNames, then step through the list to find the
-    // next note up or down. Currently just selects the first note name that
-    // matches. It doesn't preserve sharp, flat, or any try to determine what
-    // key we're in.
-    function transpose_note(note, transpose_value) {
-
-        let noteIndex = noteNames.findIndex(tone => tone.includes(note));
-        if (noteIndex === -1)
-        {
-            console.debug("Note ["+note+"] not found. Can't transpose");
-            return note;
-        }
-
-        let new_index = (noteIndex + transpose_value) % 12;
-        if (new_index < 0) {
-            new_index += 12;
-        }
-
-        // TODO: Decide on sharp, flat, or natural
-        return noteNames[new_index][0];
+// Find the given note in noteNames, then step through the list to find the
+// next note up or down. Currently just selects the first note name that
+// matches. It doesn't preserve sharp, flat, or any try to determine what
+// key we're in.
+function transpose_note(note, transpose_value) {
+    let noteIndex = noteNames.findIndex(tone => tone.includes(note));
+    if (noteIndex === -1)
+    {
+        console.debug("Note ["+note+"] not found. Can't transpose");
+        return note;
     }
+
+    let new_index = (noteIndex + transpose_value) % 12;
+    if (new_index < 0) {
+        new_index += 12;
+    }
+
+    // TODO: Decide on sharp, flat, or natural
+    return noteNames[new_index][0];
+}
+
+function initialise_columns() {
+    let column_count = 1;
+    let original_content = null;
+    const columnsCount = $('#columns_count');
+    const columnsDown = $('#columns_down');
+    const columnsUp = $('#columns_up');
+    const tabDiv = $('.tab');
+
+    // Store original content
+    if (tabDiv.length > 0) {
+        original_content = tabDiv.html();
+    }
+
+    columnsUp.click(function () {
+        column_count = Math.min(10, column_count + 1);
+        applyColumns();
+    });
+
+    columnsDown.click(function () {
+        column_count = Math.max(1, column_count - 1);
+        applyColumns();
+    });
+
+    function applyColumns() {
+        columnsCount.text(column_count);
+
+        if (!original_content || tabDiv.length === 0) {
+            return;
+        }
+
+        // Capture transpose state before modifying DOM
+        const currentTransposeValue = $('#transposed_steps').is(':visible') ?
+            parseInt($('#transposed_steps').text()) || 0 : 0;
+
+        // Store current data-original attributes for all chord elements
+        const chordData = [];
+        $('.tab').find('.chord-root, .chord-bass').each(function() {
+            const originalText = $(this).attr('data-original');
+            if (originalText) {
+                chordData.push({
+                    text: $(this).text(),
+                    original: originalText,
+                    classes: $(this).attr('class')
+                });
+            }
+        });
+
+        if (column_count === 1) {
+            // Single column - restore original content
+            tabDiv.html(original_content);
+            tabDiv.css({
+                'display': '',
+                'grid-template-columns': '',
+                'gap': ''
+            });
+        } else {
+            // Multiple columns - split content
+            // First, convert <br> tags to newlines for easier splitting
+            let htmlContent = original_content.replace(/<br\s*\/?>/gi, '\n');
+
+            // Create a temporary element to extract text while preserving bold tags
+            const tempDiv = $('<div>').html(htmlContent);
+
+            // Get HTML content but normalize it to preserve formatting
+            let processedHtml = tempDiv.html();
+
+            // Split by newlines while preserving HTML tags
+            const lines = processedHtml.split('\n');
+            const linesPerColumn = Math.ceil(lines.length / column_count);
+
+            let columnHtml = '<div style="display: grid; grid-template-columns: repeat(' + column_count + ', 1fr); gap: 2rem;">';
+
+            for (let col = 0; col < column_count; col++) {
+                const startLine = col * linesPerColumn;
+                const endLine = Math.min(startLine + linesPerColumn, lines.length);
+                const columnLines = lines.slice(startLine, endLine);
+
+                columnHtml += '<div class="font-monospace" style="white-space: pre-wrap;">';
+                // Join lines and trim leading/trailing whitespace from the column
+                const columnContent = columnLines.join('\n').replace(/^\s+/, '');
+                columnHtml += columnContent;
+                columnHtml += '</div>';
+            }
+
+            columnHtml += '</div>';
+            tabDiv.html(columnHtml);
+        }
+
+        // Restore transpose functionality after DOM modification
+        let chordIndex = 0;
+        $('.tab').find('.chord-root, .chord-bass').each(function() {
+            if (chordIndex < chordData.length) {
+                const chord = chordData[chordIndex];
+                $(this).attr('data-original', chord.original);
+
+                // Apply current transpose if needed
+                if (currentTransposeValue !== 0) {
+                    const transposedText = transpose_note(chord.original.trim(), currentTransposeValue);
+                    $(this).text(transposedText);
+                } else {
+                    $(this).text(chord.original);
+                }
+                chordIndex++;
+            }
+        });
+
+        // Ensure transpose display is correct
+        if (currentTransposeValue !== 0) {
+            $('#transposed_steps').text((currentTransposeValue > 0 ? "+" : "") + currentTransposeValue);
+            $('#transposed_steps').show();
+        } else {
+            $('#transposed_steps').hide();
+        }
+    }
+
+    // Initialize with single column
+    applyColumns();
 }
 
 $(document).ready(function () {
     colorize_favs();
     initialise_transpose();
+    initialise_columns();
 });
 
 
