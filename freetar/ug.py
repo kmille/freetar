@@ -44,6 +44,7 @@ class SongDetail:
     difficulty: str
     capo: str
     tuning: str
+    author: str
     tab_url: str
     alternatives: list[SearchResult] = field(default_factory=list)
 
@@ -62,6 +63,7 @@ class SongDetail:
             self.capo = data["store"]["page"]["data"]["tab_view"]["meta"].get("capo")
             _tuning = data["store"]["page"]["data"]["tab_view"]["meta"].get("tuning")
             self.tuning = f"{_tuning['value']} ({_tuning['name']})" if _tuning else None
+        self.author = data["store"]["page"]["data"]["tab"]["username"]
         self.tab_url = data["store"]["page"]["data"]["tab"]["tab_url"]
         self.alternatives = []
         for alternative in data["store"]["page"]["data"]["tab_view"]["versions"]:
