@@ -104,6 +104,11 @@ function colorize_favs() {
     });
 }
 
+function get_flats_enabled()
+{
+    return document.getElementById("checkbox_use_flats").checked;
+}
+
 function initialise_transpose() {
     let transpose_value = 0;
     const transposedSteps = $('#transposed_steps')
@@ -121,6 +126,9 @@ function initialise_transpose() {
         transpose_value = 0
         transpose()
     });
+    $("#checkbox_use_flats").click(function() {
+        transpose();
+    });
 
     $('.tab').find('.chord-root, .chord-bass').each(function () {
         const text = $(this).text()
@@ -128,6 +136,7 @@ function initialise_transpose() {
     })
 
     function transpose() {
+        use_flats = get_flats_enabled();
         $('.tab').find('.chord-root, .chord-bass').each(function () {
             const originalText = $(this).attr('data-original')
             const transposedSteps = $('#transposed_steps')
@@ -135,7 +144,7 @@ function initialise_transpose() {
                 $(this).text(originalText)
                 transposedSteps.hide()
             } else {
-                const new_text = transpose_note(originalText.trim(), transpose_value)
+                const new_text = transpose_note(originalText.trim(), transpose_value, use_flats)
                 $(this).text(new_text)
                 transposedSteps.text((transpose_value > 0 ? "+" : "") + transpose_value)
                 transposedSteps.show()
@@ -147,13 +156,13 @@ function initialise_transpose() {
     const noteNames = [
         ['A'],
         ['A#', 'Bb'],
-        ['B','Cb'],
-        ['C', 'B#'],
+        ['B'],
+        ['C'],
         ['C#', 'Db'],
         ['D'],
         ['D#', 'Eb'],
-        ['E', 'Fb'],
-        ['F', 'E#'],
+        ['E'],
+        ['F'],
         ['F#', 'Gb'],
         ['G'],
         ['G#', 'Ab'],
@@ -163,7 +172,7 @@ function initialise_transpose() {
     // next note up or down. Currently just selects the first note name that
     // matches. It doesn't preserve sharp, flat, or any try to determine what
     // key we're in.
-    function transpose_note(note, transpose_value) {
+    function transpose_note(note, transpose_value, use_flats=false) {
 
         let noteIndex = noteNames.findIndex(tone => tone.includes(note));
         if (noteIndex === -1)
@@ -177,8 +186,13 @@ function initialise_transpose() {
             new_index += 12;
         }
 
-        // TODO: Decide on sharp, flat, or natural
-        return noteNames[new_index][0];
+        let options = noteNames[new_index];
+        let index = 0;
+        if (options.length > 1 && use_flats) {
+            index = 1;
+        }
+
+        return noteNames[new_index][index];
     }
 }
 
