@@ -30,7 +30,7 @@ export default function Navbar() {
 		<div className="navbar bg-base-200 shadow-lg no-print">
 			<div className="navbar-start">
 				<Link href="/" className="btn btn-ghost text-xl font-bold">
-					<FaGuitar className="text-2xl" /> Freetar
+					<FaGuitar className="text-2xl" /> Freetar NextJS
 				</Link>
 			</div>
 
