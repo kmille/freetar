@@ -1,5 +1,11 @@
 .chord {
   font-weight: bold;
+  color: #0066cc;
+  padding: 0 2px;
+}
+
+[data-bs-theme='dark'] .chord {
+  color: #66b3ff;
 }
 
 .chord-root {
@@ -12,6 +18,16 @@
 
 .chord-bass {
   font-size: 0.9em;
+}
+
+.tab {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.tab .chord {
+  display: inline-block;
+  margin: 0 1px;
 }
 
 .order-inactive span {

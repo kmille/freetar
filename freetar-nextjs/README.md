@@ -13,6 +13,7 @@ An open-source alternative frontend to Ultimate Guitar, built with Next.js.
 - 🖨️ **Print-friendly** formatting
 - 🎯 **Chord diagrams** with fingering positions
 - 📱 **Responsive design** works on mobile and desktop
+- 📝 **ChordPro format** support - view, export, and copy in standard ChordPro notation
 
 ## Tech Stack
 
@@ -99,6 +100,10 @@ freetar-nextjs/
 - **Transpose:** Use ↑ and ↓ to change the key, click the displayed value to reset
 - **Show chords:** Toggle chord diagrams with fingering positions
 - **Favorites:** Click the ★ to save/remove from favorites
+- **ChordPro View:** Switch between HTML and ChordPro format display
+- **Export:** Download tabs as `.cho` files or copy to clipboard
+
+See [CHORDPRO.md](CHORDPRO.md) for detailed ChordPro documentation.
 
 ### Managing Favorites
 

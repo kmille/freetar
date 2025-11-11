@@ -4,6 +4,7 @@ import { SongDetail } from '@/types';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ChordDiagram from './ChordDiagram';
+import { convertToChordPro, exportChordProFile, chordProToHtml } from '@/lib/chordpro';
 
 interface TabDisplayProps {
   tab: SongDetail;
@@ -15,6 +16,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
   const [showChords, setShowChords] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollTimeout, setScrollTimeout] = useState(500);
+  const [viewMode, setViewMode] = useState<'html' | 'chordpro'>('html');
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pausedForUserInteraction = useRef(false);
@@ -164,6 +166,29 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
     return tempDiv.innerHTML;
   };
 
+  const getDisplayContent = (): string => {
+    if (viewMode === 'chordpro') {
+      const chordProText = convertToChordPro(tab, transposeValue);
+      return chordProToHtml(chordProText);
+    }
+    return getTransposedTab(tab.tab, transposeValue);
+  };
+
+  const handleExportChordPro = () => {
+    exportChordProFile(tab, transposeValue);
+  };
+
+  const copyChordProToClipboard = async () => {
+    const chordProText = convertToChordPro(tab, transposeValue);
+    try {
+      await navigator.clipboard.writeText(chordProText);
+      alert('ChordPro format copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('Failed to copy to clipboard');
+    }
+  };
+
   return (
     <>
       <div className="col-sm col-md-8 col-lg-9 col-12">
@@ -205,7 +230,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 </div>
       )}
 
-      <div className="d-flex align-items-center d-print-none flex-wrap">
+      <div className="d-flex align-items-center d-print-none flex-wrap mb-3">
         <div className="form-check form-switch autoscroll me-4">
           <input
             className="form-check-input"
@@ -252,7 +277,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
           </label>
         </div>
 
-        <div>
+        <div className="me-4">
           <span>Transpose </span>
           <span
             role="button"
@@ -284,6 +309,43 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
             </span>
           )}
         </div>
+      </div>
+
+      <div className="d-flex align-items-center d-print-none flex-wrap mb-3">
+        <div className="btn-group me-3" role="group">
+          <button
+            type="button"
+            className={`btn btn-sm ${viewMode === 'html' ? 'btn-primary' : 'btn-outline-primary'}`}
+            onClick={() => setViewMode('html')}
+          >
+            HTML View
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${viewMode === 'chordpro' ? 'btn-primary' : 'btn-outline-primary'}`}
+            onClick={() => setViewMode('chordpro')}
+          >
+            ChordPro View
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-sm btn-success me-2"
+          onClick={handleExportChordPro}
+          title="Export as ChordPro file (.cho)"
+        >
+          📥 Export ChordPro
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-sm btn-info"
+          onClick={copyChordProToClipboard}
+          title="Copy ChordPro format to clipboard"
+        >
+          📋 Copy ChordPro
+        </button>
       </div>
 
       <hr className="border border-primary" />
@@ -319,7 +381,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 
       <div
         className="tab font-monospace"
-        dangerouslySetInnerHTML={{ __html: getTransposedTab(tab.tab, transposeValue) }}
+        dangerouslySetInnerHTML={{ __html: getDisplayContent() }}
       />
 
       {tab.alternatives && tab.alternatives.length > 0 && (

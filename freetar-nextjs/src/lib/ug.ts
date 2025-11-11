@@ -159,11 +159,26 @@ function fixTab(tab: string): string {
   tab = tab.replace(/\[\/tab\]/g, '');
 
   // Parse chords with regex
-  const chordRegex = /\[ch\](?<root>[A-Ha-h](#|b)?)(?<quality>[^\[\/]+)?(?<bass>\/[A-Ha-h](#|b)?)?\[\/ch\]/g;
-  tab = tab.replace(chordRegex, (match, root, quality, bass) => {
-    const rootSpan = `<span class="chord-root">${root}</span>`;
-    const qualitySpan = quality ? `<span class="chord-quality">${quality}</span>` : '';
-    const bassSpan = bass ? `/<span class="chord-bass">${bass.substring(1)}</span>` : '';
+  // Pattern breakdown:
+  // - root: [A-Ha-h](#|b)? - Note name with optional sharp/flat
+  // - quality: [^\[/]+ - Everything except [ and / (chord quality like m, 7, sus4, etc.)
+  // - bass: /[A-Ha-h](#|b)? - Optional bass note (e.g., /G in C/G)
+  // The key is to match quality BEFORE checking for bass note
+  const chordRegex = /\[ch\]([A-Ha-h](#|b)?)([^\[/]+)?(\/[A-Ha-h](#|b)?)?\[\/ch\]/g;
+  tab = tab.replace(chordRegex, (match, root, rootModifier, quality, bass) => {
+    // Combine root with its modifier (# or b)
+    const fullRoot = root + (rootModifier || '');
+    const rootSpan = `<span class="chord-root">${fullRoot}</span>`;
+
+    // Clean up quality - trim whitespace and trailing slashes
+    let cleanQuality = quality ? quality.trim() : '';
+    cleanQuality = cleanQuality.replace(/\/+$/, ''); // Remove trailing slashes
+
+    const qualitySpan = cleanQuality ? `<span class="chord-quality">${cleanQuality}</span>` : '';
+
+    // Bass note (only if it has a note after the /)
+    const bassSpan = bass && bass.length > 1 ? `/<span class="chord-bass">${bass.substring(1)}</span>` : '';
+
     return `<span class="chord fw-bold">${rootSpan}${qualitySpan}${bassSpan}</span>`;
   });
 

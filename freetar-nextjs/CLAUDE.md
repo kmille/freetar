@@ -114,6 +114,8 @@ Tab content arrives with markup tags:
 - Converted to HTML spans: `<span class="chord"><span class="chord-root">C#</span><span class="chord-quality">m</span></span>`
 - Whitespace converted to `&nbsp;` to preserve formatting in HTML
 
+**Important**: Ultimate Guitar sometimes includes trailing slashes in chord notation (e.g., `A/`, `E/`). These are NOT bass notes but formatting artifacts. The regex pattern `[^\[/]+` excludes slashes from chord quality, and trailing slashes are explicitly removed with `.replace(/\/+$/, '')`. Only treat `/X` as a bass note if there's a note letter after the slash.
+
 ### URL Routing Pattern
 
 Tab URLs from Ultimate Guitar use format: `/tab/artist-name/song-name/tab-123456`
@@ -127,6 +129,26 @@ Bootstrap CSS is imported in `layout.tsx`, but Bootstrap JS needs client-side lo
 - `BootstrapClient.tsx` uses `useEffect` to require Bootstrap JS
 - This prevents SSR issues with Bootstrap's DOM manipulation
 - Component returns null (only used for side effect)
+
+## ChordPro Format Support
+
+The app supports conversion to/from ChordPro format (https://songbook-pro.com/docs/manual/chordpro/):
+
+**ChordPro Library** (`src/lib/chordpro.ts`):
+- `convertToChordPro()`: Converts SongDetail to ChordPro text with metadata directives
+- `chordProToHtml()`: Converts ChordPro text to displayable HTML
+- `parseChordPro()`: Parses ChordPro text into structured data
+- `exportChordProFile()`: Downloads tab as .cho file
+
+**Format**:
+- Metadata: `{title: Song Name}`, `{artist: Artist Name}`, `{capo: 3}`, etc.
+- Chords: `[Am]`, `[G7/B]` (inline with lyrics)
+- Comments: `{comment: Difficulty: Easy}`
+- Transpose value preserved in export
+
+**View Modes**:
+- HTML View: Original Ultimate Guitar format with styled chords
+- ChordPro View: Converts to ChordPro format for display (chords in brackets)
 
 ## Common Modifications
 
