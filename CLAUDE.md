@@ -101,6 +101,50 @@ Dark mode uses DaisyUI's `data-theme` attribute:
 - Prevents flash of wrong theme on page load
 - DaisyUI provides 'light' and 'dark' theme variants
 
+### Progressive Web App (PWA) Implementation
+
+Freetar is a fully-featured Progressive Web App that can be installed on mobile and desktop devices:
+
+**PWA Configuration** (`next.config.js`):
+- Uses `next-pwa` package wrapped around Next.js config
+- Service worker destination: `public/` directory
+- Auto-registers service worker for offline functionality
+- Disabled in development mode for easier debugging
+- Generates `sw.js` and workbox files automatically during build
+
+**Web App Manifest** (`public/manifest.json`):
+- App name: "Freetar - Free Guitar Tabs"
+- Display mode: `standalone` (runs without browser UI)
+- Theme colors: White background, dark gray theme (#1f2937)
+- Icons: 8 sizes from 72x72 to 512x512 pixels
+- Supports both `any` and `maskable` purposes for adaptive icons
+
+**Metadata Configuration** (`src/app/layout.tsx`):
+- Viewport export: Proper mobile viewport and theme color
+- Manifest link: Points to `/manifest.json`
+- Apple Web App support: Enabled with custom status bar styling
+- Icons metadata: Standard icons (192x192, 512x512) and Apple touch icon (152x152)
+- All PWA metadata separated from general metadata per Next.js 14 requirements
+
+**PWA Icons**:
+- Generated from `public/guitar.png` source image
+- 8 sizes: 72x72, 96x96, 128x128, 144x144, 152x152, 192x192, 384x384, 512x512
+- Format: PNG with transparent backgrounds
+- Generation script: Icons can be regenerated using `sharp` package
+
+**PWA Features**:
+- Install to home screen on mobile/desktop
+- Offline support with service worker caching
+- Fast loading with cached resources
+- Standalone app experience without browser chrome
+- Automatic updates when new service worker is available
+
+**Generated Files** (excluded from git):
+- `/public/sw.js`: Main service worker file
+- `/public/sw.js.map`: Source map for debugging
+- `/public/workbox-*.js`: Workbox runtime files for caching strategies
+- All generated during `npm run build` and excluded via `.gitignore`
+
 ## Key Implementation Details
 
 ### Chord Diagram Calculation
@@ -195,6 +239,10 @@ If Ultimate Guitar changes their HTML structure:
 - `cheerio`: Server-side HTML parsing (like jQuery for Node.js)
 - `axios`: HTTP client with better error handling than fetch
 - `tailwindcss` + `daisyui`: Utility-first CSS framework with component library (note: custom CSS in globals.css for chord styling)
+- `next-pwa`: Progressive Web App support with service worker generation (note: peer dependency warnings for webpack/@babel/core are expected and can be ignored as Next.js provides these internally)
+
+**Development Dependencies**:
+- `sharp`: Image processing library for generating PWA icons in multiple sizes
 
 **Node Version**: Requires Node.js ≥22.0.0 (specified in package.json engines)
 

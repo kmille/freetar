@@ -14,6 +14,7 @@ An open-source alternative frontend to Ultimate Guitar, built with Next.js.
 - 🎯 **Chord diagrams** with fingering positions
 - 📱 **Responsive design** works on mobile and desktop
 - 📝 **ChordPro format** support - view, export, and copy in standard ChordPro notation
+- 📲 **Progressive Web App (PWA)** - Install on mobile/desktop for offline access and app-like experience
 
 ## Tech Stack
 
@@ -78,7 +79,10 @@ freetar-nextjs/
 │   └── types/                 # TypeScript type definitions
 │       └── index.ts           # Shared types
 ├── public/                    # Static assets
-│   └── guitar.png            # Logo/favicon
+│   ├── guitar.png            # Logo/favicon source
+│   ├── manifest.json         # PWA manifest file
+│   ├── icon-*.png            # PWA icons (8 sizes)
+│   └── sw.js                 # Service worker (generated)
 ├── package.json              # Dependencies and scripts
 ├── tsconfig.json             # TypeScript configuration
 ├── next.config.js            # Next.js configuration
@@ -115,6 +119,28 @@ See [CHORDPRO.md](CHORDPRO.md) for detailed ChordPro documentation.
 - Click the 🌓 icon to toggle dark/light mode
 - Respects system preference by default
 - Preference saved in browser localStorage
+
+### Progressive Web App (PWA)
+
+Freetar can be installed as a standalone app on your device:
+
+**Mobile (Android/iOS):**
+1. Visit the site in your mobile browser
+2. Look for the "Add to Home Screen" prompt or option in the browser menu
+3. Tap "Add" or "Install" to install the app
+4. Launch from your home screen like a native app
+
+**Desktop (Chrome/Edge):**
+1. Visit the site in Chrome or Edge
+2. Look for the install icon (⊕) in the address bar
+3. Click it and confirm to install
+4. Access from your applications menu or taskbar
+
+**PWA Benefits:**
+- Works offline - Access your favorites and previously viewed tabs without internet
+- Faster loading - Cached resources load instantly
+- Native app experience - No browser UI, full screen mode
+- Auto-updates - Service worker updates automatically with new versions
 
 ## Building for Production
 

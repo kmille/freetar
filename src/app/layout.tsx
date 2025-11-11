@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 
@@ -13,11 +13,33 @@ const getMetadataBaseUrl = () => {
   return 'https://freetar.de';
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#1f2937',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(getMetadataBaseUrl()),
   title: 'Freetar - guitar chords from Ultimate Guitar',
   description: 'freetar is an open source alternative frontend to ultimate-guitar.com. Search for your chords/tabs hosted on Ultimate Guitar. View them in a simple design. You can save them for later in your favorites without having an account.',
   keywords: ['freetar', 'guitar', 'chords', 'tabs', 'ultimate-guitar'],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Freetar',
+  },
+  icons: {
+    icon: [
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: 'freetar - guitar chords from Ultimate Guitar',
     siteName: 'freetar',
