@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import Navbar from '@/components/Navbar';
-import BootstrapClient from '@/components/BootstrapClient';
 
 export const metadata: Metadata = {
   title: 'Freetar - guitar chords from Ultimate Guitar',
@@ -33,24 +31,18 @@ export default function RootLayout({
             __html: `
               (function() {
                 let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (JSON.parse(localStorage.getItem("dark_mode")) || isDarkMode) {
-                  document.documentElement.setAttribute('data-bs-theme', 'dark');
-                } else {
-                  document.documentElement.setAttribute('data-bs-theme', 'light');
-                }
+                const theme = JSON.parse(localStorage.getItem("dark_mode")) || isDarkMode ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
               })();
             `,
           }}
         />
       </head>
-      <body>
+      <body className="min-h-screen">
         <Navbar />
-        <div className="container">
-          <div className="row">
-            {children}
-          </div>
-        </div>
-        <BootstrapClient />
+        <main className="px-4 py-6">
+          {children}
+        </main>
       </body>
     </html>
   );

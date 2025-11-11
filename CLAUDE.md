@@ -75,7 +75,6 @@ npm run lint            # Run ESLint
 - `SearchResults.tsx`: Table with sorting, pagination, and favorite toggles
 - `TabDisplay.tsx`: Main tab viewer with transpose, autoscroll, chord visibility controls
 - `ChordDiagram.tsx`: Renders chord fingering diagrams from applicature data
-- `BootstrapClient.tsx`: Loads Bootstrap JS on client-side only
 
 ### Type System
 
@@ -88,11 +87,12 @@ All types in `src/types/index.ts`:
 
 ### Dark Mode Implementation
 
-Dark mode uses Bootstrap's `data-bs-theme` attribute:
+Dark mode uses DaisyUI's `data-theme` attribute:
 - Initial theme detection in `<script>` tag in `layout.tsx` (runs before hydration)
 - Checks localStorage first, falls back to system preference
 - Toggle updates both DOM attribute and localStorage
 - Prevents flash of wrong theme on page load
+- DaisyUI provides 'light' and 'dark' theme variants
 
 ## Key Implementation Details
 
@@ -123,12 +123,14 @@ Tab URLs from Ultimate Guitar use format: `/tab/artist-name/song-name/tab-123456
 - Next.js route: `/tab?path=artist-name/song-name/tab-123456`
 - API route extracts path param and fetches from `https://tabs.ultimate-guitar.com/tab/${path}`
 
-### Bootstrap Integration
+### Tailwind CSS and DaisyUI Integration
 
-Bootstrap CSS is imported in `layout.tsx`, but Bootstrap JS needs client-side loading:
-- `BootstrapClient.tsx` uses `useEffect` to require Bootstrap JS
-- This prevents SSR issues with Bootstrap's DOM manipulation
-- Component returns null (only used for side effect)
+The app uses Tailwind CSS with DaisyUI component library:
+- Tailwind CSS provides utility-first styling
+- DaisyUI adds pre-built components (buttons, cards, tables, etc.)
+- Configuration in `tailwind.config.js` and `postcss.config.js`
+- Global styles and Tailwind directives in `src/app/globals.css`
+- DaisyUI themes configured for light/dark mode switching
 
 ## ChordPro Format Support
 
@@ -158,7 +160,7 @@ When adding features to tab display:
 1. Add UI controls in `TabDisplay.tsx`
 2. Use React state for feature toggle/values
 3. Apply transformations in `getTransposedTab()` or similar utility
-4. Ensure print-friendly by adding `d-print-none` class to controls
+4. Ensure print-friendly by adding `no-print` class to controls
 
 ### Modifying Search/Filter Logic
 
@@ -182,7 +184,7 @@ If Ultimate Guitar changes their HTML structure:
 **Critical Dependencies**:
 - `cheerio`: Server-side HTML parsing (like jQuery for Node.js)
 - `axios`: HTTP client with better error handling than fetch
-- `bootstrap` + `react-bootstrap`: UI framework (note: custom CSS in globals.css for chord styling)
+- `tailwindcss` + `daisyui`: Utility-first CSS framework with component library (note: custom CSS in globals.css for chord styling)
 
 **Node Version**: Requires Node.js ≥18.0.0 (specified in package.json engines)
 

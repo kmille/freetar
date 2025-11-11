@@ -1,10 +1,21 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-base-100: light-dark(#ffffff, #1d232a);
+  --color-base-200: light-dark(#f3f4f6, #191e24);
+  --color-base-300: light-dark(#e5e7eb, #15191e);
+  --color-base-content: light-dark(#1f2937, #a6adbb);
+}
+
+/* Chord styling */
 .chord {
   font-weight: bold;
   color: #0066cc;
   padding: 0 2px;
 }
 
-[data-bs-theme='dark'] .chord {
+[data-theme='dark'] .chord {
   color: #66b3ff;
 }
 
@@ -20,6 +31,7 @@
   font-size: 0.9em;
 }
 
+/* Tab content styling */
 .tab {
   white-space: pre-wrap;
   line-height: 1.5;
@@ -30,6 +42,7 @@
   margin: 0 1px;
 }
 
+/* Sort indicator styling */
 .order-inactive span {
   visibility: hidden;
 }
@@ -42,6 +55,7 @@
   visibility: visible;
 }
 
+/* Favorite icon styling */
 .favorite {
   cursor: pointer;
   font-size: 1.2rem;
@@ -57,8 +71,9 @@
   color: #ffae00;
 }
 
+/* Print styles */
 @media print {
-  .d-print-none {
+  .no-print {
     display: none !important;
   }
 }

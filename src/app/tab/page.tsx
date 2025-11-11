@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SongDetail } from '@/types';
 import TabDisplay from '@/components/TabDisplay';
+import { FaTriangleExclamation, FaCircleExclamation } from 'react-icons/fa6';
 
 export default function TabPage() {
   const searchParams = useSearchParams();
@@ -39,27 +40,29 @@ export default function TabPage() {
 
   if (!path) {
     return (
-      <div className="col-12">
-        <p>Invalid tab path.</p>
+      <div className="w-full">
+        <div className="alert alert-warning">
+          <FaTriangleExclamation className="text-xl" />
+          <span>Invalid tab path.</span>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="col-12">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="w-full flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="col-12">
-        <div className="alert alert-danger" role="alert">
-          {error}
+      <div className="w-full">
+        <div className="alert alert-error">
+          <FaCircleExclamation className="text-xl" />
+          <span>{error}</span>
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SearchResponse } from '@/types';
 import SearchResults from '@/components/SearchResults';
+import { FaCircleInfo, FaCircleExclamation } from 'react-icons/fa6';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -40,27 +41,29 @@ export default function SearchPage() {
 
   if (!searchTerm) {
     return (
-      <div className="col-12">
-        <p>Enter a search term to find guitar chords and tabs.</p>
+      <div className="w-full">
+        <div className="alert alert-info">
+          <FaCircleInfo className="text-xl" />
+          <span>Enter a search term to find guitar chords and tabs.</span>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="col-12">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="w-full flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="col-12">
-        <div className="alert alert-danger" role="alert">
-          {error}
+      <div className="w-full">
+        <div className="alert alert-error">
+          <FaCircleExclamation className="text-xl" />
+          <span>{error}</span>
         </div>
       </div>
     );
@@ -69,8 +72,8 @@ export default function SearchPage() {
   if (!results) return null;
 
   return (
-    <div className="col-12">
-      <h2 className="mb-3">Search Results for &quot;{searchTerm}&quot;</h2>
+    <div className="w-full">
+      <h1 className="text-3xl font-bold mb-6">Search Results for &quot;{searchTerm}&quot;</h1>
       <SearchResults
         results={results.results}
         currentPage={results.current_page}
