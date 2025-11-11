@@ -19,6 +19,8 @@ import {
 	FaDownload,
 	FaCopy,
 	FaRegStar,
+	FaMinus,
+	FaPlus,
 } from "react-icons/fa6";
 
 interface TabDisplayProps {
@@ -32,6 +34,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	const [isScrolling, setIsScrolling] = useState(false);
 	const [scrollTimeout, setScrollTimeout] = useState(500);
 	const [viewMode, setViewMode] = useState<"html" | "chordpro">("html");
+	const [fontSize, setFontSize] = useState(14); // Default 14px (text-sm)
 	const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const pausedForUserInteraction = useRef(false);
@@ -366,6 +369,53 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 								)}
 							</div>
 						</div>
+
+						{/* Font size controls */}
+						<div className="form-control">
+							<label className="label">
+								<span className="label-text font-semibold">
+									Font Size
+								</span>
+							</label>
+							<div className="flex gap-2 items-center">
+								<button
+									className="btn btn-sm btn-circle"
+									onClick={() =>
+										setFontSize((prev) =>
+											Math.max(10, prev - 2),
+										)
+									}
+									title="Decrease font size"
+									disabled={fontSize <= 10}
+								>
+									<FaMinus />
+								</button>
+								<span className="text-sm font-mono min-w-[3rem] text-center">
+									{fontSize}px
+								</span>
+								<button
+									className="btn btn-sm btn-circle"
+									onClick={() =>
+										setFontSize((prev) =>
+											Math.min(24, prev + 2),
+										)
+									}
+									title="Increase font size"
+									disabled={fontSize >= 24}
+								>
+									<FaPlus />
+								</button>
+								{fontSize !== 14 && (
+									<button
+										className="btn btn-sm"
+										onClick={() => setFontSize(14)}
+										title="Reset font size"
+									>
+										Reset
+									</button>
+								)}
+							</div>
+						</div>
 					</div>
 
 					{/* View mode and export buttons */}
@@ -434,7 +484,8 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 			<div className="card bg-base-100 shadow-lg">
 				<div className="card-body">
 					<div
-						className="tab block font-mono text-sm"
+						className="tab block font-mono text-left"
+						style={{ fontSize: `${fontSize}px` }}
 						dangerouslySetInnerHTML={{
 							__html: getDisplayContent(),
 						}}

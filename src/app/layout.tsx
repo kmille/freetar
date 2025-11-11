@@ -3,6 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://freetar.de'),
   title: 'Freetar - guitar chords from Ultimate Guitar',
   description: 'freetar is an open source alternative frontend to ultimate-guitar.com. Search for your chords/tabs hosted on Ultimate Guitar. View them in a simple design. You can save them for later in your favorites without having an account.',
   keywords: ['freetar', 'guitar', 'chords', 'tabs', 'ultimate-guitar'],

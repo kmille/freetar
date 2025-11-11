@@ -62,6 +62,13 @@ npm run lint            # Run ESLint
 - Pauses automatically on user wheel/touch events
 - Speed control adjusts interval timeout
 
+**Font Size System**:
+- Adjustable font size for tab content (lyrics and chords)
+- Range: 10px to 24px in 2px increments
+- Default: 14px
+- Applied via inline style to tab content div
+- Reset button to return to default size
+
 ### Component Architecture
 
 **Page Components** (`src/app/`):
@@ -181,12 +188,15 @@ If Ultimate Guitar changes their HTML structure:
 
 **No environment variables required** for basic functionality.
 
+**Optional Environment Variables**:
+- `NEXT_PUBLIC_BASE_URL`: Sets the base URL for metadata and Open Graph images (defaults to `https://freetar.de`). Useful when deploying to custom domains.
+
 **Critical Dependencies**:
 - `cheerio`: Server-side HTML parsing (like jQuery for Node.js)
 - `axios`: HTTP client with better error handling than fetch
 - `tailwindcss` + `daisyui`: Utility-first CSS framework with component library (note: custom CSS in globals.css for chord styling)
 
-**Node Version**: Requires Node.js ≥18.0.0 (specified in package.json engines)
+**Node Version**: Requires Node.js ≥22.0.0 (specified in package.json engines)
 
 ## Deployment Considerations
 
@@ -196,9 +206,12 @@ If Ultimate Guitar changes their HTML structure:
 - Ensure Node.js version matches engine requirement
 
 **Docker Deployment**:
-- Need to expose port 3000
-- Set NODE_ENV=production
-- Run `npm run build` before `npm start`
+- Complete Docker setup with multi-stage builds (see `Dockerfile` and `docker-compose.yml`)
+- Uses Node.js 22 Alpine images for minimal size
+- Exposes port 3000 by default
+- Run with `docker-compose up -d`
+- See `DOCKER.md` for detailed deployment instructions
+- Optional: Set `NEXT_PUBLIC_BASE_URL` environment variable for custom domains
 
 **CORS**: Not an issue because scraping happens server-side in API routes, not from browser.
 

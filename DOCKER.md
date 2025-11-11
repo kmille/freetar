@@ -6,6 +6,7 @@ This guide explains how to run Freetar using Docker and Docker Compose.
 
 - Docker Engine 20.10+
 - Docker Compose v2.0+
+- Node.js 22+ (for local development)
 
 ## Quick Start
 
@@ -80,7 +81,11 @@ docker run -d -p 8080:3000 --name freetar freetar
 
 ## Environment Variables
 
-The application doesn't require environment variables for basic functionality. If needed, you can add them:
+The application doesn't require environment variables for basic functionality.
+
+### Optional Configuration
+
+**NEXT_PUBLIC_BASE_URL** - Sets the base URL for metadata and Open Graph images (defaults to `https://freetar.de`)
 
 **Docker Compose:**
 ```yaml
@@ -88,12 +93,21 @@ services:
   freetar:
     environment:
       - NODE_ENV=production
-      - CUSTOM_VAR=value
+      - NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 ```
 
 **Docker CLI:**
 ```bash
-docker run -d -p 3000:3000 -e CUSTOM_VAR=value --name freetar freetar
+docker run -d -p 3000:3000 -e NEXT_PUBLIC_BASE_URL=https://yourdomain.com --name freetar freetar
+```
+
+**Using .env file:**
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Edit with your values
+# Then uncomment env_file in docker-compose.yml
 ```
 
 ## Troubleshooting
