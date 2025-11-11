@@ -1,26 +1,47 @@
-FROM python:3.13-alpine3.22 AS builder
-RUN apk update
-RUN apk add gcc musl-dev libffi-dev
-RUN pip install poetry
-COPY . /app
+# Stage 1: Dependencies
+FROM node:18-alpine AS deps
 WORKDIR /app
-RUN poetry build --format=wheel
 
+# Copy package files
+COPY package*.json ./
 
-FROM python:3.13-alpine3.22
+# Install dependencies
+RUN npm ci
 
-LABEL org.opencontainers.image.source=https://github.com/kmille/freetar
-LABEL org.opencontainers.image.description="freetar - an alternative frontend to ultimate-guitar.com "
-LABEL org.opencontainers.image.licenses=GPL-3.0-only
+# Stage 2: Builder
+FROM node:18-alpine AS builder
+WORKDIR /app
 
-ENV PYTHONUNBUFFERED=TRUE
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-COPY --from=builder /app/dist/*.whl .
-RUN adduser -D freetar && \
-    pip install *.whl && \
-    rm *.whl
+# Build the application
+RUN npm run build
 
-USER freetar
-EXPOSE 22000
+# Stage 3: Runner
+FROM node:18-alpine AS runner
+WORKDIR /app
 
-ENTRYPOINT ["/usr/local/bin/freetar"]
+ENV NODE_ENV=production
+
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set ownership
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]

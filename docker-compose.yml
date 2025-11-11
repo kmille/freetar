@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+    freetar:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: freetarNextjs
+        restart: unless-stopped
+        ports:
+            - "3000:3000"
+        environment:
+            - NODE_ENV=production
+        # Uncomment if you need to add custom environment variables
+        # env_file:
+        #   - .env
