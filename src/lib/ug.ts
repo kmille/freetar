@@ -166,9 +166,8 @@ function fixTab(tab: string): string {
   // The key is to match quality BEFORE checking for bass note
   const chordRegex = /\[ch\]([A-Ha-h](#|b)?)([^\[/]+)?(\/[A-Ha-h](#|b)?)?\[\/ch\]/g;
   tab = tab.replace(chordRegex, (match, root, rootModifier, quality, bass) => {
-    // Combine root with its modifier (# or b)
-    const fullRoot = root + (rootModifier || '');
-    const rootSpan = `<span class="chord-root">${fullRoot}</span>`;
+    // The root already includes the modifier (# or b), no need to concatenate
+    const rootSpan = `<span class="chord-root">${root}</span>`;
 
     // Clean up quality - trim whitespace and trailing slashes
     let cleanQuality = quality ? quality.trim() : '';
@@ -210,7 +209,7 @@ function getChords(applicature: any): {
       const variantsTemp: { [fret: number]: number[] } = {};
       for (const possibleFret of possibleFrets) {
         if (possibleFret > 0) {
-          variantsTemp[possibleFret] = frets.map(b => b === possibleFret ? 1 : 0).reverse();
+          variantsTemp[possibleFret] = frets.map((b: number) => b === possibleFret ? 1 : 0).reverse();
         }
       }
 

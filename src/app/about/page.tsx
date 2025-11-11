@@ -132,7 +132,7 @@ export default function About() {
                 <h3 className="font-semibold mb-1">Search for a song</h3>
                 <p className="text-sm text-base-content/70">
                   Use the search bar to find any song, artist, or chord chart. Results are fetched
-                  from Ultimate Guitar's extensive database.
+                  from Ultimate Guitar&apos;s extensive database.
                 </p>
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function About() {
           </div>
           <div className="space-y-2 mb-6">
             <p className="text-sm text-base-content/70">
-              <strong>No tracking:</strong> We don't use analytics, cookies, or any tracking tools.
+              <strong>No tracking:</strong> We don&apos;t use analytics, cookies, or any tracking tools.
             </p>
             <p className="text-sm text-base-content/70">
               <strong>No accounts:</strong> Your favorites are yours alone, stored only on your device.
@@ -253,7 +253,7 @@ export default function About() {
             </div>
             <p className="text-sm text-base-content/70">
               Freetar acts as a web scraper and proxy to provide a cleaner interface for accessing
-              Ultimate Guitar's content. If you appreciate the tabs, please consider supporting the
+              Ultimate Guitar&apos;s content. If you appreciate the tabs, please consider supporting the
               original creators and Ultimate Guitar directly.
             </p>
           </div>

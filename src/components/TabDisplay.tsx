@@ -484,7 +484,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 			<div className="card bg-base-100 shadow-lg">
 				<div className="card-body">
 					<div
-						className="tab block font-mono text-left"
+						className="block font-mono text-left"
 						style={{ fontSize: `${fontSize}px` }}
 						dangerouslySetInnerHTML={{
 							__html: getDisplayContent(),

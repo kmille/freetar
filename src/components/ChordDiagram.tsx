@@ -26,7 +26,7 @@ export default function ChordDiagram({ chordName, chordMap, fingering }: ChordDi
             {Object.entries(chordMap).map(([fret, strings]) => (
               <tr key={fret}>
                 <td className="text-xs text-center pr-1">{fret}</td>
-                {strings.map((string, index) => (
+                {strings.map((isPressed: number, index: number) => (
                   <td
                     key={index}
                     className="relative border-b border-base-content"
@@ -35,7 +35,7 @@ export default function ChordDiagram({ chordName, chordMap, fingering }: ChordDi
                     }}
                   >
                     <div className="h-4 w-6 flex items-center justify-center">
-                      {string === 1 && (
+                      {isPressed === 1 && (
                         <div className="h-3 w-3 bg-base-content rounded-full"></div>
                       )}
                     </div>

@@ -1,12 +1,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { SongDetail } from '@/types';
 import TabDisplay from '@/components/TabDisplay';
 import { FaTriangleExclamation, FaCircleExclamation } from 'react-icons/fa6';
 
-export default function TabPage() {
+function TabPageContent() {
   const searchParams = useSearchParams();
   const path = searchParams.get('path');
 
@@ -71,4 +71,16 @@ export default function TabPage() {
   if (!tab) return null;
 
   return <TabDisplay tab={tab} />;
+}
+
+export default function TabPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    }>
+      <TabPageContent />
+    </Suspense>
+  );
 }

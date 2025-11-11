@@ -1,12 +1,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { SearchResponse } from '@/types';
 import SearchResults from '@/components/SearchResults';
 import { FaCircleInfo, FaCircleExclamation } from 'react-icons/fa6';
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get('search_term') || '';
   const page = parseInt(searchParams.get('page') || '1');
@@ -81,5 +81,17 @@ export default function SearchPage() {
         searchTerm={searchTerm}
       />
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }
