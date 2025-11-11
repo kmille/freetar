@@ -2,8 +2,19 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 
+// Ensure we have a valid URL for metadataBase
+const getMetadataBaseUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://freetar.de';
+  // Ensure the URL starts with http:// or https://
+  if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
+    return baseUrl;
+  }
+  // If no protocol, default to production URL
+  return 'https://freetar.de';
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://freetar.de'),
+  metadataBase: new URL(getMetadataBaseUrl()),
   title: 'Freetar - guitar chords from Ultimate Guitar',
   description: 'freetar is an open source alternative frontend to ultimate-guitar.com. Search for your chords/tabs hosted on Ultimate Guitar. View them in a simple design. You can save them for later in your favorites without having an account.',
   keywords: ['freetar', 'guitar', 'chords', 'tabs', 'ultimate-guitar'],
