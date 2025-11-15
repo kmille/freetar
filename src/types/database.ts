@@ -97,6 +97,7 @@ export interface Database {
 					user_id: string;
 					name: string;
 					description: string | null;
+					share_token: string | null;
 					created_at: string;
 					updated_at: string;
 				};
@@ -105,6 +106,7 @@ export interface Database {
 					user_id: string;
 					name: string;
 					description?: string | null;
+					share_token?: string | null;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -113,6 +115,7 @@ export interface Database {
 					user_id?: string;
 					name?: string;
 					description?: string | null;
+					share_token?: string | null;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -124,6 +127,8 @@ export interface Database {
 					tab_id: string;
 					position: number;
 					notes: string | null;
+					transpose: number;
+					capo: number;
 					created_at: string;
 				};
 				Insert: {
@@ -132,6 +137,8 @@ export interface Database {
 					tab_id: string;
 					position: number;
 					notes?: string | null;
+					transpose?: number;
+					capo?: number;
 					created_at?: string;
 				};
 				Update: {
@@ -140,6 +147,8 @@ export interface Database {
 					tab_id?: string;
 					position?: number;
 					notes?: string | null;
+					transpose?: number;
+					capo?: number;
 					created_at?: string;
 				};
 			};

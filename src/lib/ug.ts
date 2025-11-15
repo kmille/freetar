@@ -97,6 +97,7 @@ function parseSongDetail(data: any): SongDetail {
   const songName = data.store.page.data.tab.song_name;
   const version = parseInt(data.store.page.data.tab.version);
   const type = data.store.page.data.tab.type;
+  const votes = parseInt(data.store.page.data.tab.votes || 0);
   const rating = parseInt(data.store.page.data.tab.rating);
   const difficulty = data.store.page.data.tab_view.ug_difficulty;
   const applicature = data.store.page.data.tab_view.applicature;
@@ -140,6 +141,7 @@ function parseSongDetail(data: any): SongDetail {
     song_name: songName,
     version,
     type,
+    votes,
     rating,
     difficulty,
     capo,

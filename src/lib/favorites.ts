@@ -103,10 +103,13 @@ export async function addSupabaseFavorite(tab: SongDetail) {
 	console.log("Tab saved with ID:", tabId, "- Adding to favorites");
 
 	// Then, add to favorites
-	const { error } = await supabase.from("favorites").upsert({
-		user_id: user.id,
-		tab_id: tabId,
-	});
+	const { error } = await supabase
+		.from("favorites")
+		// @ts-ignore - Supabase type inference issue
+		.upsert({
+			user_id: user.id,
+			tab_id: tabId,
+		});
 
 	if (error) {
 		console.error("Error adding to favorites:", error);

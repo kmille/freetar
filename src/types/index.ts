@@ -19,6 +19,7 @@ export interface SongDetail {
   song_name: string;
   version: number;
   type: string;
+  votes: number;
   rating: number;
   difficulty: string;
   capo?: number | null;

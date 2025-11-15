@@ -7,6 +7,8 @@ import Link from "next/link";
 import {
 	getSetlist,
 	removeFromSetlist,
+	enableSharing,
+	disableSharing,
 	type SetlistWithItems,
 } from "@/lib/setlists";
 import {
@@ -14,6 +16,10 @@ import {
 	FaTrash,
 	FaStar,
 	FaMusic,
+	FaShareNodes,
+	FaEye,
+	FaCopy,
+	FaXmark,
 } from "react-icons/fa6";
 
 export default function SetlistDetailPage() {
@@ -24,6 +30,8 @@ export default function SetlistDetailPage() {
 
 	const [setlist, setSetlist] = useState<SetlistWithItems | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [sharingLoading, setSharingLoading] = useState(false);
+	const [copiedLink, setCopiedLink] = useState(false);
 
 	const loadSetlist = useCallback(async () => {
 		setLoading(true);
@@ -51,6 +59,50 @@ export default function SetlistDetailPage() {
 			});
 		} else {
 			alert("Failed to remove tab");
+		}
+	};
+
+	const handleEnableSharing = async () => {
+		setSharingLoading(true);
+		const { token, error } = await enableSharing(setlistId);
+		if (!error && token && setlist) {
+			setSetlist({ ...setlist, share_token: token });
+		} else {
+			alert("Failed to enable sharing");
+		}
+		setSharingLoading(false);
+	};
+
+	const handleDisableSharing = async () => {
+		if (!confirm("Disable sharing? The current link will stop working."))
+			return;
+
+		setSharingLoading(true);
+		const { error } = await disableSharing(setlistId);
+		if (!error && setlist) {
+			setSetlist({ ...setlist, share_token: null });
+		} else {
+			alert("Failed to disable sharing");
+		}
+		setSharingLoading(false);
+	};
+
+	const handleCopyLink = async () => {
+		if (!setlist?.share_token) return;
+
+		const baseUrl =
+			typeof window !== "undefined"
+				? window.location.origin
+				: "https://freetar.de";
+		const shareUrl = `${baseUrl}/stage/${setlist.share_token}`;
+
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			setCopiedLink(true);
+			setTimeout(() => setCopiedLink(false), 2000);
+		} catch (error) {
+			console.error("Failed to copy link:", error);
+			alert("Failed to copy link");
 		}
 	};
 
@@ -98,6 +150,76 @@ export default function SetlistDetailPage() {
 						{setlist.items.length}{" "}
 						{setlist.items.length === 1 ? "song" : "songs"}
 					</div>
+
+					{/* Sharing Controls */}
+					<div className="divider"></div>
+					{!setlist.share_token ? (
+						<button
+							onClick={handleEnableSharing}
+							disabled={sharingLoading}
+							className="btn btn-primary btn-sm"
+						>
+							{sharingLoading ? (
+								<span className="loading loading-spinner loading-sm"></span>
+							) : (
+								<>
+									<FaShareNodes /> Enable Stage View Sharing
+								</>
+							)}
+						</button>
+					) : (
+						<div className="space-y-3">
+							<div className="alert alert-success">
+								<div className="flex flex-col gap-2 w-full">
+									<div className="flex items-center gap-2">
+										<FaShareNodes className="text-lg" />
+										<span className="font-semibold">
+											Stage View Sharing Enabled
+										</span>
+									</div>
+									<div className="text-sm opacity-80">
+										Anyone with this link can view your
+										setlist in stage view
+									</div>
+								</div>
+							</div>
+
+							<div className="flex flex-wrap gap-2">
+								<Link
+									href={`/stage/${setlist.share_token}`}
+									target="_blank"
+									className="btn btn-primary btn-sm"
+								>
+									<FaEye /> Open Stage View
+								</Link>
+								<button
+									onClick={handleCopyLink}
+									className="btn btn-outline btn-sm"
+								>
+									{copiedLink ? (
+										<>✓ Copied!</>
+									) : (
+										<>
+											<FaCopy /> Copy Link
+										</>
+									)}
+								</button>
+								<button
+									onClick={handleDisableSharing}
+									disabled={sharingLoading}
+									className="btn btn-error btn-outline btn-sm"
+								>
+									{sharingLoading ? (
+										<span className="loading loading-spinner loading-sm"></span>
+									) : (
+										<>
+											<FaXmark /> Disable Sharing
+										</>
+									)}
+								</button>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 

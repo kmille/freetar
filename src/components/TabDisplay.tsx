@@ -93,12 +93,18 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	};
 
 	const handleAddToSetlist = async (setlistId: string) => {
-		const { error } = await addToSetlist(setlistId, tab);
+		const { error } = await addToSetlist(
+			setlistId,
+			tab,
+			undefined, // notes
+			transposeValue,
+			capoValue,
+		);
 
 		if (error) {
 			alert("Failed to add to setlist. It may already be in this setlist.");
 		} else {
-			alert("Added to setlist!");
+			alert("Added to setlist with current transpose/capo settings!");
 			setShowSetlistModal(false);
 		}
 	};

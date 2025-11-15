@@ -64,8 +64,8 @@ export async function saveTab(
 
 		if (existing) {
 			// Tab already exists, return its ID
-			console.log("Tab already exists with ID:", existing.id);
-			return { id: existing.id, error: null };
+			console.log("Tab already exists with ID:", (existing as any).id);
+			return { id: (existing as any).id, error: null };
 		}
 
 		// Insert new tab
@@ -78,6 +78,7 @@ export async function saveTab(
 
 		const { data, error } = await supabase
 			.from("tabs")
+			// @ts-ignore - Supabase type inference issue
 			.insert(tabData)
 			.select("id")
 			.single();
@@ -87,8 +88,8 @@ export async function saveTab(
 			return { id: null, error };
 		}
 
-		console.log("Tab inserted successfully with ID:", data.id);
-		return { id: data.id, error: null };
+		console.log("Tab inserted successfully with ID:", (data as any).id);
+		return { id: (data as any).id, error: null };
 	} catch (err) {
 		console.error("Unexpected error in saveTab:", err);
 		return {
@@ -135,7 +136,7 @@ export async function getTabByUrl(
 	}
 
 	return {
-		id: data.id,
-		tab: dbFormatToSongDetail(data),
+		id: (data as any).id,
+		tab: dbFormatToSongDetail(data as any),
 	};
 }
