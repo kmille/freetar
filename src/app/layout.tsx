@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 // Ensure we have a valid URL for metadataBase
 const getMetadataBaseUrl = () => {
@@ -73,10 +74,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <Navbar />
-        <main className="px-4 py-6">
-          {children}
-        </main>
+        <AuthProvider>
+          <Navbar />
+          <main className="px-4 py-6">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -21,14 +21,19 @@ import {
 	FaRegStar,
 	FaMinus,
 	FaPlus,
+	FaList,
 } from "react-icons/fa6";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useAuth } from "@/contexts/AuthContext";
+import { getSetlists, addToSetlist, type Setlist } from "@/lib/setlists";
 
 interface TabDisplayProps {
 	tab: SongDetail;
 }
 
 export default function TabDisplay({ tab }: TabDisplayProps) {
-	const [isFavorite, setIsFavorite] = useState(false);
+	const { user } = useAuth();
+	const { toggleFavorite, isFavorite } = useFavorites();
 	const [transposeValue, setTransposeValue] = useState(0);
 	const [capoValue, setCapoValue] = useState(0);
 	const [showChords, setShowChords] = useState(false);
@@ -36,6 +41,9 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	const [scrollTimeout, setScrollTimeout] = useState(500);
 	const [viewMode, setViewMode] = useState<"html" | "chordpro">("html");
 	const [fontSize, setFontSize] = useState(14); // Default 14px (text-sm)
+	const [showSetlistModal, setShowSetlistModal] = useState(false);
+	const [setlists, setSetlists] = useState<Setlist[]>([]);
+	const [loadingSetlists, setLoadingSetlists] = useState(false);
 	const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const pausedForUserInteraction = useRef(false);
@@ -43,11 +51,9 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	const SCROLL_STEP_SIZE = 3;
 	const SCROLL_DELAY_AFTER_USER_ACTION = 500;
 
-	useEffect(() => {
-		const favorites = JSON.parse(localStorage.getItem("favorites") || "{}");
-		const currentPath = window.location.pathname;
-		setIsFavorite(currentPath in favorites);
-	}, []);
+	const currentPath =
+		typeof window !== "undefined" ? window.location.pathname : "";
+	const isCurrentFavorite = isFavorite(currentPath);
 
 	useEffect(() => {
 		const handleUserInteraction = () => {
@@ -69,25 +75,44 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 		};
 	}, []);
 
-	const toggleFavorite = () => {
-		const favorites = JSON.parse(localStorage.getItem("favorites") || "{}");
-		const currentPath = window.location.pathname;
+	const handleToggleFavorite = () => {
+		toggleFavorite(currentPath, {
+			artist_name: tab.artist_name,
+			song: tab.song_name,
+			type: tab.type,
+			rating: tab.rating,
+			tab_url: currentPath,
+		});
+	};
 
-		if (currentPath in favorites) {
-			delete favorites[currentPath];
-			setIsFavorite(false);
-		} else {
-			favorites[currentPath] = {
-				artist_name: tab.artist_name,
-				song: tab.song_name,
-				type: tab.type,
-				rating: tab.rating,
-				tab_url: currentPath,
-			};
-			setIsFavorite(true);
+	const handleOpenSetlistModal = async () => {
+		if (!user) {
+			alert("Please sign in to use setlists");
+			return;
 		}
 
-		localStorage.setItem("favorites", JSON.stringify(favorites));
+		setLoadingSetlists(true);
+		setShowSetlistModal(true);
+		const data = await getSetlists();
+		setSetlists(data);
+		setLoadingSetlists(false);
+	};
+
+	const handleAddToSetlist = async (setlistId: string) => {
+		const { error } = await addToSetlist(setlistId, {
+			artist_name: tab.artist_name,
+			song_name: tab.song_name,
+			type: tab.type,
+			rating: tab.rating,
+			tab_url: currentPath,
+		});
+
+		if (error) {
+			alert("Failed to add to setlist. It may already be in this setlist.");
+		} else {
+			alert("Added to setlist!");
+			setShowSetlistModal(false);
+		}
 	};
 
 	const pageScroll = () => {
@@ -236,16 +261,26 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 								</span>
 								<button
 									className="btn btn-ghost btn-sm no-print"
-									onClick={toggleFavorite}
+									onClick={handleToggleFavorite}
 									title="Add/remove from favorites"
 									aria-label="Toggle favorite"
 								>
-									{isFavorite ? (
+									{isCurrentFavorite ? (
 										<FaStar className="text-yellow-500 text-xl" />
 									) : (
 										<FaRegStar className="text-xl" />
 									)}
 								</button>
+								{user && (
+									<button
+										className="btn btn-primary btn-sm no-print gap-2"
+										onClick={handleOpenSetlistModal}
+										title="Add to setlist"
+										aria-label="Add to setlist"
+									>
+										<FaList /> Add to Setlist
+									</button>
+								)}
 							</h1>
 						</div>
 						<a
@@ -587,6 +622,73 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 							))}
 						</div>
 					</div>
+				</div>
+			)}
+
+			{/* Add to Setlist Modal */}
+			{showSetlistModal && (
+				<div className="modal modal-open">
+					<div className="modal-box">
+						<h3 className="font-bold text-lg mb-4">
+							Add to Setlist
+						</h3>
+
+						{loadingSetlists ? (
+							<div className="flex justify-center py-8">
+								<span className="loading loading-spinner loading-lg"></span>
+							</div>
+						) : setlists.length === 0 ? (
+							<div className="text-center py-8">
+								<p className="mb-4">
+									You don&apos;t have any setlists yet.
+								</p>
+								<Link
+									href="/setlists"
+									className="btn btn-primary"
+									onClick={() => setShowSetlistModal(false)}
+								>
+									Create a Setlist
+								</Link>
+							</div>
+						) : (
+							<div className="space-y-2 max-h-96 overflow-y-auto">
+								{setlists.map((setlist) => (
+									<button
+										key={setlist.id}
+										onClick={() =>
+											handleAddToSetlist(setlist.id)
+										}
+										className="btn btn-outline w-full justify-start"
+									>
+										<FaList />
+										<div className="flex-1 text-left">
+											<div className="font-semibold">
+												{setlist.name}
+											</div>
+											{setlist.description && (
+												<div className="text-xs text-base-content/60">
+													{setlist.description}
+												</div>
+											)}
+										</div>
+									</button>
+								))}
+							</div>
+						)}
+
+						<div className="modal-action">
+							<button
+								onClick={() => setShowSetlistModal(false)}
+								className="btn"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+					<div
+						className="modal-backdrop"
+						onClick={() => setShowSetlistModal(false)}
+					></div>
 				</div>
 			)}
 		</div>

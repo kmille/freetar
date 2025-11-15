@@ -1,21 +1,14 @@
 'use client';
 
 import SearchResults from '@/components/SearchResults';
-import { useState, useEffect } from 'react';
 import { SearchResult } from '@/types';
 import { FaStar } from 'react-icons/fa6';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export default function Home() {
-  const [favorites, setFavorites] = useState<{ [key: string]: any }>({});
+  const { favorites, loading } = useFavorites();
 
-  useEffect(() => {
-    const storedFavorites = localStorage.getItem('favorites');
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
-    }
-  }, []);
-
-  const favoriteResults: SearchResult[] = Object.values(favorites).map((fav: any) => ({
+  const favoriteResults: SearchResult[] = Object.values(favorites).map((fav) => ({
     artist_name: fav.artist_name,
     song_name: fav.song,
     tab_url: fav.tab_url,
@@ -23,8 +16,16 @@ export default function Home() {
     type: fav.type,
     version: 0,
     votes: 0,
-    rating: parseFloat(fav.rating) || 0,
+    rating: parseFloat(fav.rating.toString()) || 0,
   }));
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

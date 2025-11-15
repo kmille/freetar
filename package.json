@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
     "axios": "^1.7.0",
     "cheerio": "^1.0.0-rc.12",
     "next": "^14.2.0",
