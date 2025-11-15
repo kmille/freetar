@@ -1,0 +1,140 @@
+"use client";
+
+import Link from "next/link";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import {
+    FaGuitar,
+    FaMagnifyingGlass,
+    FaMoon,
+    FaUser,
+    FaRightFromBracket,
+} from "react-icons/fa6";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "./AuthModal";
+
+export default function Navbar() {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const router = useRouter();
+    const { user, signOut, isConfigured } = useAuth();
+
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            router.push(
+                `/search?search_term=${encodeURIComponent(searchTerm)}`,
+            );
+        }
+    };
+
+    const toggleDarkMode = () => {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("dark_mode", JSON.stringify(newTheme === "dark"));
+    };
+
+    return (
+        <div className="navbar bg-base-200 shadow-lg no-print">
+            <div className="navbar-start">
+                <Link href="/" className="btn btn-ghost text-xl font-bold">
+                    <FaGuitar className="text-2xl" /> Freetar NextJS
+                </Link>
+            </div>
+
+            <div className="navbar-center flex-1 px-4">
+                <form onSubmit={handleSearch} className="w-full max-w-xl">
+                    <div className="join w-full">
+                        <input
+                            required
+                            className="input input-bordered join-item w-full md:w-[300px] lg:w-[500px]"
+                            name="search_term"
+                            type="search"
+                            placeholder="Search for chords and tabs..."
+                            aria-label="Search"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button
+                            className="btn btn-primary join-item"
+                            type="submit"
+                        >
+                            <FaMagnifyingGlass className="text-lg" />
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div className="navbar-end gap-2">
+                <Link href="/about" className="btn btn-ghost">
+                    About
+                </Link>
+
+                {isConfigured && (
+                    <>
+                        {user ? (
+                            <div className="dropdown dropdown-end">
+                                <label
+                                    tabIndex={0}
+                                    className="btn btn-ghost btn-circle avatar placeholder"
+                                >
+                                    <div className="bg-neutral text-neutral-content rounded-full w-10 flex items-center justify-center">
+                                        <FaUser />
+                                    </div>
+                                </label>
+                                <ul
+                                    tabIndex={0}
+                                    className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52"
+                                >
+                                    <li className="menu-title">
+                                        <span className="truncate">
+                                            {user.email}
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <Link href="/setlists">
+                                            My Setlists
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => signOut()}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <FaRightFromBracket />
+                                            Sign Out
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setShowAuthModal(true)}
+                                className="btn btn-primary btn-sm"
+                            >
+                                <FaUser />
+                                Sign In
+                            </button>
+                        )}
+                    </>
+                )}
+
+                <button
+                    className="btn btn-ghost btn-circle"
+                    onClick={toggleDarkMode}
+                    title="Toggle dark mode"
+                    aria-label="Toggle dark mode"
+                >
+                    <FaMoon className="text-xl" />
+                </button>
+            </div>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+            />
+        </div>
+    );
+}

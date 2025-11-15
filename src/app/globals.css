@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-base-100: light-dark(#ffffff, #1d232a);
+  --color-base-200: light-dark(#f3f4f6, #191e24);
+  --color-base-300: light-dark(#e5e7eb, #15191e);
+  --color-base-content: light-dark(#1f2937, #a6adbb);
+}
+
+/* Chord styling */
+.chord {
+  font-weight: bold;
+  color: #0066cc;
+  padding: 0 2px;
+}
+
+[data-theme='dark'] .chord {
+  color: #66b3ff;
+}
+
+.chord-root {
+  color: inherit;
+}
+
+.chord-quality {
+  font-size: 0.9em;
+}
+
+.chord-bass {
+  font-size: 0.9em;
+}
+
+/* Tab content styling */
+.tab {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.tab .chord {
+  display: inline-block;
+  margin: 0 1px;
+}
+
+/* Sort indicator styling */
+.order-inactive span {
+  visibility: hidden;
+}
+
+.order-inactive:hover span {
+  visibility: visible;
+}
+
+.order-active span {
+  visibility: visible;
+}
+
+/* Favorite icon styling */
+.favorite {
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.favorite.active {
+  color: #ffae00;
+}
+
+.favorite:hover {
+  color: #ffae00;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
