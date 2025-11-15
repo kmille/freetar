@@ -30,6 +30,7 @@ interface TabDisplayProps {
 export default function TabDisplay({ tab }: TabDisplayProps) {
 	const [isFavorite, setIsFavorite] = useState(false);
 	const [transposeValue, setTransposeValue] = useState(0);
+	const [capoValue, setCapoValue] = useState(0);
 	const [showChords, setShowChords] = useState(false);
 	const [isScrolling, setIsScrolling] = useState(false);
 	const [scrollTimeout, setScrollTimeout] = useState(500);
@@ -187,19 +188,24 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	};
 
 	const getDisplayContent = (): string => {
+		// Capo transposes DOWN (negative), transpose can go either way
+		const effectiveTranspose = transposeValue - capoValue;
+
 		if (viewMode === "chordpro") {
-			const chordProText = convertToChordPro(tab, transposeValue);
+			const chordProText = convertToChordPro(tab, effectiveTranspose);
 			return chordProToHtml(chordProText);
 		}
-		return getTransposedTab(tab.tab, transposeValue);
+		return getTransposedTab(tab.tab, effectiveTranspose);
 	};
 
 	const handleExportChordPro = () => {
-		exportChordProFile(tab, transposeValue);
+		const effectiveTranspose = transposeValue - capoValue;
+		exportChordProFile(tab, effectiveTranspose);
 	};
 
 	const copyChordProToClipboard = async () => {
-		const chordProText = convertToChordPro(tab, transposeValue);
+		const effectiveTranspose = transposeValue - capoValue;
+		const chordProText = convertToChordPro(tab, effectiveTranspose);
 		try {
 			await navigator.clipboard.writeText(chordProText);
 			alert("ChordPro format copied to clipboard!");
@@ -258,9 +264,22 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 							{tab.difficulty}
 						</div>
 						<div className="badge badge-lg gap-2">
-							<span className="font-semibold">Capo:</span>{" "}
+							<span className="font-semibold">Original Capo:</span>{" "}
 							{tab.capo ? `${tab.capo}th fret` : "no capo"}
 						</div>
+						{capoValue > 0 && (
+							<div className="badge badge-lg badge-primary gap-2">
+								<span className="font-semibold">Virtual Capo:</span>{" "}
+								{capoValue}th fret
+							</div>
+						)}
+						{(transposeValue !== 0 || capoValue !== 0) && (
+							<div className="badge badge-lg badge-accent gap-2">
+								<span className="font-semibold">Effective Transpose:</span>{" "}
+								{transposeValue - capoValue > 0 ? "+" : ""}
+								{transposeValue - capoValue} semitones
+							</div>
+						)}
 						{tab.tuning && (
 							<div className="badge badge-lg gap-2 md:col-span-2">
 								<span className="font-semibold">Tuning:</span>{" "}
@@ -325,6 +344,53 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 									}
 								/>
 							</label>
+						</div>
+
+						{/* Capo controls */}
+						<div className="form-control">
+							<label className="label">
+								<span className="label-text font-semibold">
+									Virtual Capo
+								</span>
+							</label>
+							<div className="flex gap-2 items-center">
+								<button
+									className="btn btn-sm btn-circle"
+									onClick={() =>
+										setCapoValue((prev) =>
+											Math.max(0, prev - 1),
+										)
+									}
+									title="Decrease capo position"
+									disabled={capoValue === 0}
+								>
+									<FaMinus />
+								</button>
+								<span className="text-sm font-mono min-w-[3rem] text-center">
+									{capoValue === 0 ? "None" : capoValue}
+								</span>
+								<button
+									className="btn btn-sm btn-circle"
+									onClick={() =>
+										setCapoValue((prev) =>
+											Math.min(12, prev + 1),
+										)
+									}
+									title="Increase capo position"
+									disabled={capoValue === 12}
+								>
+									<FaPlus />
+								</button>
+								{capoValue !== 0 && (
+									<button
+										className="btn btn-sm"
+										onClick={() => setCapoValue(0)}
+										title="Reset capo"
+									>
+										Reset
+									</button>
+								)}
+							</div>
 						</div>
 
 						{/* Transpose controls */}
