@@ -6,7 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Freetar is an open-source alternative frontend to Ultimate Guitar that scrapes and displays guitar tabs and chords. This is a Next.js 14 implementation using the App Router, TypeScript, and React 18.
 
-**Key Principle**: All user data (favorites, preferences) is stored client-side in localStorage. The application proxies requests to Ultimate Guitar through Next.js API routes to avoid CORS issues.
+**Key Principles**:
+- **Hybrid Storage**: Anonymous users use localStorage; authenticated users use Supabase cloud storage
+- **Complete Tab Storage**: Full tab content (HTML, chords, metadata) is saved to database, not just references
+- **No Re-scraping**: Favorited tabs and setlist items load instantly from database, no Ultimate Guitar dependency
+- **Privacy-First**: Optional authentication via passwordless magic links (Supabase Auth)
 
 ## Development Commands
 
@@ -26,9 +30,42 @@ npm run lint            # Run ESLint
 
 ### Data Flow Architecture
 
-1. **Search Flow**: User → Search Page → `/api/search` → Ultimate Guitar → Cheerio Parser → Search Results Component
-2. **Tab Flow**: User → Tab Page → `/api/tab` → Ultimate Guitar → Tab Parser → Tab Display Component
-3. **Favorites**: Stored entirely in browser localStorage, no server-side persistence
+#### **Search Flow** (Always from Ultimate Guitar)
+User → Search Page → `/api/search` → Ultimate Guitar → Cheerio Parser → Search Results Component
+
+#### **Tab Viewing Flow** (Two paths)
+
+**Path 1: From Search (Ultimate Guitar)**
+1. User clicks search result → `/tab?path=artist/song/tab-123`
+2. `/api/tab` scrapes Ultimate Guitar
+3. Returns complete `SongDetail` object
+4. TabDisplay renders the tab
+
+**Path 2: From Favorites/Setlists (Database)**
+1. User clicks favorite/setlist item → `/tab?id=<uuid>`
+2. `/api/tab-by-id` fetches from Supabase `tabs` table
+3. Returns complete `SongDetail` object (instant, no scraping!)
+4. TabDisplay renders the tab
+
+#### **Favorites Flow**
+
+**Anonymous Users:**
+- Stored in `localStorage` as `{ [tab_url]: { artist_name, song, type, rating, tab_url } }`
+- Limited to browser only, no sync
+
+**Authenticated Users:**
+1. User favorites a tab → `addSupabaseFavorite(tab: SongDetail)`
+2. Complete tab content saved to `tabs` table (or retrieves existing ID)
+3. Reference created in `favorites` table: `{ user_id, tab_id }`
+4. Home page fetches favorites via JOIN: `SELECT * FROM favorites JOIN tabs ON favorites.tab_id = tabs.id`
+5. Returns full tab content, not just metadata
+
+#### **Setlists Flow** (Authenticated only)
+1. User creates setlist → Saved to `setlists` table
+2. User adds tab to setlist → Complete tab saved to `tabs` table
+3. Reference created in `setlist_items` table: `{ setlist_id, tab_id, position, notes }`
+4. Setlist detail page fetches via JOIN: `SELECT * FROM setlist_items JOIN tabs ON setlist_items.tab_id = tabs.id`
+5. All tabs load instantly from database
 
 ### Web Scraping Strategy
 
@@ -44,12 +81,88 @@ npm run lint            # Run ESLint
 - `fixTab()`: Converts tab markup (`[ch]`, `[tab]`) to HTML
 - `getChords()`: Parses chord fingering data (applicature) into visual diagrams
 
+### Supabase Integration Architecture
+
+**Database Schema** (`supabase-schema.sql`):
+
+1. **`tabs` table** - Stores complete tab content
+   - `id` (UUID, primary key)
+   - `tab_url` (TEXT, unique) - Original Ultimate Guitar URL
+   - `artist_name`, `song_name`, `type` - Metadata
+   - `version`, `votes`, `rating` - Stats (optional, default values)
+   - `difficulty`, `tuning`, `capo` - Play info (optional)
+   - `tab_content` (TEXT) - Full HTML content
+   - `chords`, `fingers_for_strings`, `alternatives` (JSONB) - Structured data
+
+2. **`favorites` table** - User favorites
+   - `id` (UUID)
+   - `user_id` (UUID, references auth.users)
+   - `tab_id` (UUID, references tabs)
+   - Unique constraint on `(user_id, tab_id)`
+
+3. **`setlists` table** - Named collections
+   - `id` (UUID)
+   - `user_id` (UUID)
+   - `name`, `description` - Setlist info
+
+4. **`setlist_items` table** - Tabs in setlists
+   - `id` (UUID)
+   - `setlist_id` (UUID, references setlists)
+   - `tab_id` (UUID, references tabs)
+   - `position` (INTEGER) - Order in setlist
+   - `notes` (TEXT) - Optional notes for this tab
+   - Unique constraint on `(setlist_id, tab_id)`
+
+**Row Level Security (RLS)**:
+- `tabs`: Readable by all, writable by authenticated users
+- `favorites`: Users can only access their own
+- `setlists`: Users can only access their own
+- `setlist_items`: Users can only access items in their own setlists
+
+**Tab Storage Service** (`src/lib/tabs.ts`):
+- `saveTab(tab: SongDetail)`: Saves complete tab to database (or returns existing ID)
+- `getTabById(id: string)`: Retrieves full tab from database
+- `getTabByUrl(url: string)`: Finds tab by original URL
+- `songDetailToDbFormat()`: Converts SongDetail to database format
+- `dbFormatToSongDetail()`: Converts database row to SongDetail
+
+**Favorites Service** (`src/lib/favorites.ts`):
+- `getSupabaseFavorites()`: Fetches user favorites with full tab content (JOIN query)
+- `addSupabaseFavorite(tab: SongDetail)`: Saves tab and creates favorite reference
+- `removeSupabaseFavorite(tabId: string)`: Removes favorite reference
+- `isFavorited(tabId: string)`: Checks if tab is favorited
+- Legacy localStorage support for anonymous users
+
+**Setlists Service** (`src/lib/setlists.ts`):
+- `getSetlists()`: Fetches user's setlists
+- `getSetlist(id)`: Fetches setlist with full tab content (JOIN query)
+- `createSetlist(name, description)`: Creates new setlist
+- `addToSetlist(setlistId, tab: SongDetail)`: Saves tab and adds to setlist
+- `removeFromSetlist(itemId)`: Removes tab from setlist
+- `reorderSetlistItems()`: Changes tab order in setlist
+
+**Authentication** (`src/contexts/AuthContext.tsx`):
+- Uses Supabase Auth with magic link (passwordless email)
+- `signInWithEmail(email)`: Sends magic link
+- `signOut()`: Signs user out
+- Auto-refresh tokens
+- Persistent sessions
+- Auth state available via `useAuth()` hook
+
+**Critical Implementation Details**:
+1. When a tab is favorited or added to setlist, **complete content is saved** to `tabs` table
+2. The `tabs` table acts as a shared cache - same tab can be in multiple favorites/setlists
+3. `tab_url` is unique, so duplicate tabs aren't stored
+4. All reads from database use JOINs to fetch complete tab content
+5. URLs to database tabs use `?id=<uuid>` instead of `?path=<path>`
+
 ### Client-Side State Architecture
 
-**Favorites System**:
-- Storage format: `{ [tabUrl]: { artist_name, song, type, rating, tab_url } }`
-- Managed independently in each component that displays favorites
-- Export/import uses JSON serialization
+**Favorites System** (Hybrid):
+- **Anonymous users**: localStorage `{ [tabUrl]: { artist_name, song, type, rating, tab_url } }`
+- **Authenticated users**: Supabase database with full tab content
+- Managed by `useFavorites()` hook
+- Auto-detects user state and uses appropriate storage
 
 **Transpose System**:
 - Uses 12-tone equal temperament: `['A'], ['A#', 'Bb'], ['B', 'Cb'], ...`
@@ -69,28 +182,64 @@ npm run lint            # Run ESLint
 - Applied via inline style to tab content div
 - Reset button to return to default size
 
+**Capo System** (`TabDisplay.tsx`):
+- Virtual capo control (0-12 frets)
+- Transposes chords DOWN to show shapes to play with capo
+- Works in combination with transpose control
+- Displays both original capo (from tab metadata) and virtual capo
+- Shows effective transpose value (transpose - capo)
+
 ### Component Architecture
 
 **Page Components** (`src/app/`):
-- `page.tsx`: Home page showing favorites from localStorage
-- `search/page.tsx`: Client component that fetches search results via `/api/search`
-- `tab/page.tsx`: Client component that fetches tab data via `/api/tab`
+- `page.tsx`: Home page showing favorites (localStorage for guests, Supabase for logged-in users)
+- `search/page.tsx`: Search results from Ultimate Guitar
+- `tab/page.tsx`: Displays tab from either Ultimate Guitar (`?path=`) or database (`?id=`)
 - `about/page.tsx`: Static about page
+- `setlists/page.tsx`: Lists user's setlists (authenticated only)
+- `setlists/[id]/page.tsx`: Shows setlist with tabs from database (authenticated only)
+- `auth/callback/route.ts`: Handles magic link authentication callback
 
 **Reusable Components** (`src/components/`):
-- `Navbar.tsx`: Contains search form with client-side routing
+- `Navbar.tsx`: Search form + authentication UI (sign in button, user dropdown with setlists link)
 - `SearchResults.tsx`: Table with sorting, pagination, and favorite toggles
-- `TabDisplay.tsx`: Main tab viewer with transpose, autoscroll, chord visibility controls
+- `TabDisplay.tsx`: Main tab viewer with transpose, capo, autoscroll, chord visibility, font size controls
+  - "Add to Setlist" button (visible when logged in)
+  - Favorites button (saves full content to database if logged in)
 - `ChordDiagram.tsx`: Renders chord fingering diagrams from applicature data
+- `AuthModal.tsx`: Magic link login modal
+
+**Hooks** (`src/hooks/`):
+- `useFavorites()`: Manages favorites (localStorage for guests, Supabase for authenticated)
+  - Returns: `{ favorites, localFavorites, loading, toggleFavorite, isFavorite, getTabId }`
+  - Auto-detects user auth state
+  - Handles full tab content storage
+
+**Contexts** (`src/contexts/`):
+- `AuthContext.tsx`: Provides authentication state throughout app
+  - `useAuth()` hook returns `{ user, session, loading, signInWithEmail, signOut, isConfigured }`
 
 ### Type System
 
-All types in `src/types/index.ts`:
+**Application Types** (`src/types/index.ts`):
 - `SearchResult`: Individual search result metadata
 - `SongDetail`: Complete tab with content, metadata, chords, and fingerings
 - `ChordVariant`: Map of fret numbers to string press patterns `{ [fret]: [0|1, 0|1, ...] }`
 - `SearchResponse`: Paginated search results
 - `FreetarError`: Custom error class for user-facing error messages
+
+**Database Types** (`src/types/database.ts`):
+- Auto-generated from Supabase schema
+- `Database.public.Tables.tabs` - Tabs table types (Row, Insert, Update)
+- `Database.public.Tables.favorites` - Favorites table types
+- `Database.public.Tables.setlists` - Setlists table types
+- `Database.public.Tables.setlist_items` - Setlist items table types
+- Can be regenerated with `supabase gen types typescript --linked`
+
+**Service Types** (`src/lib/*.ts`):
+- `FavoriteWithTab`: Favorite with complete tab content (JOIN result)
+- `SetlistWithItems`: Setlist with complete tab items (JOIN result)
+- `SetlistItemWithTab`: Setlist item with complete tab content
 
 ### Dark Mode Implementation
 
@@ -169,10 +318,22 @@ Tab content arrives with markup tags:
 
 ### URL Routing Pattern
 
-Tab URLs from Ultimate Guitar use format: `/tab/artist-name/song-name/tab-123456`
-- `SearchResult.tab_url` stores the pathname only (not full URL)
+**From Search Results (Ultimate Guitar)**:
+- Original URL format: `https://tabs.ultimate-guitar.com/tab/artist-name/song-name/tab-123456`
+- `SearchResult.tab_url` stores the pathname: `/tab/artist-name/song-name/tab-123456`
 - Next.js route: `/tab?path=artist-name/song-name/tab-123456`
-- API route extracts path param and fetches from `https://tabs.ultimate-guitar.com/tab/${path}`
+- API route: `/api/tab?path=...` scrapes Ultimate Guitar
+
+**From Favorites/Setlists (Database)**:
+- Database stores complete tab with UUID primary key
+- Next.js route: `/tab?id=<uuid>`
+- API route: `/api/tab-by-id?id=<uuid>` fetches from Supabase
+- Instant load, no scraping required
+
+**Route Handler Logic** (`src/app/tab/page.tsx`):
+- Checks for `id` param first → fetch from database
+- Falls back to `path` param → fetch from Ultimate Guitar
+- Both return same `SongDetail` type → TabDisplay works identically
 
 ### Tailwind CSS and DaisyUI Integration
 
@@ -230,12 +391,30 @@ If Ultimate Guitar changes their HTML structure:
 
 ## Environment & Dependencies
 
-**No environment variables required** for basic functionality.
+**Required Environment Variables for Supabase Features**:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+Get these from: Supabase Dashboard → Settings → API
 
 **Optional Environment Variables**:
-- `NEXT_PUBLIC_BASE_URL`: Sets the base URL for metadata and Open Graph images (defaults to `https://freetar.de`). Useful when deploying to custom domains.
+- `NEXT_PUBLIC_BASE_URL`: Sets the base URL for metadata and Open Graph images (defaults to `https://freetar.de`)
+
+**Without Supabase configured**:
+- App works fully for anonymous users (search, view tabs, localStorage favorites)
+- Authentication UI hidden in navbar
+- Setlists feature disabled
+
+**With Supabase configured**:
+- Authentication enabled (magic link sign-in)
+- Cloud-synced favorites
+- Setlists feature enabled
+- Complete tab storage in database
 
 **Critical Dependencies**:
+- `@supabase/supabase-js`: Supabase client for authentication and database
 - `cheerio`: Server-side HTML parsing (like jQuery for Node.js)
 - `axios`: HTTP client with better error handling than fetch
 - `tailwindcss` + `daisyui`: Utility-first CSS framework with component library (note: custom CSS in globals.css for chord styling)
@@ -245,6 +424,14 @@ If Ultimate Guitar changes their HTML structure:
 - `sharp`: Image processing library for generating PWA icons in multiple sizes
 
 **Node Version**: Requires Node.js ≥22.0.0 (specified in package.json engines)
+
+**Supabase Setup**:
+1. Create account at https://supabase.com
+2. Create new project
+3. Run `supabase-schema.sql` in SQL Editor
+4. Get credentials from Settings → API
+5. Add to `.env.local`
+6. See `SUPABASE_SETUP.md` for detailed instructions
 
 ## Deployment Considerations
 
@@ -265,13 +452,37 @@ If Ultimate Guitar changes their HTML structure:
 
 ## Privacy & Legal
 
-- No user tracking or analytics
-- No server-side data storage
-- Acts as a proxy/scraper for Ultimate Guitar content
-- Users should be aware this scrapes a third-party site
-- Not affiliated with Ultimate Guitar
+- **No tracking or analytics**: Zero user tracking, no third-party scripts
+- **Optional authentication**: Users can use the app anonymously
+- **Data storage**:
+  - Anonymous users: localStorage only (client-side)
+  - Authenticated users: Supabase (cloud database) - user controls their data
+- **Scraper proxy**: Acts as a proxy/scraper for Ultimate Guitar content
+- **User responsibility**: Users should be aware this scrapes a third-party site
+- **Not affiliated**: Not affiliated with or endorsed by Ultimate Guitar
 
-## Testing Ultimate Guitar Scraping
+## Common Issues & Troubleshooting
+
+### **Supabase Integration Issues**
+
+**Problem**: "Songs not saved to database" or "Error inserting tab"
+- **Solution**: See `TROUBLESHOOTING.md` for complete debugging guide
+- Common causes:
+  - Database schema not run or incomplete
+  - Missing/incorrect `.env.local` credentials
+  - RLS policies too restrictive
+  - `tabs` table missing default values for `votes`, `version`, `rating`
+
+**Problem**: "Row-level security policy" errors
+- **Solution**: Re-run `supabase-schema.sql` completely
+- Make sure RLS policies allow authenticated users to insert into `tabs` table
+
+**Problem**: Favorites work but setlists don't save songs
+- **Solution**: Check browser console for specific error
+- Verify `tab_content` is not null in the tab data
+- Ensure all required fields have values or defaults
+
+### **Ultimate Guitar Scraping Issues**
 
 To test if scraping still works after UG updates:
 1. Try searching for a common song (e.g., "Wonderwall")
@@ -279,3 +490,10 @@ To test if scraping still works after UG updates:
 3. If errors occur, inspect actual UG HTML structure
 4. Update selectors in `src/lib/ug.ts` as needed
 5. Look for `div.js-store` and verify JSON structure in `data-content` attribute
+
+## Related Documentation
+
+- `SUPABASE_SETUP.md`: Complete Supabase setup guide with step-by-step instructions
+- `TROUBLESHOOTING.md`: Detailed troubleshooting for database and authentication issues
+- `DOCKER.md`: Docker deployment instructions
+- `supabase-schema.sql`: Complete database schema with RLS policies
