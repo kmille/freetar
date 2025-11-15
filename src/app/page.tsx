@@ -4,20 +4,34 @@ import SearchResults from '@/components/SearchResults';
 import { SearchResult } from '@/types';
 import { FaStar } from 'react-icons/fa6';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
-  const { favorites, loading } = useFavorites();
+  const { user } = useAuth();
+  const { favorites, localFavorites, loading } = useFavorites();
 
-  const favoriteResults: SearchResult[] = Object.values(favorites).map((fav) => ({
-    artist_name: fav.artist_name,
-    song_name: fav.song,
-    tab_url: fav.tab_url,
-    artist_url: '',
-    type: fav.type,
-    version: 0,
-    votes: 0,
-    rating: parseFloat(fav.rating.toString()) || 0,
-  }));
+  // Build results based on whether user is logged in
+  const favoriteResults: SearchResult[] = user
+    ? favorites.map((fav) => ({
+        artist_name: fav.tab.artist_name,
+        song_name: fav.tab.song_name,
+        tab_url: `/tab?id=${fav.tab_id}`, // Link to database ID
+        artist_url: '',
+        type: fav.tab.type,
+        version: fav.tab.version,
+        votes: fav.tab.votes,
+        rating: fav.tab.rating,
+      }))
+    : Object.values(localFavorites).map((fav) => ({
+        artist_name: fav.artist_name,
+        song_name: fav.song,
+        tab_url: fav.tab_url,
+        artist_url: '',
+        type: fav.type,
+        version: 0,
+        votes: 0,
+        rating: parseFloat(fav.rating.toString()) || 0,
+      }));
 
   if (loading) {
     return (

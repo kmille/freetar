@@ -1,4 +1,6 @@
 import { supabase } from "./supabase";
+import { saveTab } from "./tabs";
+import type { SongDetail } from "@/types";
 
 export interface Setlist {
 	id: string;
@@ -9,21 +11,18 @@ export interface Setlist {
 	updated_at: string;
 }
 
-export interface SetlistItem {
+export interface SetlistItemWithTab {
 	id: string;
 	setlist_id: string;
-	artist_name: string;
-	song_name: string;
-	type: string;
-	rating: number;
-	tab_url: string;
+	tab_id: string;
 	position: number;
 	notes: string | null;
 	created_at: string;
+	tab: SongDetail;
 }
 
 export interface SetlistWithItems extends Setlist {
-	items: SetlistItem[];
+	items: SetlistItemWithTab[];
 }
 
 // Get all setlists for the current user
@@ -43,7 +42,7 @@ export async function getSetlists(): Promise<Setlist[]> {
 	return data || [];
 }
 
-// Get a single setlist with its items
+// Get a single setlist with its items (including full tab content)
 export async function getSetlist(
 	setlistId: string,
 ): Promise<SetlistWithItems | null> {
@@ -62,7 +61,15 @@ export async function getSetlist(
 
 	const { data: items, error: itemsError } = await supabase
 		.from("setlist_items")
-		.select("*")
+		.select(`
+			id,
+			setlist_id,
+			tab_id,
+			position,
+			notes,
+			created_at,
+			tabs (*)
+		`)
 		.eq("setlist_id", setlistId)
 		.order("position", { ascending: true });
 
@@ -71,9 +78,36 @@ export async function getSetlist(
 		return null;
 	}
 
+	// Transform the items
+	const transformedItems: SetlistItemWithTab[] =
+		items?.map((item: any) => ({
+			id: item.id,
+			setlist_id: item.setlist_id,
+			tab_id: item.tab_id,
+			position: item.position,
+			notes: item.notes,
+			created_at: item.created_at,
+			tab: {
+				artist_name: item.tabs.artist_name,
+				song_name: item.tabs.song_name,
+				tab_url: item.tabs.tab_url,
+				type: item.tabs.type,
+				version: item.tabs.version,
+				votes: item.tabs.votes,
+				rating: item.tabs.rating,
+				difficulty: item.tabs.difficulty,
+				tuning: item.tabs.tuning,
+				capo: item.tabs.capo,
+				tab: item.tabs.tab_content,
+				chords: item.tabs.chords || {},
+				fingers_for_strings: item.tabs.fingers_for_strings || {},
+				alternatives: item.tabs.alternatives || [],
+			},
+		})) || [];
+
 	return {
 		...setlist,
-		items: items || [],
+		items: transformedItems,
 	};
 }
 
@@ -82,7 +116,8 @@ export async function createSetlist(
 	name: string,
 	description?: string,
 ): Promise<{ data: Setlist | null; error: Error | null }> {
-	if (!supabase) return { data: null, error: new Error("Supabase not configured") };
+	if (!supabase)
+		return { data: null, error: new Error("Supabase not configured") };
 
 	const {
 		data: { user },
@@ -132,19 +167,27 @@ export async function deleteSetlist(
 	return { error };
 }
 
-// Add a tab to a setlist
+// Add a tab to a setlist (stores full tab content)
 export async function addToSetlist(
 	setlistId: string,
-	tabData: {
-		artist_name: string;
-		song_name: string;
-		type: string;
-		rating: number;
-		tab_url: string;
-		notes?: string;
-	},
+	tab: SongDetail,
+	notes?: string,
 ): Promise<{ error: Error | null }> {
-	if (!supabase) return { error: new Error("Supabase not configured") };
+	if (!supabase) {
+		console.error("Supabase not configured");
+		return { error: new Error("Supabase not configured") };
+	}
+
+	console.log("Adding to setlist:", setlistId);
+
+	// First, save the tab (or get existing tab ID)
+	const { id: tabId, error: tabError } = await saveTab(tab);
+	if (tabError || !tabId) {
+		console.error("Failed to save tab:", tabError);
+		return { error: tabError || new Error("Failed to save tab") };
+	}
+
+	console.log("Tab saved with ID:", tabId, "- Adding to setlist");
 
 	// Get the highest position in the setlist
 	const { data: items } = await supabase
@@ -155,17 +198,21 @@ export async function addToSetlist(
 		.limit(1);
 
 	const nextPosition = items && items.length > 0 ? items[0].position + 1 : 0;
+	console.log("Next position in setlist:", nextPosition);
 
+	// Add to setlist
 	const { error } = await supabase.from("setlist_items").insert({
 		setlist_id: setlistId,
-		artist_name: tabData.artist_name,
-		song_name: tabData.song_name,
-		type: tabData.type,
-		rating: tabData.rating,
-		tab_url: tabData.tab_url,
+		tab_id: tabId,
 		position: nextPosition,
-		notes: tabData.notes || null,
+		notes: notes || null,
 	});
+
+	if (error) {
+		console.error("Error adding to setlist:", error);
+	} else {
+		console.log("Successfully added to setlist");
+	}
 
 	return { error };
 }

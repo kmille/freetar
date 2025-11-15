@@ -9,37 +9,84 @@ export type Json =
 export interface Database {
 	public: {
 		Tables: {
+			tabs: {
+				Row: {
+					id: string;
+					tab_url: string;
+					artist_name: string;
+					song_name: string;
+					type: string;
+					version: number;
+					votes: number;
+					rating: number;
+					difficulty: string | null;
+					tuning: string | null;
+					capo: number | null;
+					tab_content: string;
+					chords: Json | null;
+					fingers_for_strings: Json | null;
+					alternatives: Json | null;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					tab_url: string;
+					artist_name: string;
+					song_name: string;
+					type: string;
+					version?: number;
+					votes?: number;
+					rating?: number;
+					difficulty?: string | null;
+					tuning?: string | null;
+					capo?: number | null;
+					tab_content: string;
+					chords?: Json | null;
+					fingers_for_strings?: Json | null;
+					alternatives?: Json | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					tab_url?: string;
+					artist_name?: string;
+					song_name?: string;
+					type?: string;
+					version?: number;
+					votes?: number;
+					rating?: number;
+					difficulty?: string | null;
+					tuning?: string | null;
+					capo?: number | null;
+					tab_content?: string;
+					chords?: Json | null;
+					fingers_for_strings?: Json | null;
+					alternatives?: Json | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+			};
 			favorites: {
 				Row: {
 					id: string;
 					user_id: string;
-					artist_name: string;
-					song_name: string;
-					type: string;
-					rating: number;
-					tab_url: string;
+					tab_id: string;
 					created_at: string;
 					updated_at: string;
 				};
 				Insert: {
 					id?: string;
 					user_id: string;
-					artist_name: string;
-					song_name: string;
-					type: string;
-					rating: number;
-					tab_url: string;
+					tab_id: string;
 					created_at?: string;
 					updated_at?: string;
 				};
 				Update: {
 					id?: string;
 					user_id?: string;
-					artist_name?: string;
-					song_name?: string;
-					type?: string;
-					rating?: number;
-					tab_url?: string;
+					tab_id?: string;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -74,11 +121,7 @@ export interface Database {
 				Row: {
 					id: string;
 					setlist_id: string;
-					artist_name: string;
-					song_name: string;
-					type: string;
-					rating: number;
-					tab_url: string;
+					tab_id: string;
 					position: number;
 					notes: string | null;
 					created_at: string;
@@ -86,11 +129,7 @@ export interface Database {
 				Insert: {
 					id?: string;
 					setlist_id: string;
-					artist_name: string;
-					song_name: string;
-					type: string;
-					rating: number;
-					tab_url: string;
+					tab_id: string;
 					position: number;
 					notes?: string | null;
 					created_at?: string;
@@ -98,11 +137,7 @@ export interface Database {
 				Update: {
 					id?: string;
 					setlist_id?: string;
-					artist_name?: string;
-					song_name?: string;
-					type?: string;
-					rating?: number;
-					tab_url?: string;
+					tab_id?: string;
 					position?: number;
 					notes?: string | null;
 					created_at?: string;

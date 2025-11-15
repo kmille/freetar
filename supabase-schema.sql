@@ -4,18 +4,35 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Favorites table
-CREATE TABLE IF NOT EXISTS favorites (
+-- Tabs table - stores complete tab content
+CREATE TABLE IF NOT EXISTS tabs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    tab_url TEXT NOT NULL UNIQUE,
     artist_name TEXT NOT NULL,
     song_name TEXT NOT NULL,
     type TEXT NOT NULL,
-    rating NUMERIC NOT NULL,
-    tab_url TEXT NOT NULL,
+    version INTEGER DEFAULT 1,
+    votes INTEGER DEFAULT 0,
+    rating NUMERIC DEFAULT 0,
+    difficulty TEXT,
+    tuning TEXT,
+    capo INTEGER,
+    tab_content TEXT NOT NULL,
+    chords JSONB,
+    fingers_for_strings JSONB,
+    alternatives JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Favorites table (now references tabs table)
+CREATE TABLE IF NOT EXISTS favorites (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    tab_id UUID REFERENCES tabs(id) ON DELETE CASCADE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE(user_id, tab_url)
+    UNIQUE(user_id, tab_id)
 );
 
 -- Setlists table
@@ -28,34 +45,49 @@ CREATE TABLE IF NOT EXISTS setlists (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Setlist items table
+-- Setlist items table (now references tabs table)
 CREATE TABLE IF NOT EXISTS setlist_items (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     setlist_id UUID REFERENCES setlists(id) ON DELETE CASCADE NOT NULL,
-    artist_name TEXT NOT NULL,
-    song_name TEXT NOT NULL,
-    type TEXT NOT NULL,
-    rating NUMERIC NOT NULL,
-    tab_url TEXT NOT NULL,
+    tab_id UUID REFERENCES tabs(id) ON DELETE CASCADE NOT NULL,
     position INTEGER NOT NULL,
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    UNIQUE(setlist_id, tab_url)
+    UNIQUE(setlist_id, tab_id)
 );
 
 -- Create indexes for better query performance
+CREATE INDEX IF NOT EXISTS tabs_tab_url_idx ON tabs(tab_url);
+CREATE INDEX IF NOT EXISTS tabs_artist_song_idx ON tabs(artist_name, song_name);
 CREATE INDEX IF NOT EXISTS favorites_user_id_idx ON favorites(user_id);
+CREATE INDEX IF NOT EXISTS favorites_tab_id_idx ON favorites(tab_id);
 CREATE INDEX IF NOT EXISTS favorites_created_at_idx ON favorites(created_at DESC);
 CREATE INDEX IF NOT EXISTS setlists_user_id_idx ON setlists(user_id);
 CREATE INDEX IF NOT EXISTS setlist_items_setlist_id_idx ON setlist_items(setlist_id);
+CREATE INDEX IF NOT EXISTS setlist_items_tab_id_idx ON setlist_items(tab_id);
 CREATE INDEX IF NOT EXISTS setlist_items_position_idx ON setlist_items(setlist_id, position);
 
 -- Row Level Security (RLS) Policies
 
 -- Enable RLS on all tables
+ALTER TABLE tabs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE setlists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE setlist_items ENABLE ROW LEVEL SECURITY;
+
+-- Tabs policies (readable by all, writable by authenticated users)
+CREATE POLICY "Anyone can view tabs"
+    ON tabs FOR SELECT
+    USING (true);
+
+CREATE POLICY "Authenticated users can insert tabs"
+    ON tabs FOR INSERT
+    WITH CHECK (auth.uid() IS NOT NULL);
+
+CREATE POLICY "Authenticated users can update tabs"
+    ON tabs FOR UPDATE
+    USING (auth.uid() IS NOT NULL)
+    WITH CHECK (auth.uid() IS NOT NULL);
 
 -- Favorites policies
 CREATE POLICY "Users can view their own favorites"

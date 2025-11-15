@@ -3,25 +3,37 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-	getFavorites,
-	addFavorite,
-	removeFavorite,
-	syncLocalFavoritesToSupabase,
-	type FavoriteTab,
+	getSupabaseFavorites,
+	addSupabaseFavorite,
+	removeSupabaseFavorite,
+	getLocalFavorites,
+	saveLocalFavorites,
+	type FavoriteWithTab,
+	type LegacyFavoriteTab,
 } from "@/lib/favorites";
+import type { SongDetail } from "@/types";
 
 export function useFavorites() {
 	const { user } = useAuth();
-	const [favorites, setFavorites] = useState<Record<string, FavoriteTab>>(
-		{},
-	);
+	const [favorites, setFavorites] = useState<FavoriteWithTab[]>([]);
+	const [localFavorites, setLocalFavorites] = useState<
+		Record<string, LegacyFavoriteTab>
+	>({});
 	const [loading, setLoading] = useState(true);
-	const [hasSynced, setHasSynced] = useState(false);
 
 	const loadFavorites = useCallback(async () => {
 		setLoading(true);
-		const favs = await getFavorites(Boolean(user));
-		setFavorites(favs);
+
+		if (user) {
+			// Load from Supabase
+			const favs = await getSupabaseFavorites();
+			setFavorites(favs);
+		} else {
+			// Load from localStorage
+			const localFavs = getLocalFavorites();
+			setLocalFavorites(localFavs);
+		}
+
 		setLoading(false);
 	}, [user]);
 
@@ -30,45 +42,72 @@ export function useFavorites() {
 		loadFavorites();
 	}, [loadFavorites]);
 
-	// Sync localStorage to Supabase when user logs in
-	useEffect(() => {
-		if (user && !hasSynced) {
-			syncLocalFavoritesToSupabase().then(() => {
-				setHasSynced(true);
-				loadFavorites(); // Reload to get synced data
-			});
-		}
-	}, [user, hasSynced, loadFavorites]);
+	const toggleFavorite = async (tab: SongDetail) => {
+		if (user) {
+			// Supabase favorites - check by tab_url since we don't have tab_id yet
+			const existing = favorites.find(
+				(f) => f.tab.tab_url === tab.tab_url,
+			);
 
-	const toggleFavorite = async (tabUrl: string, tabData: FavoriteTab) => {
-		const isFavorited = tabUrl in favorites;
-
-		if (isFavorited) {
-			// Remove from favorites
-			const { error } = await removeFavorite(tabUrl, Boolean(user));
-			if (!error) {
-				const newFavorites = { ...favorites };
-				delete newFavorites[tabUrl];
-				setFavorites(newFavorites);
+			if (existing) {
+				// Remove from favorites
+				const { error } = await removeSupabaseFavorite(existing.tab_id);
+				if (!error) {
+					setFavorites(favorites.filter((f) => f.id !== existing.id));
+				}
+			} else {
+				// Add to favorites (this will save full tab content)
+				const { error } = await addSupabaseFavorite(tab);
+				if (!error) {
+					// Reload to get the new favorite with its ID
+					await loadFavorites();
+				}
 			}
 		} else {
-			// Add to favorites
-			const { error } = await addFavorite(tabUrl, tabData, Boolean(user));
-			if (!error) {
-				setFavorites({ ...favorites, [tabUrl]: tabData });
+			// localStorage favorites (legacy)
+			const currentPath = tab.tab_url;
+			const newLocalFavorites = { ...localFavorites };
+
+			if (currentPath in newLocalFavorites) {
+				delete newLocalFavorites[currentPath];
+			} else {
+				newLocalFavorites[currentPath] = {
+					artist_name: tab.artist_name,
+					song: tab.song_name,
+					type: tab.type,
+					rating: tab.rating,
+					tab_url: currentPath,
+				};
 			}
+
+			setLocalFavorites(newLocalFavorites);
+			saveLocalFavorites(newLocalFavorites);
 		}
 	};
 
 	const isFavorite = (tabUrl: string) => {
-		return tabUrl in favorites;
+		if (user) {
+			return favorites.some((f) => f.tab.tab_url === tabUrl);
+		} else {
+			return tabUrl in localFavorites;
+		}
+	};
+
+	const getTabId = (tabUrl: string): string | null => {
+		if (user) {
+			const fav = favorites.find((f) => f.tab.tab_url === tabUrl);
+			return fav?.tab_id || null;
+		}
+		return null;
 	};
 
 	return {
 		favorites,
+		localFavorites,
 		loading,
 		toggleFavorite,
 		isFavorite,
+		getTabId,
 		refreshFavorites: loadFavorites,
 	};
 }

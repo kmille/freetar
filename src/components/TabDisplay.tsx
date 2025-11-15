@@ -76,13 +76,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	}, []);
 
 	const handleToggleFavorite = () => {
-		toggleFavorite(currentPath, {
-			artist_name: tab.artist_name,
-			song: tab.song_name,
-			type: tab.type,
-			rating: tab.rating,
-			tab_url: currentPath,
-		});
+		toggleFavorite(tab);
 	};
 
 	const handleOpenSetlistModal = async () => {
@@ -99,13 +93,7 @@ export default function TabDisplay({ tab }: TabDisplayProps) {
 	};
 
 	const handleAddToSetlist = async (setlistId: string) => {
-		const { error } = await addToSetlist(setlistId, {
-			artist_name: tab.artist_name,
-			song_name: tab.song_name,
-			type: tab.type,
-			rating: tab.rating,
-			tab_url: currentPath,
-		});
+		const { error } = await addToSetlist(setlistId, tab);
 
 		if (error) {
 			alert("Failed to add to setlist. It may already be in this setlist.");

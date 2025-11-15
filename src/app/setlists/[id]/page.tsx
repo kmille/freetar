@@ -138,10 +138,10 @@ export default function SetlistDetailPage() {
 											<td>{index + 1}</td>
 											<td>
 												<Link
-													href={`/tab?path=${item.tab_url.replace("/tab/", "")}`}
+													href={`/tab?id=${item.tab_id}`}
 													className="link link-hover font-semibold"
 												>
-													{item.song_name}
+													{item.tab.song_name}
 												</Link>
 												{item.notes && (
 													<div className="text-xs text-base-content/60 mt-1">
@@ -149,17 +149,17 @@ export default function SetlistDetailPage() {
 													</div>
 												)}
 											</td>
-											<td>{item.artist_name}</td>
+											<td>{item.tab.artist_name}</td>
 											<td>
 												<span className="badge badge-ghost badge-sm">
-													{item.type}
+													{item.tab.type}
 												</span>
 											</td>
 											<td>
 												<div className="flex items-center gap-1">
 													<FaStar className="text-yellow-500 text-sm" />
 													<span className="text-sm">
-														{item.rating}/5
+														{item.tab.rating}/5
 													</span>
 												</div>
 											</td>
