@@ -74,7 +74,7 @@ function startScrolling() {
     scrollInterval = setInterval(pageScroll, scrollTimeout);
 }
 
-// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds. 
+// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds.
 // Will stop `pageScroll` from actually scrolling the page
 function pauseScrolling(delay) {
     pausedForUserInteraction = true;
@@ -104,6 +104,11 @@ function colorize_favs() {
     });
 }
 
+function get_flats_enabled()
+{
+    return document.getElementById("checkbox_use_flats").checked;
+}
+
 function initialise_transpose() {
     let transpose_value = 0;
     const transposedSteps = $('#transposed_steps')
@@ -121,6 +126,9 @@ function initialise_transpose() {
         transpose_value = 0
         transpose()
     });
+    $("#checkbox_use_flats").click(function() {
+        transpose();
+    });
 
     $('.tab').find('.chord-root, .chord-bass').each(function () {
         const text = $(this).text()
@@ -128,6 +136,7 @@ function initialise_transpose() {
     })
 
     function transpose() {
+        use_flats = get_flats_enabled();
         $('.tab').find('.chord-root, .chord-bass').each(function () {
             const originalText = $(this).attr('data-original')
             const transposedSteps = $('#transposed_steps')
@@ -135,7 +144,7 @@ function initialise_transpose() {
                 $(this).text(originalText)
                 transposedSteps.hide()
             } else {
-                const new_text = transpose_note(originalText.trim(), transpose_value)
+                const new_text = transpose_note(originalText.trim(), transpose_value, use_flats)
                 $(this).text(new_text)
                 transposedSteps.text((transpose_value > 0 ? "+" : "") + transpose_value)
                 transposedSteps.show()
@@ -163,7 +172,7 @@ function initialise_transpose() {
     // next note up or down. Currently just selects the first note name that
     // matches. It doesn't preserve sharp, flat, or any try to determine what
     // key we're in.
-    function transpose_note(note, transpose_value) {
+    function transpose_note(note, transpose_value, use_flats=false) {
 
         let noteIndex = noteNames.findIndex(tone => tone.includes(note));
         if (noteIndex === -1)
@@ -177,8 +186,16 @@ function initialise_transpose() {
             new_index += 12;
         }
 
-        // TODO: Decide on sharp, flat, or natural
-        return noteNames[new_index][0];
+        let options = noteNames[new_index];
+        let isFirstNoteNatural = !options[0].includes("b") && !options[0].includes("#");
+        let index = 0;
+        if (options.length > 1
+                && use_flats
+                && !isFirstNoteNatural) {
+            index = 1;
+        }
+
+        return options[index];
     }
 }
 
@@ -229,4 +246,3 @@ document.querySelectorAll('.favorite').forEach(item => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   })
 })
-
