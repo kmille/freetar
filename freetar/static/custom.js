@@ -74,7 +74,7 @@ function startScrolling() {
     scrollInterval = setInterval(pageScroll, scrollTimeout);
 }
 
-// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds. 
+// Sets `pausedForUserInteraction` to `true` for `delay` milliseconds.
 // Will stop `pageScroll` from actually scrolling the page
 function pauseScrolling(delay) {
     pausedForUserInteraction = true;
@@ -156,13 +156,13 @@ function initialise_transpose() {
     const noteNames = [
         ['A'],
         ['A#', 'Bb'],
-        ['B'],
-        ['C'],
+        ['B','Cb'],
+        ['C', 'B#'],
         ['C#', 'Db'],
         ['D'],
         ['D#', 'Eb'],
-        ['E'],
-        ['F'],
+        ['E', 'Fb'],
+        ['F', 'E#'],
         ['F#', 'Gb'],
         ['G'],
         ['G#', 'Ab'],
@@ -187,12 +187,15 @@ function initialise_transpose() {
         }
 
         let options = noteNames[new_index];
+        let isFirstNoteNatural = !options[0].includes("b") && !options[0].includes("#");
         let index = 0;
-        if (options.length > 1 && use_flats) {
+        if (options.length > 1
+                && use_flats
+                && !isFirstNoteNatural) {
             index = 1;
         }
 
-        return noteNames[new_index][index];
+        return options[index];
     }
 }
 
@@ -243,4 +246,3 @@ document.querySelectorAll('.favorite').forEach(item => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   })
 })
-
