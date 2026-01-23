@@ -1,0 +1,8 @@
+services:
+  freetar:
+    image: kmille2/freetar:latest
+    build: .
+    container_name: freetar
+    ports:
+      - "${FREETAR_PORT:-22000}:22000"
+    restart: unless-stopped
