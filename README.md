@@ -36,9 +36,24 @@ pip install freetar
 Image: https://hub.docker.com/r/kmille2/freetar  
 Port: 22000
 
-```
+```shell
 sudo docker pull kmille2/freetar
 sudo docker run -p 127.0.0.1:22000:22000 kmille2/freetar
+```
+
+Or use Docker compose:
+
+```shell
+sudo docker compose up -d
+```
+
+Set a custom bind port with the environment variable `FREETAR_PORT`
+
+You can also build and run the local repository instead of pulling from Docker Hub:
+
+```shell
+docker compose build
+docker compose up -d
 ```
 
 
