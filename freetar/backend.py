@@ -80,8 +80,8 @@ def internal_error(error):
 
 
 def main():
-    host = "0.0.0.0"
-    port = 22000
+    host = os.getenv('FREETAR_HOST', '0.0.0.0')
+    port = os.getenv('FREETAR_PORT', 22000)
     if __name__ == '__main__':
         app.run(debug=True,
                 host=host,
