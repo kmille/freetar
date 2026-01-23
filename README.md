@@ -20,6 +20,10 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 ## How to use it
 After successful installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
 
+You can specify a custom listen host or port by setting one or both of the following environment variables:
+
+* `FREETAR_HOST`
+* `FREETAR_PORT`
 
 **PyPi**  
 Package: https://pypi.org/project/freetar/
