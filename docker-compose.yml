@@ -6,3 +6,7 @@ services:
     ports:
       - "${FREETAR_PORT:-22000}:22000"
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
