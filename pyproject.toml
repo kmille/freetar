@@ -18,7 +18,7 @@ flask-minify = "^0.50"
 flask-caching = "^2.3.1"
 
 [tool.poetry.group.dev.dependencies]
-pdbpp = "^0.11.6"
+pdbpp = "^0.12.0"
 
 [build-system]
 requires = ["poetry-core"]
