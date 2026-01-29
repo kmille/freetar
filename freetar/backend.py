@@ -80,14 +80,20 @@ def internal_error(error):
 
 
 def main():
-    host = "0.0.0.0"
-    port = 22000
+    host = os.getenv("HOST", "0.0.0.0")
+
+    try:
+        port = int(os.getenv("PORT", 22000))
+        threads = int(os.getenv("THREADS", 4))
+    except ValueError as e:
+        logging.error(f"Config error: {e}")
+        sys.exit(1)
+
     if __name__ == '__main__':
         app.run(debug=True,
                 host=host,
                 port=port)
     else:
-        threads = os.environ.get("THREADS", "4")
         print(f"Running backend on {host}:{port} with {threads} threads")
         waitress.serve(app, listen=f"{host}:{port}", threads=threads)
 
