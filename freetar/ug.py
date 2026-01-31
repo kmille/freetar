@@ -157,7 +157,7 @@ def get_chords(s: SongDetail) -> SongDetail:
             found = False
             for fret, fingers in variants_temp.items():
                 try:
-                    if not found and fingers.index(1) >= 0:
+                    if not found and (1 in fingers):
                         found = True
                 except ValueError:
                     ...
@@ -167,16 +167,16 @@ def get_chords(s: SongDetail) -> SongDetail:
 
             if not len(variants):
                 continue
+            if (6 - len(variants)) >= min(variants.keys()):
+                for fret in range(1, min(variants.keys())):
+                    variants[fret] = [0] * 6
             while len(variants) < 6:
                 variants[max(variants) + 1] = [0] * 6
-
-            variant_strings_pressed = [*variants.values()]
-            variant_strings_pressed = [sum(x) for x in zip(*variant_strings_pressed)]
-            unstrummed_strings = [int(not bool(y)) for y in variant_strings_pressed]
+            variants = {k: variants[k] for k in sorted(variants.keys())}
 
             fingering_for_variant = []
-            for finger, x in zip(chord_variant["fingers"][::-1], unstrummed_strings):
-                fingering_for_variant.append("x" if x else finger)
+            for finger, fret in zip(chord_variant["fingers"][::-1], chord_variant["frets"][::-1]):
+                fingering_for_variant.append("x" if fret == -1 else finger)
             fingering_for_variant = fingering_for_variant
 
             if chord not in chords:
