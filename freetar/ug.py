@@ -106,7 +106,7 @@ class Search:
 
     def __init__(self, value: str, page: int):
         try:
-            resp = requests.get(f"https://www.ultimate-guitar.com/search.php?page={page}&search_type=title&value={quote(value)}",
+            resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}",
                                 headers={'User-Agent': USER_AGENT})
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
@@ -190,7 +190,7 @@ def get_chords(s: SongDetail) -> SongDetail:
 
 def ug_tab(url_path: str):
     try:
-        resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + url_path,
+        resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path,
                             headers={'User-Agent': USER_AGENT})
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
