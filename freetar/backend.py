@@ -12,7 +12,7 @@ cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
                       "CACHE_THRESHOLD": 10000})
 
 app = Flask(__name__)
-cache.init_app(app)
+#cache.init_app(app)
 Minify(app=app, html=True, js=True, cssless=True)
 
 
@@ -29,7 +29,7 @@ def index():
 
 
 @app.route("/search")
-@cache.cached(query_string=True)
+#@cache.cached(query_string=True)
 def search():
     search_term = request.args.get("search_term")
     try:
@@ -47,7 +47,7 @@ def search():
 
 
 @app.route("/tab/<artist>/<song>")
-@cache.cached()
+#@cache.cached()
 def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
     return render_template("tab.html",
@@ -56,7 +56,7 @@ def show_tab(artist: str, song: str):
 
 
 @app.route("/tab/<tabid>")
-@cache.cached()
+#@cache.cached()
 def show_tab2(tabid: int):
     tab = ug_tab(tabid)
     return render_template("tab.html",

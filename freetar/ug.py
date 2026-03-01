@@ -1,4 +1,5 @@
 import requests
+import tempfile
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 import json
@@ -113,10 +114,25 @@ class Search:
             self.total_pages = data['store']['page']['data']['pagination']['total']
             self.current_page = data['store']['page']['data']['pagination']['current']
             #print(json.dumps(data, indent=4))
-        except requests.exceptions.RequestException:
-            # don't print full URL here, in case of 404
+        except requests.exceptions.HTTPError as e:
+            print(f"DEBUG: Error Searching for chords: {e}")
+            print(f"DEBUG: Response:\n{e.response.text}")
+            with open(f"/tmp/{next(tempfile._get_candidate_names())}.html", "w") as f:
+                print(f"Writing response to {f.name}")
+                f.write(resp.text)
             raise FreetarError(f"Could not find any chords for '{value}'.")
+        #except requests.exceptions.RequestException as e:
+        #    print(f"DEBUG: Error Searching for chords: {e}")
+        #    # don't print full URL here, in case of 404
+        #    with open(f"/tmp/{next(tempfile._get_candidate_names())}.html", "w") as f:
+        #        print(f"Writing response to {f.name}")
+        #        f.write(resp.text)
+        #    raise FreetarError(f"Could not find any chords for '{value}'.")
         except (KeyError, ValueError, AttributeError) as e:
+            print(f"DEBUG: Error Searching for chords: {e}")
+            with open(f"/tmp/{next(tempfile._get_candidate_names())}.html", "w") as f:
+                print(f"Writing response to {f.name}")
+                f.write(resp.text)
             raise FreetarError(f"Could not search for chords: {e}") from e
 
     def get_results(self, data: object):
