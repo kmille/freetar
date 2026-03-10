@@ -52,7 +52,6 @@
   {% endif %}
 </div>
 
-{% if favs %}
 <details><summary>Advanced</summary>
   <strong class="d-block">Export favorites</strong>
   <button type="button" class="btn btn-secondary" onclick="exportFavorites()">Export</button><br/>
@@ -61,19 +60,21 @@
 </details>
 
 <script>
-        favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        const resultsBody = document.querySelector('#results tbody');
 
-        $.each(favorites, function (index, song) {
-            $('#results').append(
-                '<tr>' +
-                '<td>' + song.artist_name + '</td>' +
-                '<td class="song">' +
-                '<a href="' + song.tab_url + '">' + song.song + '</a>' +
-                '</td>' +
-                '<td>' + song.rating + '</td>' +
-                '<td>' + song.type + '</td>' +
-                '<td><span data-artist="'+song.artist_name+'" data-song="'+song.song+'" data-type="'+song.type+'" data-rating="'+song.rating+'" data-url="'+song.tab_url+'" class="favorite">★</span></td>' +
-                '</tr>');
+        Object.values(favorites).forEach(song => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${song.artist_name}</td>
+                <td class="song">
+                    <a href="${song.tab_url}">${song.song}</a>
+                </td>
+                <td>${song.rating}</td>
+                <td>${song.type}</td>
+                <td><span data-artist="${song.artist_name}" data-song="${song.song}" data-type="${song.type}" data-rating="${song.rating}" data-url="${song.tab_url}" class="favorite">★</span></td>
+            `;
+            resultsBody.appendChild(row);
         });
 
   function exportFavorites() {
@@ -100,12 +101,14 @@
     }
   }
 </script>
-{% endif %}
 
 <script>
-    favorites_url = Object.keys(JSON.parse(localStorage.getItem("favorites")) || {});
-    for (const fav of [...document.getElementsByClassName('favorite')]) {
-      if (favorites_url.includes(fav.getAttribute('data-url').split("?")[0])) $(fav).css("color", "#ffae00");
+    const favoritesData = JSON.parse(localStorage.getItem("favorites")) || {};
+    const favorites_url = Object.keys(favoritesData);
+    for (const fav of document.querySelectorAll('.favorite')) {
+      if (favorites_url.includes(fav.getAttribute('data-url').split("?")[0])) {
+        fav.style.color = "#ffae00";
+      }
     } 
 
     // Add sorting to the table

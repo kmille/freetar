@@ -11,26 +11,33 @@ let scrollTimeout = 500;
 let scrollInterval = null;
 let pauseScrollTimeout = null;
 
-$('#checkbox_autoscroll').prop("checked", false);
+const checkboxAutoscroll = document.getElementById("checkbox_autoscroll");
+if (checkboxAutoscroll) {
+    checkboxAutoscroll.checked = false;
+}
 
 
 /*****************
 * Event Handlers
 *****************/
 
-$('#checkbox_autoscroll').click(function () {
-    if ($(this).is(':checked')) {
+checkboxAutoscroll?.addEventListener("click", function () {
+    if (this.checked) {
         startScrolling();
     } else {
         stopScrolling();
     }
 });
 
-$(window).on("wheel touchmove", function() {
+window.addEventListener("wheel", () => {
     pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
 });
 
-$('#scroll_speed_down').click(function () {
+window.addEventListener("touchmove", () => {
+    pauseScrolling(SCROLL_DELAY_AFTER_USER_ACTION);
+});
+
+document.getElementById("scroll_speed_down")?.addEventListener("click", function () {
     // Increase the delay to slow down scroll
     scrollTimeout += 50;
     if (scrollInterval !== null)
@@ -40,10 +47,10 @@ $('#scroll_speed_down').click(function () {
     }
 });
 
-$('#scroll_speed_up').click(function () {
+document.getElementById("scroll_speed_up")?.addEventListener("click", function () {
     // Decrease the delay to speed up scroll.
     // Don't decrease the delay all the way to 0
-    scrollTimeout = Math.max(50, scrollTimeout - 50);
+    scrollTimeout = Math.max(SCROLL_TIMEOUT_MINIMUM, scrollTimeout - 50);
 
     if (scrollInterval !== null)
     {
@@ -68,6 +75,7 @@ function pageScroll() {
 // Sets up the `pageScroll` function to be called in a loop every
 // `scrollTimeout` milliseconds
 function startScrolling() {
+    document.getElementById("scroll_speed").innerHTML = (scrollTimeout / 50 - 10) * -1;
     if (scrollInterval) {
         clearInterval(scrollInterval);
     }
@@ -94,51 +102,59 @@ function stopScrolling() {
 
 function colorize_favs() {
     // make every entry yellow if we faved it before
-    favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
 
-    $("#results tr").each(function () {
-        var tab_url = $(this).find(".song").find("a").attr("href");
-        if (favorites[tab_url] != undefined) {
-            $(this).find(".favorite").css("color", "#ffae00");
+    document.querySelectorAll("#results tr").forEach((row) => {
+        const tab_url = row.querySelector(".song a")?.getAttribute("href");
+        if (tab_url && favorites[tab_url] !== undefined) {
+            const favoriteEl = row.querySelector(".favorite");
+            if (favoriteEl) {
+                favoriteEl.style.color = "#ffae00";
+            }
         }
     });
 }
 
 function initialise_transpose() {
     let transpose_value = 0;
-    const transposedSteps = $('#transposed_steps')
-    const minus = $('#transpose_down')
-    const plus = $('#transpose_up')
-    plus.click(function () {
+    const transposedSteps = document.getElementById("transposed_steps");
+    const minus = document.getElementById("transpose_down");
+    const plus = document.getElementById("transpose_up");
+
+    plus?.addEventListener("click", function () {
         transpose_value = Math.min(11, transpose_value + 1)
         transpose()
     });
-    minus.click(function () {
+    minus?.addEventListener("click", function () {
         transpose_value = Math.max(-11, transpose_value - 1)
         transpose()
     });
-    transposedSteps.click(function () {
+    transposedSteps?.addEventListener("click", function () {
         transpose_value = 0
         transpose()
     });
 
-    $('.tab').find('.chord-root, .chord-bass').each(function () {
-        const text = $(this).text()
-        $(this).attr('data-original', text)
-    })
+    document.querySelectorAll(".tab .chord-root, .tab .chord-bass").forEach((el) => {
+        const text = el.textContent;
+        el.setAttribute("data-original", text);
+    });
 
     function transpose() {
-        $('.tab').find('.chord-root, .chord-bass').each(function () {
-            const originalText = $(this).attr('data-original')
-            const transposedSteps = $('#transposed_steps')
+        document.querySelectorAll(".tab .chord-root, .tab .chord-bass").forEach((el) => {
+            const originalText = el.getAttribute("data-original");
+            const transposedSteps = document.getElementById("transposed_steps");
             if (transpose_value === 0) {
-                $(this).text(originalText)
-                transposedSteps.hide()
+                el.textContent = originalText;
+                if (transposedSteps) {
+                    transposedSteps.style.display = "none";
+                }
             } else {
-                const new_text = transpose_note(originalText.trim(), transpose_value)
-                $(this).text(new_text)
-                transposedSteps.text((transpose_value > 0 ? "+" : "") + transpose_value)
-                transposedSteps.show()
+                const new_text = transpose_note(originalText.trim(), transpose_value);
+                el.textContent = new_text;
+                if (transposedSteps) {
+                    transposedSteps.textContent = (transpose_value > 0 ? "+" : "") + transpose_value;
+                    transposedSteps.style.display = "";
+                }
             }
         });
     }
@@ -164,7 +180,6 @@ function initialise_transpose() {
     // matches. It doesn't preserve sharp, flat, or any try to determine what
     // key we're in.
     function transpose_note(note, transpose_value) {
-
         let noteIndex = noteNames.findIndex(tone => tone.includes(note));
         if (noteIndex === -1)
         {
@@ -182,59 +197,82 @@ function initialise_transpose() {
     }
 }
 
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", function () {
     colorize_favs();
     initialise_transpose();
 });
 
 
-$('#checkbox_view_chords').click(function(){
-    if($(this).is(':checked')){
-        $("#chordVisuals").show();
-    } else {
-        $("#chordVisuals").hide();
+document.getElementById("checkbox_view_chords")?.addEventListener("click", function () {
+    const chordVisuals = document.getElementById("chordVisuals");
+    if (chordVisuals) {
+        chordVisuals.style.display = this.checked ? "" : "none";
     }
 });
 
-$('#download').click(function(){
-    $("#download-options").show();
+document.getElementById("download")?.addEventListener("click", function () {
+    document.getElementById("download-options").style.display = "block";
 });
 
-$('#download-options').click(function(){
-    $("#download-options").hide();
+document.getElementById("download-options")?.addEventListener("click", function () {
+    document.getElementById("download-options").style.display = "none";
 });
 
-$('#dark_mode').click(function(){
+document.getElementById("dark_mode")?.addEventListener("click", function () {
     if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
         document.documentElement.setAttribute('data-bs-theme', 'light');
         localStorage.setItem("dark_mode", false);
-    }
-    else {
+    } else {
         document.documentElement.setAttribute('data-bs-theme', 'dark');
         localStorage.setItem("dark_mode", true);
     }
 });
 
-document.querySelectorAll('.favorite').forEach(item => {
-  item.addEventListener('click', event => {
-    favorites = JSON.parse(localStorage.getItem("favorites")) || {};
-    elm = event.target;
-    tab_url = elm.getAttribute('data-url')
-    if (tab_url in favorites) {
-        delete favorites[tab_url];
-        $(elm).css("color", "");
-    } else {
-      const fav = {
-        artist_name: elm.getAttribute('data-artist'),
-        song: elm.getAttribute('data-song'),
-        type: elm.getAttribute('data-type'),
-        rating: elm.getAttribute('data-rating'),
-        tab_url: elm.getAttribute('data-url')
-      }
-      favorites[fav["tab_url"]] = fav;
-      $(elm).css("color", "#ffae00");
-    }
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  })
-})
+document.querySelectorAll(".favorite").forEach((item) => {
+    item.addEventListener("click", (event) => {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
+        const elm = event.currentTarget;
+        const tab_url = elm.getAttribute("data-url");
+        if (tab_url in favorites) {
+            delete favorites[tab_url];
+            elm.style.color = "";
+        } else {
+            const fav = {
+                artist_name: elm.getAttribute("data-artist"),
+                song: elm.getAttribute("data-song"),
+                type: elm.getAttribute("data-type"),
+                rating: elm.getAttribute("data-rating"),
+                tab_url: elm.getAttribute("data-url"),
+            };
+            favorites[fav["tab_url"]] = fav;
+            elm.style.color = "#ffae00";
+        }
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+    });
+});
 
+const change_columns = (add) => {
+    const tabs = document.querySelector(".tab");
+    if (tabs) {
+        tabs.style.columnCount = parseInt(tabs.style.columnCount || 1) + add;
+
+        const down = document.querySelector("#columns_down");
+        const up = document.querySelector("#columns_up");
+        if (["", "1"].includes(tabs.style.columnCount)) {
+            down.style.opacity = 0.3;
+            down.style.pointerEvents = "none";
+        } else if (["", "4"].includes(tabs.style.columnCount)) {
+            up.style.opacity = 0.3;
+            up.style.pointerEvents = "none";
+        } else {
+            down.style.opacity = 1;
+            up.style.opacity = 1;
+            down.style.pointerEvents = "auto";
+            up.style.pointerEvents = "auto";
+        }
+    }
+};
+
+change_columns(0);
+document.querySelector("#columns_up")?.addEventListener("click", () => change_columns(1));
+document.querySelector("#columns_down")?.addEventListener("click", () => change_columns(-1));

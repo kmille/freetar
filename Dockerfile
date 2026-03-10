@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.21 AS builder
+FROM python:3.14-alpine3.23 AS builder
 RUN apk update
 RUN apk add gcc musl-dev libffi-dev
 RUN pip install poetry
@@ -7,7 +7,12 @@ WORKDIR /app
 RUN poetry build --format=wheel
 
 
-FROM python:3.12-alpine3.20
+FROM python:3.14-alpine3.23
+
+LABEL org.opencontainers.image.source=https://github.com/kmille/freetar
+LABEL org.opencontainers.image.description="freetar - an alternative frontend to ultimate-guitar.com "
+LABEL org.opencontainers.image.licenses=GPL-3.0-only
+
 ENV PYTHONUNBUFFERED=TRUE
 
 COPY --from=builder /app/dist/*.whl .
