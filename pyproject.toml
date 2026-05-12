@@ -1,7 +1,7 @@
 [project]
 name = "freetar"
 version = "0.18.0"
-description = ""
+description = "an alternative frontend to ultimate-guitar.com"
 authors = [{ name = "kmille", email = "github@androidloves.me" }]
 readme = "README.md"
 repository = "https://github.com/kmille/freetar"
