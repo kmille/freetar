@@ -5,7 +5,7 @@ from flask_caching import Cache
 from flask_minify import Minify
 
 from freetar.ug import Search, ug_tab
-from freetar.utils import get_version, FreetarError
+from freetar.utils import get_version, get_bootstrap_colors, FreetarError
 
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
                       "CACHE_DEFAULT_TIMEOUT": 0,
@@ -52,6 +52,7 @@ def show_tab(artist: str, song: str):
     tab = ug_tab(f"{artist}/{song}")
     return render_template("tab.html",
                            tab=tab,
+                           bootstrap_colors=get_bootstrap_colors(),
                            title=f"{tab.artist_name} - {tab.song_name}")
 
 
@@ -61,6 +62,7 @@ def show_tab2(tabid: int):
     tab = ug_tab(tabid)
     return render_template("tab.html",
                            tab=tab,
+                           bootstrap_colors=get_bootstrap_colors(),
                            title=f"{tab.artist_name} - {tab.song_name}")
 
 
