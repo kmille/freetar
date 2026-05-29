@@ -7,8 +7,9 @@ from flask_minify import Minify
 from freetar.ug import Search, ug_tab
 from freetar.utils import get_version, FreetarError
 
+CACHE_TIMEOUT = int(os.environ.get("FREETAR_CACHE_TIMEOUT", 0))
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
-                      "CACHE_DEFAULT_TIMEOUT": 0,
+                      "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
                       "CACHE_THRESHOLD": 10000})
 
 app = Flask(__name__)

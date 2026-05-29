@@ -16,14 +16,15 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 - useful for printing chords
 - show chords
 
-
 ## How to use it
-After successful installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000.  
 
-You can specify a custom listen host or port by setting one or both of the following environment variables:
+After successful installation, there is an executable called `freetar` in the PATH. Execute it without parameters and it listens on 0.0.0.0:22000. You can specify a custom listen host or port by using environment variables. 
+
+## Environment variables
 
 * `FREETAR_HOST`
 * `FREETAR_PORT`
+* `FREETAR_CACHE_TIMEOUT` (how log should tabs be cached in memory, reduces the requests to Ultimate Guitar, defaults to 0 (inifnity))
 
 **PyPi**  
 Package: https://pypi.org/project/freetar/
@@ -66,7 +67,7 @@ Visit localhost:22000 in browser
 
 # static files: freetar/static/*
 # html templates: freetar/templates/*
-uv run freetar
+FREETAR_CACHE_TIMEOUT=1 uv run freetar
 ```
 
 ## Future work
@@ -74,6 +75,7 @@ uv run freetar
 - ~~show chords~~
 - improve UX on mobile devices
 - on smartphones: prevent lock screen
+- package it as PGA (Progressive Web APP)
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
 - ~~Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)~~ ([done](https://github.com/libredirect/browser_extension/issues/942))
