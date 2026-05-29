@@ -59,6 +59,41 @@
           <span role="button" id="columns_up" title="add column" class="m-2">+</span>
           <span role="button" id="columns_down" title="remove column" class="m-2">-</span>
       </div>
+
+      <div class="dropdown">
+        <style>
+            :root {
+                --chords-color: var(--bs-body-color);
+            }
+
+            .color-swatch {
+                width: 1.5rem;
+                height: 1.5rem;
+                padding: 0;
+                border: 1px solid var(--bs-border-color);
+            }
+            .color-swatch:has(.btn-check:checked) {
+                outline: 2px solid var(--bs-body-color);
+                outline-offset: 1px;
+                border: none;
+            }
+            .chord {
+                color: var(--chords-color, var(--bs-body-color));
+            }
+        </style>
+        <button class="btn btn-sm dropdown-toggle d-flex align-items-center gap-1" type="button" id="chordColorDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Select chords color">
+            <span id="currentColorIndicator" class="border border-secondary-subtle rounded-circle" style="width: 1.25em; height: 1.25em; background-color: var(--chords-color);"></span>
+        </button>
+        <div class="dropdown-menu p-2 shadow-sm" aria-labelledby="chordColorDropdown" style="min-width: 7rem;">
+            <div class="d-flex flex-wrap gap-2 justify-content-evenly" id="chordColorPalette">
+                {% for color in bootstrap_colors %}
+                    <label class="btn color-swatch" style="background-color: var({{ color }});">
+                        <input type="radio" class="btn-check" name="chordColor" value="{{ color }}">
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+      </div>
   </div>
 
     <hr class="border border-primary"/>
@@ -116,8 +151,10 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.documentElement.style.setProperty("--chords-color", `var(${localStorage.getItem("chords_color") || "--bs-body-color"})`);
 
+    document.addEventListener("DOMContentLoaded", function () {
+        // Set favorite star's color to gold if this song is in the user's favorites
         const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
         if (window.location.pathname in favorites) {
             console.log("True!");
@@ -126,8 +163,25 @@
             });
         }
 
+        // Set/update the chords highlight color
+        set_chords_color(document.documentElement.style.getPropertyValue("--chords-color").slice(4, -1));
+        document.getElementById("chordColorPalette")?.addEventListener("change", e => set_chords_color(e.target.value));
     });
 
+    function set_chords_color(color) {
+        // If the given `color` is invalid, set it to the default value
+        if (!color) color = "--bs-body-color";
+
+        // Update the chords color CSS variable
+        document.documentElement.style.setProperty("--chords-color", `var(${color})`);
+        // Update the radio button selection in the color selection dropdown menu
+        const radio = document.querySelector(`input[name="chordColor"][value="${color}"]`);
+        if (radio) radio.checked = true;
+
+        // Save color selection to local storage
+        localStorage.setItem("chords_color", color);
+    }
 </script>
+<script defer src="/static/bootstrap/bootstrap.bundle.min.js"></script>
 
 {% endblock %}
