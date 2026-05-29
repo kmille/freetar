@@ -60,6 +60,9 @@
 </details>
 
 <script>
+
+    if (window.location.pathname === "/") {
+
         const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
         const resultsBody = document.querySelector('#results tbody');
 
@@ -76,6 +79,7 @@
             `;
             resultsBody.appendChild(row);
         });
+    }
 
   function exportFavorites() {
     const blob = new Blob([localStorage.getItem("favorites")], { type: "application/json" });
