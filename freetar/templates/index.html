@@ -34,9 +34,16 @@
 
 <div>
   {% if search_results %}
-        More results
         <table>
             <tr>
+                <td>
+                {% if search_results.current_page > 1 %}
+                    &nbsp;
+                    <a href="/search?search_term={{ search_term }}&page={{ search_results.current_page - 1 }}" >⇐&nbsp;</a>
+                {% else %}
+                    &nbsp;⇐
+                {% endif %}
+                </td>
                 {% for page in range(search_results.total_pages) %}
                 <td>
                     <a    
@@ -47,6 +54,14 @@
                     </a>
                 </td>
                 {% endfor %}
+                <td>
+                {% if search_results.current_page < search_results.total_pages %}
+                    <a href="/search?search_term={{ search_term }}&page={{ search_results.current_page + 1 }}" >&nbsp;⇒</a>
+                    &nbsp;
+                {% else %}
+                    &nbsp;⇒
+                {% endif %}
+                </td>
             </tr>
         </table>
   {% endif %}
