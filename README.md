@@ -61,7 +61,7 @@ docker compose up -d
 ### Dev environment
 You need [uv](https://docs.astral.sh/uv/getting-started/installation/). Then:
 ```
-uv run freetar/backend.py
+FREETAR_CACHE_TIMEOUT=1 uv run freetar/backend.py
 vim freetar/*.py
 Visit localhost:22000 in browser
 
@@ -75,10 +75,11 @@ FREETAR_CACHE_TIMEOUT=1 uv run freetar
 - ~~show chords~~
 - improve UX on mobile devices
 - on smartphones: prevent lock screen
-- package it as PGA (Progressive Web APP)
+- package it as PGA (Progressive Web App)
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?
 - ~~Browser Extension like [Invidious Redirection](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/)~~ ([done](https://github.com/libredirect/browser_extension/issues/942))
+- show qr code to quickly share a tab?
 
 ## Contributions
 
