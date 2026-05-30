@@ -116,16 +116,42 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    let wakeLock = null;
 
+    async function requestWakeLock() {
+        if (!('wakeLock' in navigator)) {
+            console.log('Wake Lock API not supported');
+            return;
+        }
+
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock got lost');
+            });
+
+            console.log('Wake Lock is active');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        requestWakeLock();
+        
         const favorites = JSON.parse(localStorage.getItem("favorites")) || {};
         if (window.location.pathname in favorites) {
-            console.log("True!");
             document.querySelectorAll(".favorite").forEach(el => {
                 el.style.color = "#ffae00";
             });
         }
-
     });
 
 </script>
