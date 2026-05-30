@@ -15,6 +15,7 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 - auto scroll
 - useful for printing chords
 - show chords
+- prvent screen from turning off (using WakeLock API)
 
 ## How to use it
 
@@ -72,9 +73,7 @@ FREETAR_CACHE_TIMEOUT=1 uv run freetar
 
 ## Future work
 
-- ~~show chords~~
 - improve UX on mobile devices
-- on smartphones: prevent lock screen
 - package it as PGA (Progressive Web App)
 - ~~share chords (qr code)?~~ (done by #12 with export/import functionality)
 - save favs encrypted server side?

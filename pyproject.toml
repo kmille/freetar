@@ -9,9 +9,9 @@ homepage = "https://github.com/kmille/freetar"
 requires-python = ">=3.9"
 
 [project.urls]
-Homepage = "https://github.com/freetar/freetar"
-Repository = "https://github.com/freetar/freetar"
-Issues = "https://github.com/freetar/freetar/issues"
+Homepage = "https://github.com/kmille/freetar"
+Repository = "https://github.com/kmille/freetar"
+Issues = "https://github.com/kmille/freetar/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"
