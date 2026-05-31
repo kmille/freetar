@@ -21,6 +21,8 @@
   <meta property="og:type" content=website>
   <meta property="og:image" content=https://freetar.de/static/guitar.png>
 
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
 
   <link href="/static/bootstrap/bootstrap.min.css" rel="stylesheet">
   <title>{{ title or "Freetar - guitar chords from Ultimate Guitar" }}</title>
@@ -70,6 +72,16 @@
   </div>
 
   <script src="/static/custom.js"></script>
+
+  <script>
+      // just used for the Progressive Web App - not doing anything
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/static/sw.js')
+              .then(() => console.log('Service worker registered'))
+              .catch(err => console.error(err));
+      }
+  </script>
+
 </body>
 
 </html>
