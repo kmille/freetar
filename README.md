@@ -26,6 +26,7 @@ After successful installation, there is an executable called `freetar` in the PA
 * `FREETAR_HOST`
 * `FREETAR_PORT`
 * `FREETAR_CACHE_TIMEOUT` (how log should tabs be cached in memory, reduces the requests to Ultimate Guitar, defaults to 0 (inifnity))
+* `FREETAR_LOCAL=1` fetches directly from Ultimate Guitar instead of the public Freetar proxies.
 
 **PyPi**  
 Package: https://pypi.org/project/freetar/
@@ -69,6 +70,7 @@ Visit localhost:22000 in browser
 # static files: freetar/static/*
 # html templates: freetar/templates/*
 FREETAR_CACHE_TIMEOUT=1 uv run freetar
+FREETAR_LOCAL=1 uv run freetar
 ```
 
 ## Future work

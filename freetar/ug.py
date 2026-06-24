@@ -2,10 +2,18 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 import json
+import os
 import re
 
 from dataclasses import dataclass, field
 from .utils import FreetarError
+
+LOCAL_MODE = os.environ.get("FREETAR_LOCAL") == "1"
+REQUEST_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/126.0.0.0 Safari/537.36",
+}
 
 
 @dataclass
@@ -104,7 +112,12 @@ class Search:
 
     def __init__(self, value: str, page: int):
         try:
-            resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}")
+            if LOCAL_MODE:
+                resp = requests.get("https://www.ultimate-guitar.com/search.php",
+                                    params={"page": page, "search_type": "title", "value": value},
+                                    headers=REQUEST_HEADERS)
+            else:
+                resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}")
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
             data = bs.find("div", {"class": "js-store"}) # KeyError
@@ -187,7 +200,11 @@ def get_chords(s: SongDetail) -> SongDetail:
 
 def ug_tab(url_path: str):
     try:
-        resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path)
+        if LOCAL_MODE:
+            resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + str(url_path),
+                                headers=REQUEST_HEADERS)
+        else:
+            resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path)
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         data = bs.find("div", {"class": "js-store"})
