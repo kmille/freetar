@@ -210,6 +210,14 @@ document.getElementById("checkbox_view_chords")?.addEventListener("click", funct
     }
 });
 
+document.getElementById("download")?.addEventListener("click", function () {
+    document.getElementById("download-options").style.display = "block";
+});
+
+document.getElementById("download-options")?.addEventListener("click", function () {
+    document.getElementById("download-options").style.display = "none";
+});
+
 document.getElementById("dark_mode")?.addEventListener("click", function () {
     if (document.documentElement.getAttribute('data-bs-theme') == 'dark') {
         document.documentElement.setAttribute('data-bs-theme', 'light');
