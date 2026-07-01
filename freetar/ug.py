@@ -1,12 +1,16 @@
-import requests
+from curl_cffi import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 import json
+import os
 import re
 
 from dataclasses import dataclass, field
 from .utils import FreetarError
 
+UG_BASE_DOMAIN = os.getenv("FREETAR_BASE_DOMAIN", "ultimate-guitar.com")
+UG_SEARCH_DOMAIN = os.getenv("FREETAR_SEARCH_DOMAIN", f"www.{UG_BASE_DOMAIN}")
+UG_TABS_DOMAIN = os.getenv("FREETAR_TABS_DOMAIN", f"tabs.{UG_BASE_DOMAIN}")
 
 @dataclass
 class SearchResult:
@@ -104,7 +108,7 @@ class Search:
 
     def __init__(self, value: str, page: int):
         try:
-            resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}")
+            resp = requests.get(f"https://{UG_SEARCH_DOMAIN}/search.php?page={page}search_type=title&value={quote(value)}", impersonate="firefox")
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
             data = bs.find("div", {"class": "js-store"}) # KeyError
@@ -187,7 +191,7 @@ def get_chords(s: SongDetail) -> SongDetail:
 
 def ug_tab(url_path: str):
     try:
-        resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path)
+        resp = requests.get(f"https://{UG_TABS_DOMAIN}/tab/" + url_path, impersonate="firefox")
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         data = bs.find("div", {"class": "js-store"})

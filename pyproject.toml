@@ -15,7 +15,7 @@ Issues = "https://github.com/kmille/freetar/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = {extras = ["socks"], version = "^2.32.3"}
+curl-cffi = ">=0.13.0"
 beautifulsoup4 = "^4.12.0"
 flask = "^3.0.30"
 waitress = "^3.0.2"
