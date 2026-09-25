@@ -52,7 +52,7 @@ Or use Docker compose:
 sudo docker compose up -d
 ```
 
-Set a custom bind port with the environment variable `FREETAR_PORT`
+Set a custom bind port with the environment variable `FREETAR_PORT`. If you use disk cache, the mounted directory needs to be `chown 1000:1000` .
 
 You can also build and run the local repository instead of pulling from Docker Hub:
 
