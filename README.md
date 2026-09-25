@@ -25,7 +25,9 @@ After successful installation, there is an executable called `freetar` in the PA
 
 * `FREETAR_HOST`
 * `FREETAR_PORT`
-* `FREETAR_CACHE_TIMEOUT` (how log should tabs be cached in memory, reduces the requests to Ultimate Guitar, defaults to 0 (inifnity))
+* `FREETAR_CACHING` (`ram` (default) for memory caching, use `off` for developing/debugging, `disk` for disk cache)
+* `FREETAR_CACHE_TIMEOUT` (how log should tabs be cached in memory, reduces the requests to Ultimate Guitar, defaults to 0 (inifnity), only needed if `ram` or `disk` caching is used)
+* `FREETAR_CACHE_DIR` (location of disk cache, defaults to /tmp)
 * `FREETAR_LOCAL=1` fetches directly from Ultimate Guitar instead of the public Freetar proxies.
 
 **PyPi**  
@@ -62,15 +64,14 @@ docker compose up -d
 
 ### Dev environment
 You need [uv](https://docs.astral.sh/uv/getting-started/installation/). Then:
-```
-FREETAR_CACHE_TIMEOUT=1 uv run freetar/backend.py
+```bash
+FREETAR_CACHING=off uv run freetar/backend.py  # dev server
+FREETAR_CACHING=off uv run freetar # production server
 vim freetar/*.py
 Visit localhost:22000 in browser
 
 # static files: freetar/static/*
 # html templates: freetar/templates/*
-FREETAR_CACHE_TIMEOUT=1 uv run freetar
-FREETAR_LOCAL=1 uv run freetar
 ```
 
 ## Future work

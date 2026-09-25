@@ -1,5 +1,7 @@
 import waitress
+import sys
 import os
+from pathlib import Path
 from flask import Flask, render_template, request
 from flask_caching import Cache
 from flask_minify import Minify
@@ -7,12 +9,35 @@ from flask_minify import Minify
 from freetar.ug import Search, ug_tab
 from freetar.utils import get_version, FreetarError
 
+FREETAR_CACHING = os.environ.get("FREETAR_CACHING", "ram")
 CACHE_TIMEOUT = int(os.environ.get("FREETAR_CACHE_TIMEOUT", 0))
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache',
-                      "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
-                      "CACHE_THRESHOLD": 10000})
+CACHE_DIR = os.environ.get("FREETAR_CACHE_DIR", "/tmp")
+
+if FREETAR_CACHING == "off":
+    print("Disabling caching")
+    cache_config = {'CACHE_TYPE': 'NullCache'}
+elif FREETAR_CACHING == "ram":
+    print("Enabling memory caching")
+    cache_config = {
+        'CACHE_TYPE': 'SimpleCache',
+        "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
+        "CACHE_THRESHOLD": 100000,
+    }
+elif FREETAR_CACHING == "disk":
+    Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+    print(f"Enabling disk caching ({CACHE_DIR})")
+    cache_config = {
+        'CACHE_TYPE': 'FileSystemCache',
+        "CACHE_DIR": CACHE_DIR,
+        "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
+        "CACHE_THRESHOLD": 100000,
+    }
+else:
+    print(f"Invalid FREETAR_CACHING value: {FREETAR_CACHING}")
+    sys.exit(1)
 
 app = Flask(__name__)
+cache = Cache(config=cache_config)
 cache.init_app(app)
 Minify(app=app, html=True, js=True, cssless=True)
 
