@@ -128,7 +128,9 @@ def main():
     else:
         threads = os.environ.get("THREADS", "4")
         logger.info(f"Running freetar {get_version()} backend on {host}:{port} with {threads} threads")
-        waitress.serve(app, listen=f"{host}:{port}", threads=threads)
+        waitress.serve(app, listen=f"{host}:{port}",
+                       threads=threads,
+                       channel_timeout=30)
 
 
 if __name__ == '__main__':
