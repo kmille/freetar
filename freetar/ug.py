@@ -124,7 +124,7 @@ class Search:
             else:
                 resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}",
                                     timeout=UPSTREAM_TIMEOUT)
-            logger.debug(f"Got {resp.status_code} for {resp.request.url}")
+            logger.debug(f"Got {resp.status_code} for {resp.request.url} in {resp.elapsed.total_seconds():.2f}s")
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
             data = bs.find("div", {"class": "js-store"}) # KeyError
@@ -214,7 +214,7 @@ def ug_tab(url_path: str):
         else:
             resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path,
                                 timeout=UPSTREAM_TIMEOUT)
-        logger.debug(f"Got {resp.status_code} for {resp.request.url}")
+        logger.debug(f"Got {resp.status_code} for {resp.request.url} in {resp.elapsed.total_seconds():.2f}s")
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         data = bs.find("div", {"class": "js-store"})
