@@ -28,6 +28,7 @@ After successful installation, there is an executable called `freetar` in the PA
 * `FREETAR_PORT`
 * `FREETAR_CACHING` (`ram` (default) for memory caching, use `off` for developing/debugging, `disk` for disk cache)
 * `FREETAR_CACHE_TIMEOUT` (how log should tabs be cached in memory, reduces the requests to Ultimate Guitar, defaults to 0 (inifnity), only needed if `ram` or `disk` caching is used)
+* `CACHE_THRESHOLD` amount of files to cache, default 100000
 * `FREETAR_CACHE_DIR` (location of disk cache, defaults to /tmp)
 * `FREETAR_LOCAL=1` fetches directly from Ultimate Guitar instead of the public Freetar proxies.
 

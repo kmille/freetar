@@ -22,6 +22,7 @@ from freetar.utils import get_version, FreetarError
 
 FREETAR_CACHING = os.environ.get("FREETAR_CACHING", "ram")
 CACHE_TIMEOUT = int(os.environ.get("FREETAR_CACHE_TIMEOUT", 0))
+CACHE_THRESHOLD = int(os.environ.get("FREETAR_CACHE_THRESHOLD", 100000))
 CACHE_DIR = os.environ.get("FREETAR_CACHE_DIR", "/tmp")
 
 if FREETAR_CACHING == "off":
@@ -32,7 +33,7 @@ elif FREETAR_CACHING == "ram":
     cache_config = {
         'CACHE_TYPE': 'SimpleCache',
         "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
-        "CACHE_THRESHOLD": 100000,
+        "CACHE_THRESHOLD": CACHE_THRESHOLD,
     }
 elif FREETAR_CACHING == "disk":
     Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
@@ -41,7 +42,7 @@ elif FREETAR_CACHING == "disk":
         'CACHE_TYPE': 'FileSystemCache',
         "CACHE_DIR": CACHE_DIR,
         "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
-        "CACHE_THRESHOLD": 100000,
+        "CACHE_THRESHOLD": CACHE_THRESHOLD,
     }
 else:
     logger.error(f"Invalid FREETAR_CACHING value: {FREETAR_CACHING}")
