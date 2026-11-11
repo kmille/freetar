@@ -126,7 +126,7 @@ def main():
                 host=host,
                 port=port)
     else:
-        threads = os.environ.get("THREADS", "4")
+        threads = int(os.environ.get("THREADS", "4"))
         logger.info(f"Running freetar {get_version()} backend on {host}:{port} with {threads} threads")
         waitress.serve(app, listen=f"{host}:{port}",
                        threads=threads,
