@@ -9,6 +9,7 @@ import re
 from dataclasses import dataclass, field
 from .utils import FreetarError
 
+UPSTREAM_TIMEOUT = (3.05, 10)  # (connect, read)
 LOCAL_MODE = os.environ.get("FREETAR_LOCAL") == "1"
 REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -118,9 +119,11 @@ class Search:
             if LOCAL_MODE:
                 resp = requests.get("https://www.ultimate-guitar.com/search.php",
                                     params={"page": page, "search_type": "title", "value": value},
+                                    timeout=UPSTREAM_TIMEOUT,
                                     headers=REQUEST_HEADERS)
             else:
-                resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}")
+                resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}",
+                                    timeout=UPSTREAM_TIMEOUT)
             logger.debug(f"Got {resp.status_code} for {resp.request.url}")
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
@@ -206,9 +209,11 @@ def ug_tab(url_path: str):
     try:
         if LOCAL_MODE:
             resp = requests.get("https://tabs.ultimate-guitar.com/tab/" + str(url_path),
+                                timeout=UPSTREAM_TIMEOUT,
                                 headers=REQUEST_HEADERS)
         else:
-            resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path)
+            resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path,
+                                timeout=UPSTREAM_TIMEOUT)
         logger.debug(f"Got {resp.status_code} for {resp.request.url}")
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
