@@ -1,3 +1,4 @@
+import logging
 import waitress
 import sys
 import os
@@ -5,6 +6,16 @@ from pathlib import Path
 from flask import Flask, render_template, request
 from flask_caching import Cache
 from flask_minify import Minify
+
+level = logging.DEBUG if os.getenv("DEBUG") == "1" else logging.INFO
+logging.getLogger("urllib3").setLevel(logging.INFO)
+logging.basicConfig(
+    level=level,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
 
 from freetar.ug import Search, ug_tab
 from freetar.utils import get_version, FreetarError
@@ -14,10 +25,10 @@ CACHE_TIMEOUT = int(os.environ.get("FREETAR_CACHE_TIMEOUT", 0))
 CACHE_DIR = os.environ.get("FREETAR_CACHE_DIR", "/tmp")
 
 if FREETAR_CACHING == "off":
-    print("Disabling caching")
+    logger.info("Disabling caching")
     cache_config = {'CACHE_TYPE': 'NullCache'}
 elif FREETAR_CACHING == "ram":
-    print("Enabling memory caching")
+    logger.info("Enabling memory caching")
     cache_config = {
         'CACHE_TYPE': 'SimpleCache',
         "CACHE_DEFAULT_TIMEOUT": CACHE_TIMEOUT,
@@ -25,7 +36,7 @@ elif FREETAR_CACHING == "ram":
     }
 elif FREETAR_CACHING == "disk":
     Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
-    print(f"Enabling disk caching ({CACHE_DIR})")
+    logger.info(f"Enabling disk caching ({CACHE_DIR})")
     cache_config = {
         'CACHE_TYPE': 'FileSystemCache',
         "CACHE_DIR": CACHE_DIR,
@@ -33,7 +44,7 @@ elif FREETAR_CACHING == "disk":
         "CACHE_THRESHOLD": 100000,
     }
 else:
-    print(f"Invalid FREETAR_CACHING value: {FREETAR_CACHING}")
+    logger.error(f"Invalid FREETAR_CACHING value: {FREETAR_CACHING}")
     sys.exit(1)
 
 app = Flask(__name__)
@@ -99,6 +110,7 @@ def show_about():
 @app.errorhandler(500)
 @app.errorhandler(FreetarError)
 def internal_error(error):
+    logger.exception("Exception occured")
     search_term = request.args.get("search_term")
     return render_template('error.html',
                            search_term=search_term,
@@ -114,7 +126,7 @@ def main():
                 port=port)
     else:
         threads = os.environ.get("THREADS", "4")
-        print(f"Running freetar {get_version()} backend on {host}:{port} with {threads} threads")
+        logger.info(f"Running freetar {get_version()} backend on {host}:{port} with {threads} threads")
         waitress.serve(app, listen=f"{host}:{port}", threads=threads)
 
 

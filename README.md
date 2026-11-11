@@ -23,6 +23,7 @@ After successful installation, there is an executable called `freetar` in the PA
 
 ## Environment variables
 
+* `DEBUG=1` to get debug output
 * `FREETAR_HOST`
 * `FREETAR_PORT`
 * `FREETAR_CACHING` (`ram` (default) for memory caching, use `off` for developing/debugging, `disk` for disk cache)

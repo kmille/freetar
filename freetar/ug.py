@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
+import logging
 import json
 import os
 import re
@@ -14,6 +15,8 @@ REQUEST_HEADERS = {
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
                   "Chrome/126.0.0.0 Safari/537.36",
 }
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -118,6 +121,7 @@ class Search:
                                     headers=REQUEST_HEADERS)
             else:
                 resp = requests.get(f"https://proxy.freetar.de/search.php?page={page}&search_type=title&value={quote(value)}")
+            logger.debug(f"Got {resp.status_code} for {resp.request.url}")
             resp.raise_for_status()
             bs = BeautifulSoup(resp.text, 'html.parser') # data can be None
             data = bs.find("div", {"class": "js-store"}) # KeyError
@@ -205,6 +209,7 @@ def ug_tab(url_path: str):
                                 headers=REQUEST_HEADERS)
         else:
             resp = requests.get("https://tabs.proxy.freetar.de/tab/" + url_path)
+        logger.debug(f"Got {resp.status_code} for {resp.request.url}")
         resp.raise_for_status()
         bs = BeautifulSoup(resp.text, 'html.parser')
         data = bs.find("div", {"class": "js-store"})
