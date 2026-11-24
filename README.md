@@ -6,6 +6,7 @@ This is like [Invidious](https://invidious.io/) but only for [Ultimate Guitar](h
 - https://freetar.de
 - https://freetar.habedieeh.re
 - https://tabs.adast.dk
+- https://tabs.utilibre.org
 
 ## Features
 - no ads, popups, AI, blockchain. Just a simple design
